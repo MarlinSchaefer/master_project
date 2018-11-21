@@ -13,6 +13,7 @@ NUM_OF_TEMPLATE = 20000
 SCALING_FACTOR = 6.1
 RESAMPLE_DELTA_T = 1.0 / 1024
 FILE_NAME = "template_bank_full"
+RANDOM_START_TIME = True
 
 APPROXIMANT = "SEOBNRv4_opt"
 DELTA_T = 1.0 / 4096
@@ -63,7 +64,10 @@ def payload(i):
     
     if gw_present:
         strain = NULL_WAVEFORM
-        t_start = int(round((T_SAMPLES - len(strain)) / 2))
+        if RANDOM_START_TIME:
+            t_start = int(round((T_SAMPLES - len(strain)) / 2)) + int(round(random() * strain.sample_rate))
+        else:
+            t_start = int(round((T_SAMPLES - len(strain)) / 2))
         strain.prepend_zeros(t_start)
         strain.append_zeros(T_SAMPLES-len(strain))
         
