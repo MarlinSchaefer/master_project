@@ -63,7 +63,7 @@ def payload(i):
     noise = noise_from_psd(length=T_SAMPLES, delta_t=DELTA_T, psd=psd, seed=randint(0,10000))
     
     if gw_present:
-        strain = NULL_WAVEFORM
+        strain = TimeSeries(NULL_WAVEFORM)
         if RANDOM_START_TIME:
             t_start = int(round((T_SAMPLES - len(strain)) / 2)) + int(round(random() * strain.sample_rate))
         else:
