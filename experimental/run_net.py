@@ -47,24 +47,6 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['metrics'] = ['mape']
     opt_arg['epochs'] = 10
     
-    #Properties for the waveform itself
-    opt_arg['approximant'] = "SEOBNRv4_opt"
-    opt_arg['mass1'] = 30.0
-    opt_arg['mass2'] = 30.0
-    opt_arg['delta_t'] = 1.0 / 4096
-    opt_arg['f_lower'] = 20.0
-    
-    #Properties for the generating program
-    opt_arg['gw_prob'] = 1.0
-    opt_arg['snr_low'] = 1.0
-    opt_arg['snr_upper'] = 12.0
-    opt_arg['resample_delta_t'] = 1.0 / 1024
-    opt_arg['t_len'] = 64.0
-    opt_arg['resample_t_len'] = 4.0
-    opt_arg['num_of_templates'] = 20000
-    opt_arg['random_starting_time'] = True
-    opt_arg['random_phase'] = True
-    
     for key in opt_arg.keys():
         if key is in kwargs:
             opt_arg[key] = kwargs.get(key)
