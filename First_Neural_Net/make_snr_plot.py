@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from load_data import load_data_Conv1D
 
-NAME_DIC = {'classify_snr_4': 'template_bank_full', 'classify_small_snr': 'small_snr_templates', 'classify_varied_time': 'varied_time_templates_new'}
+NAME_DIC = {'classify_snr_4': 'template_bank_full', 'classify_small_snr': 'small_snr_templates', 'classify_varied_time': 'varied_time_templates_new', 'classify_varied_phase': 'varied_time_templates_new'}
 
 def plot(name):
     (train_data, train_labels), (test_data, test_labels) = load_data_Conv1D(name=NAME_DIC[name])
