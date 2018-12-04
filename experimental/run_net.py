@@ -121,7 +121,7 @@ def run_net(net_name, temp_name, **kwargs):
     if not net_exists_q(net_name, path=net_path):
         try:
             #NOTE: The module needs to have a method 'get_model'
-            net_mod = imp.load_source("net_mod.load", str(os.path.join(net_path, net_name + '.py')))
+            net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
             net = net_mod.get_model()
             
         except IOError:
@@ -223,7 +223,7 @@ def run_net(net_name, temp_name, **kwargs):
     
     net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
     
-    net.save(os.path.join(net_path, net_name + '_run_net_new.hf5'))
+    net.save(os.path.join(net_path, net_name + '.hf5'))
     
     print(net.evaluate(test_data, test_labels))
     
