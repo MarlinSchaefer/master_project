@@ -77,6 +77,8 @@ Args:
     -(op,bool)show_snr_plot: Wether or not to show a plot to visualize the
                              resulting net. An image is stored even when this
                              option is set to false. (**) Default: True
+    -(op,bool)only_print_image: Wether or not to train the net or just print
+                                the final evaluation image. Default: False
 
 Ret:
     -(void)
@@ -109,6 +111,7 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['epochs'] = 10
     opt_arg['overwrite_template_file'] = False
     opt_arg['show_snr_plot'] = True
+    opt_arg['only_print_image'] = False
     
     for key in opt_arg.keys():
         if key in kwargs:
@@ -173,6 +176,7 @@ def run_net(net_name, temp_name, **kwargs):
             return()
     
     #Load templates
+    print(os.path.join(temp_path, temp_name + ".hf5"))
     (train_data, train_labels), (test_data, test_labels) = load_data(os.path.join(temp_path, temp_name + ".hf5"))
     
     #Check sizes of loaded data against the input and output shape of the net
@@ -218,16 +222,17 @@ def run_net(net_name, temp_name, **kwargs):
         cache[0] = len(test_labels)
         np.reshape(test_labels, tuple(cache))
     
-    #If everything is fine, train and evaluate the net
-    net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
-    
-    net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
-    
-    net.save(os.path.join(net_path, net_name + '.hf5'))
-    
-    print(net.evaluate(test_data, test_labels))
+    if not opt_arg['only_print_image']:
+        #If everything is fine, train and evaluate the net
+        net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
+        
+        net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+        
+        net.save(os.path.join(net_path, net_name + '.hf5'))
+        
+        print(net.evaluate(test_data, test_labels))
     
     if ignored_error:
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
-    plot(net, test_data, test_labels, os.path.join(net_path, net_name + '_run_net_new_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
+    plot(net, test_data, test_labels, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
