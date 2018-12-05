@@ -114,11 +114,11 @@ def payload(i, **kwargs):
         opt_arg['snr'] = 0.0
     
     noise._epoch = strain._epoch
-    total = TimeSeries(strain + noise)
-    del strain
+    total = TimeSeries(noise + strain)
     del noise
+    del strain
         
-    total.whiten(opt_arg['whiten_len'], opt_arg['whiten_cutoff'], low_frequency_cutoff=kwargs['f_lower'])
+    total = total.whiten(opt_arg['whiten_len'], opt_arg['whiten_cutoff'], low_frequency_cutoff=kwargs['f_lower'])
         
     mid_point = (total.end_time + total.start_time) / 2
     total = resample_to_delta_t(total, opt_arg['resample_delta_t'])
