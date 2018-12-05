@@ -6,6 +6,8 @@ def plot(net, data, labels, path, show=False, net_name='N/A'):
     x_pt = labels.reshape(len(labels))
     y_pt = np.zeros(len(data))
     
+    print("Path: %s" % path)
+    
     for i, pt in enumerate(data):
         y_pt[i] = net.predict(np.array([pt]))
     
