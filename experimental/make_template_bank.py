@@ -36,8 +36,8 @@ def data_to_file(name, data, split_index):
     training.create_dataset('train_labels', data=train_labels, dtype='f')
     
     testing = output.create_group('testing')
-    testing.create_dataset('test_data', data=test_data)
-    testing.create_dataset('test_labels', data=test_labels)
+    testing.create_dataset('test_data', data=test_data, dtype='f')
+    testing.create_dataset('test_labels', data=test_labels, dtype='f')
     
     output.close()
     return()
@@ -105,10 +105,12 @@ def payload(i, **kwargs):
             t_before = int(round((T_SAMPLES) / 2)) - len(strain.sample_times) + int(round(random() * opt_arg['time_variance'] * strain.sample_rate))
         else:
             t_before = int(round((T_SAMPLES) / 2)) - len(strain.sample_times)
+            #t_before = int(round((T_SAMPLES - len(strain)) / 2))
         
         strain.prepend_zeros(t_before)
         strain.append_zeros(T_SAMPLES - len(strain))
-        strain /= sigma(strain, psd=psd, low_frequency_cutoff=kwargs['f_lower']) * opt_arg['snr']
+        strain /= sigma(strain, psd=psd, low_frequency_cutoff=kwargs['f_lower'])
+        strain *= opt_arg['snr']
     else:
         strain = TimeSeries(np.zeros(len(noise)))
         opt_arg['snr'] = 0.0
@@ -122,9 +124,9 @@ def payload(i, **kwargs):
         
     mid_point = (total.end_time + total.start_time) / 2
     total = resample_to_delta_t(total, opt_arg['resample_delta_t'])
-    total_crop = np.array(total.time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2))
+    total_crop = total.time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
     
-    return(np.array([total_crop, opt_arg['snr']]))
+    return(np.array([np.array(total_crop), opt_arg['snr']]))
 
 """
 Create a template file using the given options.
@@ -251,10 +253,10 @@ def create_file(name, **kwargs):
             opt_arg[key] = kwargs.get(key)
             del kwargs[key]
     
-    for key, val in kwargs.items():
+    for key, val in wav_arg.items():
         if not key == 'mode_array':
             if type(val) == list:
-                kwargs[key] = [min(val), max(val)]
+                wav_arg[key] = [min(val), max(val)]
     
     kwargs.update(wav_arg)
     seed(opt_arg['seed'])
