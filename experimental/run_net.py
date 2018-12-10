@@ -132,7 +132,7 @@ def run_net(net_name, temp_name, **kwargs):
             return()
     else:
         #NOTE: The Net has to be stored with the ending 'hf5'
-        net = keras.models.load_model(os.path.join(net_path, net_name, '.hf5'))
+        net = keras.models.load_model(os.path.join(net_path, net_name + '.hf5'))
     
     input_layer_shape = (net.layers)[0].get_input_at(0).get_shape().as_list()
     input_layer_shape = tuple(input_layer_shape[1:])
@@ -181,6 +181,8 @@ def run_net(net_name, temp_name, **kwargs):
     
     #Check sizes of loaded data against the input and output shape of the net
     do_reshape = False
+    print('Output shape: {}'.format(output_layer_shape))
+    print('data shape: {}'.format(train_labels.shape))
     if not train_data[0].shape == input_layer_shape:
         if not opt_arg['ignore_fixable_errors']:
             inp = 'False'
