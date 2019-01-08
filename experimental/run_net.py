@@ -166,7 +166,8 @@ def run_net(net_name, temp_name, **kwargs):
                     return()
             else:
                 try:
-                    from make_template_bank import create_file
+                    from make_template_bank_new import create_file
+                    #from make_template_bank import create_file
                     
                     create_file(name=temp_name, path=temp_path, **kwargs)
                 except ImportError:
@@ -228,6 +229,7 @@ def run_net(net_name, temp_name, **kwargs):
         #If everything is fine, train and evaluate the net
         net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
         
+        print(net.summary())
         net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
         
         net.save(os.path.join(net_path, net_name + '.hf5'))
