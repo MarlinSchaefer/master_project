@@ -221,7 +221,7 @@ def create_file(name, **kwargs):
     wav_arg['mass2'] = 30.0
     wav_arg['delta_t'] = 1.0 / 4096
     wav_arg['f_lower'] = 20.0
-    wav_arg['phase'] = [0., np.pi]
+    wav_arg['coa_phase'] = [0., np.pi]
     wav_arg['distance'] = 1.0
     
     #Properties for handeling the process of generating the waveform
