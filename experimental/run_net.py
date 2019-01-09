@@ -66,6 +66,8 @@ Args:
                                      not (*). Default: False
     -(op,bool)overwrite_template_file: Wether to overwrite or use existing
                                        template-files. Default: False
+    -(op,bool)overwrite_net_file: Wether to load or overwrite an existing
+                                  network-model. Default: True
     -(op,str/func)loss: The loss-option from keras.models.fit().
                         Default: 'mean_squared_error'
     -(op,str/func)optimizer: The optimizer option from keras.models.fit().
@@ -79,6 +81,9 @@ Args:
                              option is set to false. (**) Default: True
     -(op,bool)only_print_image: Wether or not to train the net or just print
                                 the final evaluation image. Default: False
+    -(op,bool)use_custom_train_function: Wether to use keras.model.fit or a
+                                         custom training function. (3*)
+                                         Default: False
 
 Ret:
     -(void)
@@ -95,6 +100,10 @@ Notes:
             run_net(net_name, temp_name, **kwargs)
      
      as it utilizes the mulitprocessing.Pool module.
+    -(3*): The custom training function needs to be provided in the network.py
+           file, which would be used to load the network if no .hf5 stored
+           version existis. This function needs to have the network as a
+           parameter and needs to return the trained model.
 """
 def run_net(net_name, temp_name, **kwargs):
     ignored_error = False
@@ -114,6 +123,7 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['show_snr_plot'] = True
     opt_arg['only_print_image'] = False
     opt_arg['use_custom_train_function'] = False
+    opt_arg['epoch_break'] = 10
     
     for key in opt_arg.keys():
         if key in kwargs:
@@ -122,6 +132,10 @@ def run_net(net_name, temp_name, **kwargs):
     
     net_path = opt_arg['net_path']
     temp_path = opt_arg['temp_path']
+    
+    if opt_arg['epochs'] == None and not opt_arg['use_custom_train_function']:
+        raise ValueError('Cannot set "epochs" to "None" without using a custom training function which can handle this exception.')
+        return
     
     if not net_exists_q(net_name, path=net_path) or opt_arg['overwrite_net_file']:
         try:
@@ -236,7 +250,7 @@ def run_net(net_name, temp_name, **kwargs):
             try:
                 #NOTE: The module needs to have a method 'train_model', which returns the trained model.
                 net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-                net = net_mod.train_model(net)
+                net = net_mod.train_model(net, train_data, train_labels, test_data, test_labels, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'])
             
             except IOError:
                 raise NameError('There is no net named %s in %s.' % (net_name, net_path))
