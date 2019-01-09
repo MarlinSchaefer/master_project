@@ -71,7 +71,7 @@ def verify_templates(file_path):
         #true_wav = whiten(true_wav, psd, train_wav_par[i]['f_lower'])
         #print(true_wav)
         
-        snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_data[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), max(abs(matched_filter(true_wav, TimeSeries(train_raw[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
+        snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_data[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), max(abs(matched_filter(true_wav, TimeSeries(train_raw[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower'])))**0.5, train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
     
     #print(train_data[0])
     
