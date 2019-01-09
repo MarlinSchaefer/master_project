@@ -110,8 +110,10 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['metrics'] = ['mape']
     opt_arg['epochs'] = 10
     opt_arg['overwrite_template_file'] = False
+    opt_arg['overwrite_net_file'] = True
     opt_arg['show_snr_plot'] = True
     opt_arg['only_print_image'] = False
+    opt_arg['use_custom_train_function'] = False
     
     for key in opt_arg.keys():
         if key in kwargs:
@@ -121,7 +123,7 @@ def run_net(net_name, temp_name, **kwargs):
     net_path = opt_arg['net_path']
     temp_path = opt_arg['temp_path']
     
-    if not net_exists_q(net_name, path=net_path):
+    if not net_exists_q(net_name, path=net_path) or opt_arg['overwrite_net_file']:
         try:
             #NOTE: The module needs to have a method 'get_model'
             net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
@@ -230,7 +232,17 @@ def run_net(net_name, temp_name, **kwargs):
         net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
         
         print(net.summary())
-        net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+        if opt_arg['use_custom_train_function']:
+            try:
+                #NOTE: The module needs to have a method 'train_model', which returns the trained model.
+                net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+                net = net_mod.train_model(net)
+            
+            except IOError:
+                raise NameError('There is no net named %s in %s.' % (net_name, net_path))
+                return()
+        else:
+            net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
         
         net.save(os.path.join(net_path, net_name + '.hf5'))
         
