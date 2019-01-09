@@ -111,7 +111,7 @@ def payload(i, **kwargs):
     gw_present = bool(random() < opt_arg['gw_prob'])
     
     psd = aLIGOZeroDetHighPower(length=F_LEN, delta_f=DELTA_F, low_freq_cutoff=kwargs['f_lower'])
-    noise = noise_from_psd(length=T_SAMPLES, delta_t=kwargs['delta_t'], psd=psd, seed=0)
+    noise = noise_from_psd(length=T_SAMPLES, delta_t=kwargs['delta_t'], psd=psd, seed=randint(0,100000))
     
     if gw_present:
         #print(kwargs)
@@ -166,7 +166,7 @@ given as a list, the function will uniformly distribute the value between the
 minimum and the maximum of this list. (Valid for all parameters, but useful
 only for source parameters, such as mass or spin.)
 The signal to noise ratio is scaled by dividing the generated signal by its
-sigma value (for details on this see the documentation of pycbc.filter.sigma).
+sigma value (for details on this see the documentation of pycbc.filter.sigma).2
 Therefore changing the distance from the default will result in inaccurate
 SNRs.
 This function also sets some default source parameters, if no others are
@@ -188,7 +188,7 @@ Args:
     -(op,bool)random_starting_time: Wether or not the position of a potential
                                     signal will be varied within the
                                     timeseries. (**) Default: True
-    -(op,float)time_variance: Time (in s) the position of the GW within the
+    -(op,float)time_variance: Time (in s) the position of the GW within the2
                               signal will maximally be varied by. Default: 1.0
     -(op,float)resample_delta_t: The sample frequency the templates will be
                                  stored at. Default: 1.0 / 1024
