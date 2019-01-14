@@ -4,6 +4,7 @@ from load_data import load_data
 import numpy as np
 import imp
 from make_snr_plot import plot
+from loss_plot import make_loss_plot
 
 """
 TODO:
@@ -266,3 +267,5 @@ def run_net(net_name, temp_name, **kwargs):
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
     plot(net, test_data, test_labels, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
+    
+    make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), net_name + "_loss_plot.png"))
