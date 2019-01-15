@@ -1,10 +1,12 @@
 import os
 import keras
-from load_data import load_data
+from load_data import load_data, load_wiki
 import numpy as np
 import imp
 from make_snr_plot import plot
 from loss_plot import make_loss_plot
+import time
+from wiki import make_wiki_entry, read_json, get_wiki_path
 
 """
 TODO:
@@ -109,6 +111,7 @@ Notes:
 def run_net(net_name, temp_name, **kwargs):
     ignored_error = False
     
+    wiki_data = {}
     opt_arg = {}
     
     #Properties for this function
@@ -126,10 +129,13 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['use_custom_train_function'] = False
     opt_arg['epoch_break'] = 10
     
+    wiki_data['programm_internals'] = {}
+    
     for key in opt_arg.keys():
         if key in kwargs:
             opt_arg[key] = kwargs.get(key)
             del kwargs[key]
+        wiki_data['programm_internals'][key] = opt_arg[key]
     
     net_path = opt_arg['net_path']
     temp_path = opt_arg['temp_path']
@@ -167,7 +173,8 @@ def run_net(net_name, temp_name, **kwargs):
                 ignored_error = True
         
         if input_to_bool(inp):
-            
+            wiki_data['template_generation'] = {}
+            wiki_data['template_generation']['time_start'] = time.gmtime(time.time())
             kwargs['data_shape'] = input_layer_shape
             kwargs['label_shape'] = output_layer_shape
             if 'temp_creation_script' in kwargs:
@@ -178,6 +185,7 @@ def run_net(net_name, temp_name, **kwargs):
                     custom_temp_script = importlib.import_module(str(temp_creation_script))
                     
                     custom_temp_script.create_file(name=temp_name, path=temp_path, **kwargs)
+                    wiki_data['template_generation']['time_end'] = time.gmtime(time.time())
                 except ImportError:
                     print("Could not import the creation file.")
                     return()
@@ -187,11 +195,13 @@ def run_net(net_name, temp_name, **kwargs):
                     #from make_template_bank import create_file
                     
                     create_file(name=temp_name, path=temp_path, **kwargs)
+                    wiki_data['template_generation']['time_end'] = time.gmtime(time.time())
                 except ImportError:
                     print("Could not import module 'make_template_file'")
                     return()
         else:
             return()
+    
     
     #Load templates
     print(os.path.join(temp_path, temp_name + ".hf5"))
@@ -242,6 +252,8 @@ def run_net(net_name, temp_name, **kwargs):
         cache[0] = len(test_labels)
         np.reshape(test_labels, tuple(cache))
     
+    wiki_data['training'] = {}
+    wiki_data['training']['time_start'] = time.gmtime(time.time())
     if not opt_arg['only_print_image']:
         #If everything is fine, train and evaluate the net
         net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
@@ -252,12 +264,14 @@ def run_net(net_name, temp_name, **kwargs):
                 #NOTE: The module needs to have a method 'train_model', which returns the trained model.
                 net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
                 net = net_mod.train_model(net, train_data, train_labels, test_data, test_labels, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'])
+                wiki_data['training']['time_end'] = time.gmtime(time.time())
             
             except IOError:
                 raise NameError('There is no net named %s in %s.' % (net_name, net_path))
                 return()
         else:
-            net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+             hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+             wiki_data['training']['time_end'] = time.gmtime(time.time())
         
         net.save(os.path.join(net_path, net_name + '.hf5'))
         
@@ -268,4 +282,28 @@ def run_net(net_name, temp_name, **kwargs):
     
     plot(net, test_data, test_labels, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
     
-    make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), net_name + "_loss_plot.png"))
+    try:
+        make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), net_name + "_loss_plot.png"))
+    except IOError:
+        print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
+    
+    try:
+        wiki_data['loss'] = read_json(os.path.join(get_store_path(), net_name + "_results.json"))
+    except IOError:
+        losses = hist.history['loss']
+        wiki_data['loss'] = {}
+        wiki_data['loss']['min_training'] = (0, np.inf)
+        wiki_data['loss']['min_testing'] = (0, np.inf)
+        wiki_data['loss']['last_training'] = (len(losses), losses[-1])
+        wiki_data['loss']['last_testing'] = (0, np.inf)
+        
+        for idx, pt in enumerate(losses):
+            if pt < wiki_data['loss']['min_training'][1]:
+                wiki_data['loss']['min_training'] = (idx, pt)
+        
+        print(bcolors.OKGREEN + 'Could not store loss history in the wiki, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
+    wiki_data['ignored_errors'] = ignored_error
+    wiki_data['template_properties'] = load_wiki(os.path.join(temp_path, temp_name + ".hf5"))
+    wiki_data['network'] = str(net.summary())
+    
+    make_wiki_entry(wiki_data)
