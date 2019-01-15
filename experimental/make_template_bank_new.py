@@ -56,6 +56,10 @@ def data_to_file(name, data, split_index):
     psd.create_dataset('data', data=data[5], dtype=np.float64)
     psd.create_dataset('delta_f', data=data[6], dtype=np.float64)
     
+    parameter_space = output.create_group('parameter_space')
+    for key, val in data[7].items():
+        parameter_space.create_dataset(str(key), data=val, dtype=val.dtype)
+    
     output.close()
     return()
 
@@ -315,6 +319,12 @@ def create_file(name, **kwargs):
     data_1 = data_1.reshape(in_shape)
     data_2 = data_2.reshape(out_shape)
     
-    data = [data_0, data_1, data_2, data_3, data_4, data_5, data_6]
+    prop_dict = {}
+    prop_dict.update(wav_arg)
+    prop_dict.update(opt_arg)
+    for key in prop_dict.keys():
+        prop_dict[key] = np.array(prop_dict[key])
+    
+    data = [data_0, data_1, data_2, data_3, data_4, data_5, data_6, prop_dict]
     
     data_to_file(name=os.path.join(opt_arg['path'], name + '.hf5'), data=data, split_index=int(round(opt_arg['train_to_test']*opt_arg['num_of_templates'])))
