@@ -6,7 +6,7 @@ import imp
 from make_snr_plot import plot
 from loss_plot import make_loss_plot
 import time
-from wiki import make_wiki_entry, read_json, get_wiki_path
+from wiki import make_wiki_entry, read_json, model_to_string
 
 """
 TODO:
@@ -304,6 +304,6 @@ def run_net(net_name, temp_name, **kwargs):
         print(bcolors.OKGREEN + 'Could not store loss history in the wiki, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
     wiki_data['ignored_errors'] = ignored_error
     wiki_data['template_properties'] = load_wiki(os.path.join(temp_path, temp_name + ".hf5"))
-    wiki_data['network'] = str(net.summary())
+    wiki_data['network'] = model_to_string(net)
     
     make_wiki_entry(wiki_data)
