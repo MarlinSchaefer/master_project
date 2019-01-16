@@ -28,13 +28,24 @@ def net_to_wiki(file_path):
 def get_wiki_path():
     return(os.path.join(os.path.dirname(os.path.abspath(__file__)), "wiki"))
 
+def model_to_string(model):
+    summary = []
+    model.summary(print_fn=lambda x: summary.append(x + '\n'))
+    
+    s = '\n'
+    
+    for st in summary:
+        s += st
+        
+    return(s)
+
 def export_to_wiki_file(data):
     file_path = os.path.join(get_wiki_path(), 'wiki.txt')
     file_already_exists = os.path.isfile(file_path)
     
     with open(file_path, 'a+') as FILE:
         if file_already_exists:
-            FILE.write('----------------------------------------------------------------')
+            FILE.write('###############################################################################')
             FILE.write('\n\n\n')
         
         for s in data:
