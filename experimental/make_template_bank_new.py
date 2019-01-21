@@ -129,6 +129,8 @@ def payload(i, **kwargs):
             t_before = int(round((T_SAMPLES) / 2)) - len(strain.sample_times)
             #t_before = int(round((T_SAMPLES - len(strain)) / 2))
         
+        opt_arg['samples_before'] = t_before
+        
         strain.prepend_zeros(t_before)
         strain.append_zeros(T_SAMPLES - len(strain))
         #print("SNR: %f" % opt_arg['snr'])
@@ -139,6 +141,7 @@ def payload(i, **kwargs):
     else:
         strain = TimeSeries(np.zeros(len(noise)))
         opt_arg['snr'] = 0.0
+        opt_arg['samples_before'] = 0
     
     noise._epoch = strain._epoch
     full = TimeSeries(noise + strain)
@@ -150,14 +153,17 @@ def payload(i, **kwargs):
         
     mid_point = (total.end_time + total.start_time) / 2
     total = resample_to_delta_t(total, opt_arg['resample_delta_t'])
-    full = resample_to_delta_t(full, opt_arg['resample_delta_t'])
+    #full = resample_to_delta_t(full, opt_arg['resample_delta_t'])
     total_crop = total.time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
     full_crop  = full.time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
     
-    del full
-    del total
     
-    return((np.array(total_crop), np.array(full_crop), opt_arg['snr'], str(kwargs), str(opt_arg)))
+    #del full
+    #del total
+    
+    #print(opt_arg)
+    
+    return((np.array(total_crop), np.array(full), opt_arg['snr'], str(kwargs), str(opt_arg)))
 
 """
 Create a template file using the given options.
@@ -316,7 +322,8 @@ def create_file(name, **kwargs):
     out_shape.insert(0, opt_arg['num_of_templates'])
     
     data_0 = data_0.reshape(in_shape)
-    data_1 = data_1.reshape(in_shape)
+    #data_1 = data_1.reshape(in_shape)
+    print(data_1.shape)
     data_2 = data_2.reshape(out_shape)
     
     prop_dict = {}
