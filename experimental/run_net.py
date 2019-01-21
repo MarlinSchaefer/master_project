@@ -77,7 +77,8 @@ def set_template_file(temp_name, temp_path, args):
                     exit()
             else:
                 try:
-                    from make_template_bank_new import create_file
+                    #from make_template_bank_new import create_file
+                    from make_template_bank_v2 import create_file
                     
                     create_file(name=temp_name, path=temp_path, **kwargs)
                 except ImportError:
@@ -89,6 +90,9 @@ def set_template_file(temp_name, temp_path, args):
     return(ignored_error)
 
 def reshape_data(train_data, test_data, final_shape, **opt_arg):
+    print('Train Data shape: {}'.format(train_data.shape))
+    print('Test Data shape: {}'.format(test_data.shape))
+    print('Final shape: {}'.format(final_shape))
     do_reshape = False
     ignored_error = False
     #print('Output shape: {}'.format(output_layer_shape))
