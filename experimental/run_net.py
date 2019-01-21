@@ -10,7 +10,6 @@ from wiki import make_wiki_entry, read_json, model_to_string
 
 """
 TODO:
--Implement the option to not overwrite existing files
 -Add support for .ini files
 """
 
@@ -43,6 +42,108 @@ def input_to_bool(string):
     true = ['y', 'Y', 'Yes', 'yes', 'Ja', 'ja', 'J', 'j', 'true', 'True', 'T', 't', '1']
     return(string in true)
 
+def filter_keys(opt_arg, kwargs):
+    for key in opt_arg.keys():
+        if key in kwargs:
+            opt_arg[key] = kwargs.get(key)
+            del kwargs[key]
+    
+    return(opt_arg, kwargs)
+
+def set_template_file(temp_name, temp_path, args):
+    opt_arg = args[0]
+    kwargs = args[1]
+    ignored_error = False
+    
+    if not template_exists_q(temp_name, path=temp_path) or opt_arg['overwrite_template_file']:
+        if not opt_arg['ignore_fixable_errors'] and not opt_arg['overwrite_template_file']:
+            inp = raw_input('No template file named %s found at %s.\nDo you want to generate it?\n' % (temp_name, temp_path))
+        else:
+            inp = 'y'
+            if not opt_arg['overwrite_template_file']:
+                ignored_error = True
+        
+        if input_to_bool(inp):
+            if 'temp_creation_script' in kwargs:
+                temp_creation_script = kwargs.get('temp_creation_script')
+                del kwargs['temp_creation_script']
+                try:
+                    #The custom module needs to have a 'create_file' method
+                    custom_temp_script = importlib.import_module(str(temp_creation_script))
+                    
+                    custom_temp_script.create_file(name=temp_name, path=temp_path, **kwargs)
+                except ImportError:
+                    print("Could not import the creation file.")
+                    exit()
+            else:
+                try:
+                    from make_template_bank_new import create_file
+                    
+                    create_file(name=temp_name, path=temp_path, **kwargs)
+                except ImportError:
+                    print("Could not import module 'make_template_bank_new'")
+                    exit()
+        else:
+            exit()
+    
+    return(ignored_error)
+
+def reshape_data(train_data, test_data, final_shape, **opt_arg):
+    do_reshape = False
+    ignored_error = False
+    #print('Output shape: {}'.format(output_layer_shape))
+    #print('data shape: {}'.format(train_labels.shape))
+    if not train_data[0].shape == final_shape:
+        if not opt_arg['ignore_fixable_errors']:
+            inp = 'False'
+            inp = raw_input("The provided data does not fit the provided net.\nDo you want to try and reshape the data?\n")
+            if input_to_bool(inp):
+                do_reshape = True
+            else:
+                exit()
+        else:
+            do_reshape = True
+            ignored_error = True
+    
+    if do_reshape:
+        cache = list(final_shape)
+        cache.insert(0, len(train_data))
+        np.reshape(train_data, tuple(cache))
+        
+        cache[0] = len(test_data)
+        np.reshape(test_data, tuple(cache))
+    
+    return((train_data, test_data, ignored_error))
+
+def _train_net(net, net_name, train_data, test_data, train_labels, test_labels, **opt_arg):
+    """Function to handle different ways of training the network.
+    
+    
+    
+    """
+    net_path = opt_arg['net_path']
+    hist = None
+    
+    #If everything is fine, train and evaluate the net
+    net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
+        
+    print(net.summary())
+    if opt_arg['use_custom_train_function']:
+        try:
+            #NOTE: The module needs to have a method 'train_model', which returns the trained model.
+            net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+            net = net_mod.train_model(net, train_data, train_labels, test_data, test_labels, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'])
+        except IOError:
+            raise NameError('There is no net named %s in %s.' % (net_name, net_path))
+            return()
+    else:
+        hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+        
+    net.save(os.path.join(net_path, net_name + '.hf5'))
+        
+    print(net.evaluate(test_data, test_labels))
+    
+    return(hist)
 
 """
 Function to handle running a neural net.
@@ -131,19 +232,27 @@ def run_net(net_name, temp_name, **kwargs):
     
     wiki_data['programm_internals'] = {}
     
+    #Look for any key of the values above that was overwritten and delete it
+    #from kwargs to pass kwargs on to other functions.
+    opt_arg, kwargs = filter_keys(opt_arg, kwargs)
+    
+    #Store the optional arguments set in the wiki
     for key in opt_arg.keys():
-        if key in kwargs:
-            opt_arg[key] = kwargs.get(key)
-            del kwargs[key]
         wiki_data['programm_internals'][key] = opt_arg[key]
     
+    #Set shortcuts to the paths for easier reference
     net_path = opt_arg['net_path']
     temp_path = opt_arg['temp_path']
     
+    #The standard training function 'fit' doesn't take None as an option for
+    #the epochs. Hance check this here.
     if opt_arg['epochs'] == None and not opt_arg['use_custom_train_function']:
         raise ValueError('Cannot set "epochs" to "None" without using a custom training function which can handle this exception.')
         return
     
+    #Load the network. If there is a .hf5 file named correctly and the option
+    #'overwrite_net_file' is set to false load this one. Otherwise import the
+    #model from a .py file.
     if not net_exists_q(net_name, path=net_path) or opt_arg['overwrite_net_file']:
         try:
             #NOTE: The module needs to have a method 'get_model'
@@ -157,50 +266,25 @@ def run_net(net_name, temp_name, **kwargs):
         #NOTE: The Net has to be stored with the ending 'hf5'
         net = keras.models.load_model(os.path.join(net_path, net_name + '.hf5'))
     
+    #Get the important shapes of the layers to possibly reshape the loaded
+    #template data later on
     input_layer_shape = (net.layers)[0].get_input_at(0).get_shape().as_list()
     input_layer_shape = tuple(input_layer_shape[1:])
     output_layer_shape = (net.layers)[-1].get_output_at(0).get_shape().as_list()
     output_layer_shape = tuple(output_layer_shape[1:])
     
+    kwargs['data_shape'] = input_layer_shape
+    kwargs['label_shape'] = output_layer_shape
+    
     #Handle not existing template file
     #Either create or quit
-    if not template_exists_q(temp_name, path=temp_path) or opt_arg['overwrite_template_file']:
-        if not opt_arg['ignore_fixable_errors'] and not opt_arg['overwrite_template_file']:
-            inp = raw_input('No template file named %s found at %s.\nDo you want to generate it?\n' % (temp_name, temp_path))
-        else:
-            inp = 'y'
-            if not opt_arg['overwrite_template_file']:
-                ignored_error = True
+    wiki_data['template_generation'] = {}
+    wiki_data['template_generation']['time_start'] = time.gmtime(time.time())
+    
+    if set_template_file(temp_name, temp_path, [opt_arg, kwargs]):
+        ignored_error = True
         
-        if input_to_bool(inp):
-            wiki_data['template_generation'] = {}
-            wiki_data['template_generation']['time_start'] = time.gmtime(time.time())
-            kwargs['data_shape'] = input_layer_shape
-            kwargs['label_shape'] = output_layer_shape
-            if 'temp_creation_script' in kwargs:
-                temp_creation_script = kwargs.get('temp_creation_script')
-                del kwargs['temp_creation_script']
-                try:
-                    #The custom module needs to have a 'create_file' method
-                    custom_temp_script = importlib.import_module(str(temp_creation_script))
-                    
-                    custom_temp_script.create_file(name=temp_name, path=temp_path, **kwargs)
-                    wiki_data['template_generation']['time_end'] = time.gmtime(time.time())
-                except ImportError:
-                    print("Could not import the creation file.")
-                    return()
-            else:
-                try:
-                    from make_template_bank_new import create_file
-                    #from make_template_bank import create_file
-                    
-                    create_file(name=temp_name, path=temp_path, **kwargs)
-                    wiki_data['template_generation']['time_end'] = time.gmtime(time.time())
-                except ImportError:
-                    print("Could not import module 'make_template_file'")
-                    return()
-        else:
-            return()
+    wiki_data['template_generation']['time_end'] = time.gmtime(time.time())
     
     
     #Load templates
@@ -208,85 +292,41 @@ def run_net(net_name, temp_name, **kwargs):
     (train_data, train_labels), (test_data, test_labels) = load_data(os.path.join(temp_path, temp_name + ".hf5"))
     
     #Check sizes of loaded data against the input and output shape of the net
-    do_reshape = False
-    print('Output shape: {}'.format(output_layer_shape))
-    print('data shape: {}'.format(train_labels.shape))
-    if not train_data[0].shape == input_layer_shape:
-        if not opt_arg['ignore_fixable_errors']:
-            inp = 'False'
-            inp = raw_input("The provided data does not fit the provided net.\nDo you want to try and reshape the data?\n")
-            if input_to_bool(inp):
-                do_reshape = True
-            else:
-                return
-        else:
-            do_reshape = True
-            ignored_error = True
+    train_data, test_data, ignored_error_reshaping = reshape_data(train_data, test_data, input_layer_shape, **opt_arg)
     
-    if do_reshape:
-        cache = list(input_layer_shape)
-        cache.insert(0, len(train_data))
-        np.reshape(train_data, tuple(cache))
-        
-        cache[0] = len(test_data)
-        np.reshape(test_data, tuple(cache))
+    if ignored_error_reshaping:
+        ignored_error = True
     
-    do_reshape = False
-    if not train_labels[0].shape == output_layer_shape:
-        if not opt_arg['ignore_fixable_errors']:
-            inp = 'False'
-            inp = raw_input("The provided labels do not fit the provided net.\nDo you want to try and reshape the labels?\n")
-            if input_to_bool(inp):
-                do_reshape = True
-            else:
-                return
-        else:
-            do_reshape = True
-            ignored_error = True
+    train_labels, test_labels, ignored_error_reshaping = reshape_data(train_labels, test_labels, output_layer_shape, **opt_arg)
     
-    if do_reshape:
-        cache = list(output_layer_shape)
-        cache.insert(0, len(train_labels))
-        np.reshape(train_labels, tuple(cache))
-        
-        cache[0] = len(test_labels)
-        np.reshape(test_labels, tuple(cache))
+    if ignored_error_reshaping:
+        ignored_error = True
     
-    wiki_data['training'] = {}
-    wiki_data['training']['time_start'] = time.gmtime(time.time())
+    #Training takes place here
     if not opt_arg['only_print_image']:
-        #If everything is fine, train and evaluate the net
-        net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
+        wiki_data['training'] = {}
+        wiki_data['training']['time_start'] = time.gmtime(time.time())
         
-        print(net.summary())
-        if opt_arg['use_custom_train_function']:
-            try:
-                #NOTE: The module needs to have a method 'train_model', which returns the trained model.
-                net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-                net = net_mod.train_model(net, train_data, train_labels, test_data, test_labels, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'])
-                wiki_data['training']['time_end'] = time.gmtime(time.time())
-            
-            except IOError:
-                raise NameError('There is no net named %s in %s.' % (net_name, net_path))
-                return()
-        else:
-             hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
-             wiki_data['training']['time_end'] = time.gmtime(time.time())
+        hist = _train_net(net, net_name, train_data, test_data, train_labels, test_labels, **opt_arg)
         
-        net.save(os.path.join(net_path, net_name + '.hf5'))
+        wiki_data['training']['time_end'] = time.gmtime(time.time())
         
-        print(net.evaluate(test_data, test_labels))
-    
+    #Give a warning if some errors were ignored and not specifically said
+    #(i.e. user input) to be automatically handeled
     if ignored_error:
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
+    #Plot the distribution of labels against predictions
     plot(net, test_data, test_labels, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
     
+    #Plot the loss over some recorded history
     try:
         make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), net_name + "_loss_plot.png"))
     except IOError:
         print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
     
+    
+    #Store wiki data about the loss
     try:
         wiki_data['loss'] = read_json(os.path.join(get_store_path(), net_name + "_results.json"))
     except IOError:
@@ -297,6 +337,7 @@ def run_net(net_name, temp_name, **kwargs):
         wiki_data['loss']['last_training'] = (len(losses), losses[-1])
         wiki_data['loss']['last_testing'] = (0, np.inf)
         
+        #Find minimum loss
         for idx, pt in enumerate(losses):
             if pt < wiki_data['loss']['min_training'][1]:
                 wiki_data['loss']['min_training'] = (idx, pt)
@@ -306,4 +347,5 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['template_properties'] = load_wiki(os.path.join(temp_path, temp_name + ".hf5"))
     wiki_data['network'] = model_to_string(net)
     
+    #Create a wiki-entry
     make_wiki_entry(wiki_data)
