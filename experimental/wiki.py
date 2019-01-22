@@ -59,26 +59,27 @@ def make_wiki_entry(data):
     output = []
     
     for key in order:
-        if type(data[key]) == dict:
-            #Do stuff
-            output.append(str(key) + ':')
-            output.append('\n')
-            
-            for k, v in data[key].items():
-                if isinstance(v, type(time.gmtime(time.time()))):
-                    output.append('\t' + str(k) + ': ' + time_to_string(v) + '\n')
-                else:
-                    output.append('\t' + str(k) + ': ' + str(v) + '\n')
-            
-            output.append('\n')
-        else:
-            #Do other stuff
-            if isinstance(data[key], type(time.gmtime(time.time()))):
-                output.append(str(key) + ': ' + time_to_string(data[key]) + '\n')
+        if key in data.keys():
+            if type(data[key]) == dict:
+                #Do stuff
+                output.append(str(key) + ':')
+                output.append('\n')
+                
+                for k, v in data[key].items():
+                    if isinstance(v, type(time.gmtime(time.time()))):
+                        output.append('\t' + str(k) + ': ' + time_to_string(v) + '\n')
+                    else:
+                        output.append('\t' + str(k) + ': ' + str(v) + '\n')
+                
+                output.append('\n')
             else:
-                output.append(str(key) + ': ' + str(data[key]) + '\n')
-            
-            output.append('\n')
+                #Do other stuff
+                if isinstance(data[key], type(time.gmtime(time.time()))):
+                    output.append(str(key) + ': ' + time_to_string(data[key]) + '\n')
+                else:
+                    output.append(str(key) + ': ' + str(data[key]) + '\n')
+                
+                output.append('\n')
     
     #Handle all other keys that are not handled before
     for key, val in data.items():
