@@ -58,27 +58,37 @@ def verify_templates(file_path):
     
     snr_res = []
     
+    
+    #psd.resize(len(true_wav)/2+1)
+    #psd = inverse_spectrum_truncation(psd, len(true_wav), low_frequency_cutoff=train_wav_par[i]['f_lower'])
+    
     for i in range(len(train_data)):
-        
+        print(i)
         true_wav = get_td_waveform(**(train_wav_par[i]))[0]
-        true_wav.resize(len(train_data[i]))
+        #print('Length of waveform = {}'.format(len(true_wav)))
+        #plt.show(plt.plot(true_wav))
+        #print(train_ext_par[i])
+        true_wav.prepend_zeros(train_ext_par[i]['samples_before'])
+        #print('Will append: {}'.format(len(train_raw[i]) - len(true_wav)))
+        true_wav.append_zeros(len(train_raw[i]) - len(true_wav))
         
-        psd = interpolate(psd, true_wav.delta_f)
-        psd.resize(len(true_wav)/2+1)
-        psd = inverse_spectrum_truncation(psd, len(psd), low_frequency_cutoff=train_wav_par[i]['f_lower'])
+        #plt.show(plt.plot(true_wav * 10**25))
+        
+        
         
         #print(true_wav)
         #true_wav = whiten(true_wav, psd, train_wav_par[i]['f_lower'])
         #print(true_wav)
         
-        snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_data[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), max(abs(matched_filter(true_wav, TimeSeries(train_raw[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower'])))**0.5, train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
+        #snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_data[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), max(abs(matched_filter(true_wav, TimeSeries(train_raw[i], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
+        snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_raw[i], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
     
     #print(train_data[0])
     
-    diff = [pt[1] - pt[2] for pt in snr_res]
+    diff = [pt[0] - pt[1] for pt in snr_res]
     mean = sum(diff) / len(diff)
-    for i in range(len(diff)):
-        diff[i] -= mean
+    #for i in range(len(diff)):
+        #diff[i] -= mean
     
     bin_borders = np.linspace(-10,10,21)
     bins = np.zeros(20)
@@ -93,6 +103,12 @@ def verify_templates(file_path):
     #binned = np.digitize(bins,np.arange(-9-5,10.5,1.0))
     
     plt.show(plt.bar(np.arange(-9.5,10.5,1.0),bins))
+    
+    x_vals = [pt[1] for pt in snr_res]
+    y_vals = [pt[0] for pt in snr_res]
+    plt.scatter(x_vals, y_vals)
+    plt.plot(np.linspace(0.0,13.0, 1000), np.linspace(0.0,13.0, 1000), color='red')
+    plt.show()
     
     stats, pval = normaltest(diff)
     
