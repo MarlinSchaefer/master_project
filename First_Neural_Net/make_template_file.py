@@ -3,17 +3,17 @@ from pycbc.psd import aLIGOZeroDetHighPower
 from pycbc.waveform import get_td_waveform
 from pycbc.filter import sigma, resample_to_delta_t
 import numpy as np
-from random import random, seed, randint
+from random import random, seed, randint, uniform
 from pycbc.types.timeseries import TimeSeries
 from multiprocessing import Pool
 import h5py
 
 #Global constants definitions
-NUM_OF_TEMPLATE = 20000
+NUM_OF_TEMPLATE = 100
 SCALING_FACTOR = 6.1
 RESAMPLE_DELTA_T = 1.0 / 1024
-FILE_NAME = "template_bank_full"
-RANDOM_START_TIME = True
+FILE_NAME = "test_bank"
+RANDOM_START_TIME = False
 
 APPROXIMANT = "SEOBNRv4_opt"
 DELTA_T = 1.0 / 4096
@@ -34,13 +34,32 @@ seed(12345)
 def save_to_file(data):
     split_index = int(round(0.7 * NUM_OF_TEMPLATE))
     
-    train_data = np.vstack(data[0][:split_index])
-    train_labels = np.vstack(data[1][:split_index])
+    train_data = []
     
-    test_data = np.vstack(data[0][split_index:])
-    test_labels = np.vstack(data[1][split_index:])
+    for i, dat in enumerate(data[0][:split_index]):
+        train_data.append([[x] for x in dat])
     
-    output = h5py.File(FILE_NAME + '.hdf5', 'w')
+    train_data = np.array(train_data,dtype=np.float32)
+    #print(type(train_data))
+    #print(train_data.dtype)
+    #train_data = data[0][:split_index].reshape((split_index,4096,1))
+    #print(data[1][:split_index].reshape((split_index,1)))
+    train_labels = []
+    for dat in data[1][:split_index]:
+        train_labels.append([dat])
+    
+    train_labels = np.array(train_labels,dtype=np.float32)
+    #print(train_labels.dtype)
+    
+    #train_data = np.vstack(data[0][:split_index])
+    #train_labels = np.vstack(data[1][:split_index])
+    
+    #test_data = np.vstack(data[0][split_index:])
+    #test_labels = np.vstack(data[1][split_index:])
+    test_data = np.array([])
+    test_labels = np.array([])
+    
+    output = h5py.File(FILE_NAME + '.hf5', 'w')
     
     training = output.create_group('training')
     training.create_dataset('train_data', data=train_data, dtype='f')
@@ -56,11 +75,12 @@ def save_to_file(data):
 def payload(i):
     print i
     
-    gw_present = bool(random() < GW_PROB)
-    snr_goal = random() * 5 + 7
+    snr_goal = uniform(5.0,12.0)
+    #gw_present = bool(random() < GW_PROB)
+    gw_present = 1.0
     
     psd = aLIGOZeroDetHighPower(length=F_LEN, delta_f=DELTA_F, low_freq_cutoff=F_LOWER)
-    noise = noise_from_psd(length=T_SAMPLES, delta_t=DELTA_T, psd=psd, seed=randint(0,10000))
+    noise = noise_from_psd(length=T_SAMPLES, delta_t=DELTA_T, psd=psd, seed=0)
     
     if gw_present:
         strain = TimeSeries(NULL_WAVEFORM)
