@@ -1,24 +1,521 @@
 training:
-	time_start: 1547581955.54
-	time_end: 1547581957.12
+	time_start: 16.1.2019: 14:11.49
+	time_end: 16.1.2019: 17:30.34
+
+loss:
+	last_training: (50, 1.8375144878114973)
+	min_training: (45, 1.2744179226330348)
+	min_testing: (40, 1.6237056741714477)
+	last_testing: (50, 2.3519230295817057)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 64)          1088      
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 64)          0         
+_________________________________________________________________
+activation_1 (Activation)    (None, 1020, 64)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 128)         131200    
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 128)          0         
+_________________________________________________________________
+activation_2 (Activation)    (None, 251, 128)          0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 256)          524544    
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 256)           0         
+_________________________________________________________________
+activation_3 (Activation)    (None, 59, 256)           0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 512)           1049088   
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 512)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 512)           0         
+_________________________________________________________________
+activation_4 (Activation)    (None, 13, 512)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 6656)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 128)               852096    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 128)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 64)                8256      
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 2,566,337
+Trainable params: 2,566,337
+Non-trainable params: 0
+_________________________________________________________________
 
 
 loss:
-	last_training: (10, 2.9413657188415527)
-	min_training: (9, 2.9413657188415527)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
+	last_training: (50, 1.8375144878114973)
+	min_training: (45, 1.2744179226330348)
+	min_testing: (40, 1.6237056741714477)
+	last_testing: (50, 2.3519230295817057)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: 0.0
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 5. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: 30.0
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 16.1.2019: 12:50.15
+	time_end: 16.1.2019: 14:11.49
+
+ignored_errors: False
+
+###############################################################################
 
 
-network: None
+training:
+	time_start: 16.1.2019: 17:37.49
+	time_end: 16.1.2019: 18:6.4
+
+loss:
+	last_training: (50, 0.6140902113233294)
+	min_training: (50, 0.6140902113233294)
+	min_testing: (25, 1.0710109768595015)
+	last_testing: (50, 1.4999530328114827)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+activation_1 (Activation)    (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+activation_2 (Activation)    (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+activation_3 (Activation)    (None, 59, 64)            0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 3776)              0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 3776)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                241728    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 283,121
+Trainable params: 283,121
+Non-trainable params: 0
+_________________________________________________________________
 
 
 loss:
-	last_training: (10, 2.9413657188415527)
-	min_training: (9, 2.9413657188415527)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
+	last_training: (50, 0.6140902113233294)
+	min_training: (50, 0.6140902113233294)
+	min_testing: (25, 1.0710109768595015)
+	last_testing: (50, 1.4999530328114827)
 
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: 0.0
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 5. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: 30.0
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: False
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 16.1.2019: 17:37.49
+	time_end: 16.1.2019: 17:37.49
+
+ignored_errors: False
+###############################################################################
+
+
+training:
+	time_start: 16.1.2019: 20:57.1
+	time_end: 16.1.2019: 22:0.24
+
+loss:
+	last_training: (100, 0.2016516843523298)
+	min_training: (60, 0.18955723192010607)
+	min_testing: (15, 1.2931889291490828)
+	last_testing: (100, 1.5886057392756143)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 3776)              0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 3776)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                241728    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 283,569
+Trainable params: 283,345
+Non-trainable params: 224
+_________________________________________________________________
+
+
+loss:
+	last_training: (100, 0.2016516843523298)
+	min_training: (60, 0.18955723192010607)
+	min_testing: (15, 1.2931889291490828)
+	last_testing: (100, 1.5886057392756143)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: 0.0
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 5. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: 30.0
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: False
+	epochs: 100
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 16.1.2019: 20:57.1
+	time_end: 16.1.2019: 20:57.1
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 16.1.2019: 22:4.22
+	time_end: 16.1.2019: 23:16.20
+
+loss:
+	last_training: (100, 0.11280306880814689)
+	min_training: (100, 0.11280306880814689)
+	min_testing: (15, 0.927447163786207)
+	last_testing: (100, 1.2318860138257344)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,577
+Trainable params: 214,097
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (100, 0.11280306880814689)
+	min_training: (100, 0.11280306880814689)
+	min_testing: (15, 0.927447163786207)
+	last_testing: (100, 1.2318860138257344)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: 0.0
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 5. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: 30.0
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: False
+	epochs: 100
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 16.1.2019: 22:4.22
+	time_end: 16.1.2019: 22:4.22
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 17.1.2019: 4:31.8
+	time_end: 17.1.2019: 7:53.53
+
+loss:
+	last_training: (100, 0.12094412880710192)
+	min_training: (100, 0.12094412880710192)
+	min_testing: (10, 0.9134247574125017)
+	last_testing: (100, 1.1689701340993246)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,577
+Trainable params: 214,097
+Non-trainable params: 480
+_________________________________________________________________
+
+comment:
+    Dropout on each layer = 0.1
+
+loss:
+	last_training: (100, 0.12094412880710192)
+	min_training: (100, 0.12094412880710192)
+	min_testing: (10, 0.9134247574125017)
+	last_testing: (100, 1.1689701340993246)
 
 template_properties:
 	data_shape: [4096    1]
@@ -35,15 +532,14 @@ template_properties:
 	delta_t: 0.000244140625
 	train_to_test: 0.7
 	label_shape: [1]
-	num_of_templates: 10
+	num_of_templates: 30000
 	snr: [ 5. 12.]
 	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
 	distance: 1.0
 	resample_t_len: 4.0
 	mass1: 30.0
-	mass2: 30.0
+	mass2: [10. 30.]
 	approximant: SEOBNRv4_opt
-
 
 programm_internals:
 	loss: mean_squared_error
@@ -51,46 +547,583 @@ programm_internals:
 	only_print_image: False
 	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
 	overwrite_template_file: True
-	epochs: 10
+	epochs: 100
 	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
 	metrics: ['mape']
 	overwrite_net_file: True
 	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
+	use_custom_train_function: True
+	epoch_break: 5
 	ignore_fixable_errors: True
 
+template_generation:
+	time_start: 17.1.2019: 0:42.23
+	time_end: 17.1.2019: 4:31.8
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 17.1.2019: 10:31.57
+	time_end: 17.1.2019: 12:56.31
+
+loss:
+	last_training: (30, 1.2277990203130813)
+	min_training: (25, 0.541137604372842)
+	min_testing: (10, 0.9027774206797282)
+	last_testing: (30, 1.996567464404636)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,577
+Trainable params: 214,097
+Non-trainable params: 480
+_________________________________________________________________
+
+comment:
+    Dropoutrate 0.1 for 1, 2  and 0.25 for 3, 4
+
+loss:
+	last_training: (30, 1.2277990203130813)
+	min_training: (25, 0.541137604372842)
+	min_testing: (10, 0.9027774206797282)
+	last_testing: (30, 1.996567464404636)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         3.14159265]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 30000
+	snr: [ 5. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: 30.0
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: False
+	epochs: 30
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
 
 template_generation:
-	time_start: 1547581947.44
-	time_end: 1547581955.54
+	time_start: 17.1.2019: 10:31.57
+	time_end: 17.1.2019: 10:31.57
 
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 18.1.2019: 5:16.32
+	time_end: 18.1.2019: 12:4.50
+
+loss:
+	last_training: (50, 0.7587684303465344)
+	min_training: (50, 0.7587684303465344)
+	min_testing: (5, 2.2288101793924966)
+	last_testing: (50, 2.7052553862465754)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          16324     
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          4020      
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           944       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           208       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 235,113
+Trainable params: 224,365
+Non-trainable params: 10,748
+_________________________________________________________________
+
+comment:
+    Dropout rates (0.1, 0.1, 0.25, 0.25)
+    Batch normalization: axis=1
+
+loss:
+	last_training: (50, 0.7587684303465344)
+	min_training: (50, 0.7587684303465344)
+	min_testing: (5, 2.2288101793924966)
+	last_testing: (50, 2.7052553862465754)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         3.14159265]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 30000
+	snr: [ 1. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 18.1.2019: 1:24.23
+	time_end: 18.1.2019: 5:16.31
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 19.1.2019: 9:54.31
+	time_end: 19.1.2019: 11:37.49
+
+loss:
+	last_training: (50, 0.43549203378813606)
+	min_training: (50, 0.43549203378813606)
+	min_testing: (15, 1.3729487462270829)
+	last_testing: (50, 2.414396409564548)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,577
+Trainable params: 214,097
+Non-trainable params: 480
+_________________________________________________________________
+
+comment:
+    Dropout rates: (0.1, 0.1, 0.25, 0.25)
+
+loss:
+	last_training: (50, 0.43549203378813606)
+	min_training: (50, 0.43549203378813606)
+	min_testing: (15, 1.3729487462270829)
+	last_testing: (50, 2.414396409564548)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         3.14159265]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 30000
+	snr: [ 1. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: False
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 19.1.2019: 9:54.31
+	time_end: 19.1.2019: 9:54.31
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 19.1.2019: 15:31.40
+	time_end: 19.1.2019: 17:1.44
+
+loss:
+	last_training: (50, 0.31516167728673844)
+	min_training: (50, 0.31516167728673844)
+	min_testing: (15, 0.9892142744518462)
+	last_testing: (50, 1.328938639746772)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,577
+Trainable params: 214,097
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 0.31516167728673844)
+	min_training: (50, 0.31516167728673844)
+	min_testing: (15, 0.9892142744518462)
+	last_testing: (50, 1.328938639746772)
+
+template_properties:
+	data_shape: [4096    1]
+	time_variance: 1.0
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         3.14159265]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 30000
+	snr: [ 5. 12.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	approximant: SEOBNRv4_opt
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: True
+
+template_generation:
+	time_start: 19.1.2019: 11:42.52
+	time_end: 19.1.2019: 15:31.40
 
 ignored_errors: False
 
 
---------------------------------------------
+###############################################################################
+
+
 training:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=19, tm_min=55, tm_sec=21, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=19, tm_min=55, tm_sec=23, tm_wday=1, tm_yday=15, tm_isdst=0)
+	time_start: 21.1.2019: 18:2.44
+	time_end: 21.1.2019: 18:36.51
+
+loss:
+	last_training: (50, 1.6826502990722656)
+	min_training: (30, 0.509254800098283)
+	min_testing: (5, 1.3256401019096375)
+	last_testing: (50, 2.8405974661509195)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          272       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,577
+Trainable params: 214,097
+Non-trainable params: 480
+_________________________________________________________________
 
 
 loss:
-	last_training: (10, 5.950503826141357)
-	min_training: (2, 5.8603668212890625)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-
-network: None
-
-
-loss:
-	last_training: (10, 5.950503826141357)
-	min_training: (2, 5.8603668212890625)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
+	last_training: (50, 1.6826502990722656)
+	min_training: (30, 0.509254800098283)
+	min_testing: (5, 1.3256401019096375)
+	last_testing: (50, 2.8405974661509195)
 
 template_properties:
 	data_shape: [4096    1]
@@ -107,157 +1140,13 @@ template_properties:
 	delta_t: 0.000244140625
 	train_to_test: 0.7
 	label_shape: [1]
-	num_of_templates: 10
+	num_of_templates: 10000
 	snr: [ 5. 12.]
 	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
 	distance: 1.0
 	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
-	approximant: SEOBNRv4_opt
-
-
-programm_internals:
-	loss: mean_squared_error
-	optimizer: adam
-	only_print_image: False
-	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	overwrite_template_file: True
-	epochs: 10
-	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	metrics: ['mape']
-	overwrite_net_file: True
-	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
-	ignore_fixable_errors: True
-
-
-template_generation:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=19, tm_min=55, tm_sec=13, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=19, tm_min=55, tm_sec=21, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-
-ignored_errors: False
-
-
---------------------------------------------
-
-
-training:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=1, tm_sec=27, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=1, tm_sec=29, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-
-loss:
-	last_training: (10, 3.1860239505767822)
-	min_training: (6, 3.0811479091644287)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-
-network: None
-
-
-loss:
-	last_training: (10, 3.1860239505767822)
-	min_training: (6, 3.0811479091644287)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-
-template_properties:
-	data_shape: [4096    1]
-	time_variance: 1.0
-	seed: 12345
-	gw_prob: 1.0
-	whiten_len: 4.0
-	coa_phase: [0.         3.14159265]
-	resample_delta_t: 0.0009765625
-	random_starting_time: True
-	t_len: 64.0
-	whiten_cutoff: 4.0
-	f_lower: 20.0
-	delta_t: 0.000244140625
-	train_to_test: 0.7
-	label_shape: [1]
-	num_of_templates: 10
-	snr: [ 5. 12.]
-	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	distance: 1.0
-	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
-	approximant: SEOBNRv4_opt
-
-
-programm_internals:
-	loss: mean_squared_error
-	optimizer: adam
-	only_print_image: False
-	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	overwrite_template_file: True
-	epochs: 10
-	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	metrics: ['mape']
-	overwrite_net_file: True
-	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
-	ignore_fixable_errors: True
-
-
-template_generation:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=1, tm_sec=19, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=1, tm_sec=27, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-
-ignored_errors: False
-
-
---------------------------------------------
-
-
-training:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=3, tm_sec=33, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=3, tm_sec=34, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-loss:
-	last_training: (10, 19.304302215576172)
-	min_training: (9, 19.304302215576172)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-network: None
-
-loss:
-	last_training: (10, 19.304302215576172)
-	min_training: (9, 19.304302215576172)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-template_properties:
-	data_shape: [4096    1]
-	time_variance: 1.0
-	seed: 12345
-	gw_prob: 1.0
-	whiten_len: 4.0
-	coa_phase: [0.         3.14159265]
-	resample_delta_t: 0.0009765625
-	random_starting_time: True
-	t_len: 64.0
-	whiten_cutoff: 4.0
-	f_lower: 20.0
-	delta_t: 0.000244140625
-	train_to_test: 0.7
-	label_shape: [1]
-	num_of_templates: 10
-	snr: [ 5. 12.]
-	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	distance: 1.0
-	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
 	approximant: SEOBNRv4_opt
 
 programm_internals:
@@ -266,282 +1155,18 @@ programm_internals:
 	only_print_image: False
 	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
 	overwrite_template_file: True
-	epochs: 10
+	epochs: 50
 	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
 	metrics: ['mape']
 	overwrite_net_file: True
 	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
+	use_custom_train_function: True
+	epoch_break: 5
 	ignore_fixable_errors: True
 
 template_generation:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=3, tm_sec=25, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=3, tm_sec=33, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-ignored_errors: False
-
---------------------------------------------
-
-
-training:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=4, tm_sec=46, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=4, tm_sec=48, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-loss:
-	last_training: (10, 2.3274686336517334)
-	min_training: (6, 2.151747703552246)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-network: None
-
-loss:
-	last_training: (10, 2.3274686336517334)
-	min_training: (6, 2.151747703552246)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-template_properties:
-	data_shape: [4096    1]
-	time_variance: 1.0
-	seed: 12345
-	gw_prob: 1.0
-	whiten_len: 4.0
-	coa_phase: [0.         3.14159265]
-	resample_delta_t: 0.0009765625
-	random_starting_time: True
-	t_len: 64.0
-	whiten_cutoff: 4.0
-	f_lower: 20.0
-	delta_t: 0.000244140625
-	train_to_test: 0.7
-	label_shape: [1]
-	num_of_templates: 10
-	snr: [ 5. 12.]
-	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	distance: 1.0
-	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
-	approximant: SEOBNRv4_opt
-
-programm_internals:
-	loss: mean_squared_error
-	optimizer: adam
-	only_print_image: False
-	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	overwrite_template_file: True
-	epochs: 10
-	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	metrics: ['mape']
-	overwrite_net_file: True
-	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
-	ignore_fixable_errors: True
-
-template_generation:
-	time_start: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=4, tm_sec=38, tm_wday=1, tm_yday=15, tm_isdst=0)
-	time_end: time.struct_time(tm_year=2019, tm_mon=1, tm_mday=15, tm_hour=20, tm_min=4, tm_sec=46, tm_wday=1, tm_yday=15, tm_isdst=0)
-
-ignored_errors: False
-
---------------------------------------------
-
-
-training:
-	time_start: 15.1.2019: 20:18.3
-	time_end: 15.1.2019: 20:18.4
-
-loss:
-	last_training: (10, 18.15401840209961)
-	min_training: (8, 3.4373855590820312)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-network: None
-
-loss:
-	last_training: (10, 18.15401840209961)
-	min_training: (8, 3.4373855590820312)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-template_properties:
-	data_shape: [4096    1]
-	time_variance: 1.0
-	seed: 12345
-	gw_prob: 1.0
-	whiten_len: 4.0
-	coa_phase: [0.         3.14159265]
-	resample_delta_t: 0.0009765625
-	random_starting_time: True
-	t_len: 64.0
-	whiten_cutoff: 4.0
-	f_lower: 20.0
-	delta_t: 0.000244140625
-	train_to_test: 0.7
-	label_shape: [1]
-	num_of_templates: 10
-	snr: [ 5. 12.]
-	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	distance: 1.0
-	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
-	approximant: SEOBNRv4_opt
-
-programm_internals:
-	loss: mean_squared_error
-	optimizer: adam
-	only_print_image: False
-	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	overwrite_template_file: True
-	epochs: 10
-	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	metrics: ['mape']
-	overwrite_net_file: True
-	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
-	ignore_fixable_errors: True
-
-template_generation:
-	time_start: 15.1.2019: 20:17.55
-	time_end: 15.1.2019: 20:18.3
-
-ignored_errors: False
-
-----------------------------------------------------------------
-
-
-training:
-	time_start: 15.1.2019: 20:19.12
-	time_end: 15.1.2019: 20:19.13
-
-loss:
-	last_training: (10, 5.761106014251709)
-	min_training: (9, 5.761106014251709)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-network: None
-
-loss:
-	last_training: (10, 5.761106014251709)
-	min_training: (9, 5.761106014251709)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-template_properties:
-	data_shape: [4096    1]
-	time_variance: 1.0
-	seed: 12345
-	gw_prob: 1.0
-	whiten_len: 4.0
-	coa_phase: [0.         3.14159265]
-	resample_delta_t: 0.0009765625
-	random_starting_time: True
-	t_len: 64.0
-	whiten_cutoff: 4.0
-	f_lower: 20.0
-	delta_t: 0.000244140625
-	train_to_test: 0.7
-	label_shape: [1]
-	num_of_templates: 10
-	snr: [ 5. 12.]
-	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	distance: 1.0
-	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
-	approximant: SEOBNRv4_opt
-
-programm_internals:
-	loss: mean_squared_error
-	optimizer: adam
-	only_print_image: False
-	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	overwrite_template_file: True
-	epochs: 10
-	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	metrics: ['mape']
-	overwrite_net_file: True
-	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
-	ignore_fixable_errors: True
-
-template_generation:
-	time_start: 15.1.2019: 20:19.3
-	time_end: 15.1.2019: 20:19.12
-
-ignored_errors: False
-
-----------------------------------------------------------------
-
-
-training:
-	time_start: 15.1.2019: 20:25.19
-	time_end: 15.1.2019: 20:25.21
-
-loss:
-	last_training: (10, 5.3785552978515625)
-	min_training: (7, 3.90250563621521)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-network: None
-
-loss:
-	last_training: (10, 5.3785552978515625)
-	min_training: (7, 3.90250563621521)
-	min_testing: (0, inf)
-	last_testing: (0, inf)
-
-template_properties:
-	data_shape: [4096    1]
-	time_variance: 1.0
-	seed: 12345
-	gw_prob: 1.0
-	whiten_len: 4.0
-	coa_phase: [0.         3.14159265]
-	resample_delta_t: 0.0009765625
-	random_starting_time: True
-	t_len: 64.0
-	whiten_cutoff: 4.0
-	f_lower: 20.0
-	delta_t: 0.000244140625
-	train_to_test: 0.7
-	label_shape: [1]
-	num_of_templates: 10
-	snr: [ 5. 12.]
-	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	distance: 1.0
-	resample_t_len: 4.0
-	mass1: 30.0
-	mass2: 30.0
-	approximant: SEOBNRv4_opt
-
-programm_internals:
-	loss: mean_squared_error
-	optimizer: adam
-	only_print_image: False
-	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	overwrite_template_file: True
-	epochs: 10
-	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/experimental/saves
-	metrics: ['mape']
-	overwrite_net_file: True
-	show_snr_plot: True
-	use_custom_train_function: False
-	epoch_break: 10
-	ignore_fixable_errors: True
-
-template_generation:
-	time_start: 15.1.2019: 20:25.11
-	time_end: 15.1.2019: 20:25.19
+	time_start: 21.1.2019: 15:0.5
+	time_end: 21.1.2019: 18:2.43
 
 ignored_errors: False
 
