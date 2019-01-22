@@ -3,25 +3,62 @@ import numpy as np
 import json
 import os
 
+"""
 def get_model():
-    SCALE_FACTOR = 2
+    model = keras.models.Sequential()
+    
+    model.add(keras.layers.Conv1D(64, 16, input_shape=(4096,1)))
+    model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Conv1D(64, 16))
+    model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Conv1D(128, 16))
+    model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Conv1D(128, 16))
+    model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(1))
+    
+    return(model)
+"""    
+    
+
+def get_model():
+    SCALE_FACTOR = 4
     model = keras.models.Sequential()
  
     model.add(keras.layers.Conv1D(64/SCALE_FACTOR, 16, input_shape=(4096,1)))
-    model.add(keras.layers.MaxPooling1D(4))
+    #model.add(keras.layers.BatchNormalization(axis=1))
+    model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.MaxPooling1D(4))
+    #model.add(keras.layers.Dropout(0.1))
+    
     model.add(keras.layers.Conv1D(128/SCALE_FACTOR, 16, input_shape=(4096,1)))
-    model.add(keras.layers.MaxPooling1D(4))
+    #model.add(keras.layers.BatchNormalization(axis=1))
+    model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Dropout(0.1))
+    
     model.add(keras.layers.Conv1D(256/SCALE_FACTOR, 16, input_shape=(4096,1)))
-    model.add(keras.layers.MaxPooling1D(4))
+    #model.add(keras.layers.BatchNormalization(axis=1))
+    model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
-    model.add(keras.layers.Conv1D(512/SCALE_FACTOR, 16, input_shape=(4096,1)))
     model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Dropout(0.1))
+    
+    model.add(keras.layers.Conv1D(512/SCALE_FACTOR, 8, input_shape=(4096,1)))
+    #model.add(keras.layers.BatchNormalization(axis=1))
+    model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.MaxPooling1D(4))
+    model.add(keras.layers.Dropout(0.25))
+    
     model.add(keras.layers.Flatten())
-    model.add(keras.layers.Dense(128,activation='relu'))
+    #model.add(keras.layers.Dense(128,activation='relu'))
+    #model.add(keras.layers.Dropout(0.25))
     model.add(keras.layers.Dense(64,activation='relu'))
+    model.add(keras.layers.Dropout(0.25))
     model.add(keras.layers.Dense(1))
     
     return(model)
@@ -115,7 +152,7 @@ def train_model(model, train_data, train_labels, test_data, test_labels, net_pat
             results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
     
     #Save the results to a file.
-    with open(os.path.join(net_path, name + '_test_results.json'), "w+") as FILE:
+    with open(os.path.join(net_path, name + '_results.json'), "w+") as FILE:
         json.dump(results, FILE, indent=4)
     
     return(model)
