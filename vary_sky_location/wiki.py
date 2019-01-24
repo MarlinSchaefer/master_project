@@ -14,7 +14,7 @@ def read_json(path):
         if pt[1][0] < min_tr[1]:
             min_tr = (pt[0], pt[1][0])
         if pt[2][0] < min_te[1]:
-            min_te = (pt[0], pt[1][0])
+            min_te = (pt[0], pt[2][0])
     
     return({'min_training': min_tr, 'min_testing': min_te, 'last_training': (data[-1][0], data[-1][1][0]), 'last_testing': (data[-1][0], data[-1][2][0])})
 
