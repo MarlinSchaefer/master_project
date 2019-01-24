@@ -6,10 +6,12 @@ from functools import partial
 from pycbc.psd import aLIGOZeroDetHighPower, interpolate, inverse_spectrum_truncation
 from pycbc.noise import noise_from_psd
 from pycbc.types.timeseries import TimeSeries
-from pycbc.filter import sigma, resample_to_delta_t
+from pycbc.filter import sigma, resample_to_delta_t, sigmasq, matched_filter
 import os
 import h5py
 from run_net import filter_keys
+from pycbc.detector import Detector
+import sys
 
 """
 TODO: Implement this function which should return a list of dictionaries
@@ -21,6 +23,7 @@ def generate_psd(**kwargs):
     return(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DELTA_F, low_freq_cutoff=kwargs['f_lower']))
 
 def generate_parameters(num_of_templates, rand_seed, **kwargs):
+    exceptions = ['mode_array', 'detectors']
     seed(rand_seed)
     
     #print(kwargs)
@@ -34,7 +37,7 @@ def generate_parameters(num_of_templates, rand_seed, **kwargs):
         #print(ret)
         for key, val in kwargs.items():
             #print("{}, {}".format(key,val))
-            if not key == 'mode_array':
+            if not key in exceptions:
                 if type(val) == list:
                     #print("If  :{}: {}".format(key, uniform(val[0], val[1])))
                     tmp_dic[key] = uniform(val[0], val[1])
@@ -54,9 +57,109 @@ def generate_parameters(num_of_templates, rand_seed, **kwargs):
     #print('Exiting generation')
     return(ret)
 
-#TODO: Implement correctly?
-def activation_function(hp, hc):
-    return(hp)
+def detector_projection(hp, hc, **kwargs):
+    """Returns the waveform projected onto different detectors.
+    
+    Arguments
+    ---------
+    hp : TimeSeries
+        TimeSeries object containing the "plus" polarization of a GW
+    hc : TimeSeries
+        TimeSeries object containing the "cross" polarization of a GW
+    
+    Returns
+    -------
+    list
+        A list containing the signals projected onto the detectors specified in
+        in kwargs['detectors].
+    """
+    end_time = kwargs['end_time']
+    detectors = kwargs['detectors']
+    declination = kwargs['declination']
+    right_ascension = kwargs['right_ascension']
+    polarization = kwargs['polarization']
+    
+    del kwargs['end_time']
+    del kwargs['detectors']
+    del kwargs['declination']
+    del kwargs['right_ascension']
+    del kwargs['polarization']
+    
+    detectors = [Detector(d) for d in detectors]
+    
+    hp.start_time += end_time
+    hc.start_time += end_time
+    
+    ret = [d.project_wave(TimeSeries(hp), TimeSeries(hc), right_ascension, declination, polarization) for d in detectors]
+    
+    return(ret)
+
+def set_temp_offset(sig_list, t_len, t_offset):
+    #Sanity check
+    if not isinstance(sig_list, list) or not isinstance(sig_list[0], type(TimeSeries([0], 0.1))):
+        raise TypeError("A list of pycbc.types.timeseries.TimeSeries objects must be provided.")
+        sys.exit(0)
+    
+    dt = sig_list[0].delta_t
+    
+    for pt in sig_list:
+        if not pt.delta_t == dt:
+            raise ValueError("The timeseries must have the same delta_t!")
+            sys.exit(0)
+    
+    #Take the first signal as reference and apply the timeshift in respect to
+    #this signal (so only this template will be centered at t=0 for a timeshift
+    #of 0)
+    ref = sig_list[0].sample_times[0]
+    
+    #Calculate the temporal offset between the templates
+    prep_list = [ref - dat.sample_times[0] for dat in sig_list]
+    
+    #Find the signal that happens the earliest and store its offset to the
+    #reference signal (the earliest signal will have a negative offset)
+    min_val = min(prep_list)
+    
+    #Calculate the offset of every template with respect to this earliest
+    prep_list = [dat - min_val for dat in prep_list]
+    
+    #Convert time to samples
+    prep_list = [int(dat / dt) for dat in prep_list]
+    
+    #Calculate for every signal how many zeros have to be prepended for the
+    #first signal to have a temporal offset of T_OFFSET and the other signals
+    #to stay in relation to this first signal
+    prep_list = [int(t_len / (2 * dt)) - len(sig_list[0]) - dat + int(t_offset / dt) for dat in prep_list]
+    
+    for i, dat in enumerate(sig_list):
+        #Prepend the zeros calculated before
+        dat.prepend_zeros(prep_list[i])
+        #Append as many zeros as needed to get to a final length of T_LEN seconds
+        dat.append_zeros(int(t_len / dt) - len(dat))
+    
+    return
+
+def rescale_to_snr(sig_list, snr, psd, f_lower):
+    """Rescale the list of signals by the total detector SNR.
+    
+    Parameters
+    ----------
+    sig_list : list
+        List of the strain data (as TimeSeries object) for every detector
+    snr : float
+        The desiered SNR over all detectors
+    psd : FrequencySeries
+        The PSD that is used in all detectors
+    f_lower : float
+        Low frequency cutoff of the signals and the PSD
+    
+    Returns
+    -------
+    list
+        A list of the rescaled strain data in the order it was given in sig_list
+    """
+    snrsq_list = [sigmasq(strain, psd=psd, low_frequency_cutoff=f_lower) for strain in sig_list]
+    div = np.sqrt(sum(snrsq_list))
+    return([pt / div * snr for pt in sig_list])
 
 """
 Generates a specified a single template. It is a helper function to
@@ -83,14 +186,11 @@ Ret:
                  entry.
 """
 def worker(kwargs):
-    #print('Entering worker')
-    #print(kwargs)
     full_kwargs = dict(kwargs)
     kwargs = dict(kwargs)
     
     opt_arg = {}
-    opt_keys = ['snr', 'gw_prob', 'random_starting_time', 'resample_delta_t', 't_len', 'resample_t_len', 'time_variance', 'whiten_len', 'whiten_cutoff']
-    
+    opt_keys = ['snr', 'gw_prob', 'random_starting_time', 'resample_delta_t', 't_len', 'resample_t_len', 'time_offset', 'whiten_len', 'whiten_cutoff']
     
     for key in opt_keys:
         try:
@@ -98,7 +198,15 @@ def worker(kwargs):
             del kwargs[key]
         except KeyError:
             print("The necessary argument '%s' was not supplied in '%s'" % (key, str(__file__)))
-            #exit()
+    
+    projection_arg = {}
+    projection_arg['end_time'] = 1337 * 137 * 42
+    projection_arg['declination'] = 0.0
+    projection_arg['right_ascension'] = 0.0
+    projection_arg['polarization'] = 0.0
+    projection_arg['detectors'] = ['L1', 'H1']
+    
+    projection_arg, kwargs = filter_keys(projection_arg, kwargs)
     
     T_SAMPLES = int(opt_arg['t_len']/kwargs['delta_t'])
     DELTA_F = 1.0/opt_arg['t_len']
@@ -107,55 +215,60 @@ def worker(kwargs):
     gw_present = bool(random() < opt_arg['gw_prob'])
     
     psd = generate_psd(**full_kwargs)
-    noise = noise_from_psd(length=T_SAMPLES, delta_t=kwargs['delta_t'], psd=psd, seed=randint(0,100000))
+    #TODO: Generate the seed for this prior to parallelizing
+    noise_list = [noise_from_psd(length=T_SAMPLES, delta_t=kwargs['delta_t'], psd=psd, seed=randint(0,100000)) for d in projection_arg['detectors']]
     
     if gw_present:
-        #print(kwargs)
+        #Generate waveform
         hp, hc = get_td_waveform(**kwargs)
         
-        strain = activation_function(hp, hc)
+        #Project it onto the considered detectors (This could be handeled using)
+        #a list, to make room for more detectors
+        strain_list = detector_projection(TimeSeries(hp), TimeSeries(hc), **projection_arg)
         
+        #Enlarge the signals bya adding zeros infront and after. Take care of a
+        #random timeshift while still keeping the relative timeshift between
+        #detectors
+        #TODO: This should also be set outside
         if opt_arg['random_starting_time']:
-            t_before = int(round((T_SAMPLES) / 2)) - len(strain.sample_times) + int(round(random() * opt_arg['time_variance'] * strain.sample_rate))
+            t_offset = opt_arg['time_offset']
         else:
-            t_before = int(round((T_SAMPLES) / 2)) - len(strain.sample_times)
-            #t_before = int(round((T_SAMPLES - len(strain)) / 2))
+            t_offset = 0.0
         
-        opt_arg['samples_before'] = t_before
+        set_temp_offset(strain_list, opt_arg['t_len'], t_offset)
         
-        strain.prepend_zeros(t_before)
-        strain.append_zeros(T_SAMPLES - len(strain))
-        #print("SNR: %f" % opt_arg['snr'])
-        #print("Scaling factor: %f" % (sigma(strain, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))
-        kwargs['distance'] = sigma(strain, psd=psd, low_frequency_cutoff=kwargs['f_lower']) / opt_arg['snr']
-        strain /= sigma(strain, psd=psd, low_frequency_cutoff=kwargs['f_lower'])
-        strain *= opt_arg['snr']
+        #Rescale the templates to match wanted SNR
+        strain_list = rescale_to_snr(strain_list, opt_arg['snr'], psd, kwargs['f_lower'])
     else:
-        strain = TimeSeries(np.zeros(len(noise)))
+        strain_list = [TimeSeries(np.zeros(len(noise_list[0]))) for n in range(len(noise_list))]
         opt_arg['snr'] = 0.0
-        opt_arg['samples_before'] = 0
     
-    noise._epoch = strain._epoch
-    full = TimeSeries(noise + strain)
-    total = TimeSeries(noise + strain)
-    del noise
-    del strain
+    total_white = []
+    matched_snr_sq = []
+    for i, noise in enumerate(noise_list):
+        #Add strain to noise
+        noise._epoch = strain_list[i]._epoch
+        total = TimeSeries(noise + strain_list[i])
         
-    total = total.whiten(opt_arg['whiten_len'], opt_arg['whiten_cutoff'], low_frequency_cutoff=kwargs['f_lower'])
+        #Whiten the total data, downsample and crop the data
+        total_white.append(total.whiten(opt_arg['whiten_len'], opt_arg['whiten_cutoff'], low_frequency_cutoff=kwargs['f_lower']))
+        total_white[i] = resample_to_delta_t(total_white[i], opt_arg['resample_delta_t'])
+        mid_point = (total_white[i].end_time + total_white[i].start_time) / 2
+        total_white[i] = total_white[i].time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
         
-    mid_point = (total.end_time + total.start_time) / 2
-    total = resample_to_delta_t(total, opt_arg['resample_delta_t'])
-    #full = resample_to_delta_t(full, opt_arg['resample_delta_t'])
-    total_crop = total.time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
-    full_crop  = full.time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
+        #Calculate matched filter snr
+        matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
     
+    del total
+    del strain_list
     
-    #del full
-    #del total
+    #Calculate the total SNR of all detectors
+    calc_snr = np.sqrt(sum(matched_snr_sq))
+    del matched_snr_sq
     
-    #print(opt_arg)
+    out_wav = [[dat[i] for dat in total_white] for i in range(len(total_white[0]))]
     
-    return((np.vstack(np.array(total_crop)), np.array(full), np.array([opt_arg['snr']]), np.array(str(kwargs)), np.array(str(opt_arg))))
+    return((np.array(out_wav), np.array([opt_arg['snr']]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
 
 """
 Create a template file using the given options.
@@ -250,19 +363,33 @@ def create_file(name, **kwargs):
     wav_arg['mass2'] = 30.0
     wav_arg['delta_t'] = 1.0 / 4096
     wav_arg['f_lower'] = 20.0
-    wav_arg['coa_phase'] = [0., np.pi]
+    wav_arg['coa_phase'] = [0., 2 * np.pi]
     wav_arg['distance'] = 1.0
     
     #Properties for handeling the process of generating the waveform
-    wav_arg['snr'] = [1.0, 12.0]
+    wav_arg['snr'] = [6.0, 15.0]
     wav_arg['gw_prob'] = 1.0
     wav_arg['random_starting_time'] = True
-    wav_arg['time_variance'] = 1.0
+    wav_arg['time_offset'] = [-0.5, 0.5]
     wav_arg['resample_delta_t'] = 1.0 / 1024
     wav_arg['t_len'] = 64.0
     wav_arg['resample_t_len'] = 4.0
     wav_arg['whiten_len'] = 4.0
     wav_arg['whiten_cutoff'] = 4.0
+    
+    #Skyposition
+    wav_arg['end_time'] = 1337 * 137 * 42
+    wav_arg['declination'] = 0.0
+    wav_arg['right_ascension'] = 0.0
+    wav_arg['polarization'] = 0.0
+    wav_arg['detectors'] = ['L1', 'H1']
+    
+    """
+    #These are just here to remember the values each one of these can take
+    wav_arg['declination'] = [-np.pi / 2, np.pi / 2]
+    wav_arg['right_ascension'] = [-np.pi, np.pi]
+    wav_arg['polarization'] = [0.0, np.pi]
+    """
     
     wav_arg, kwargs = filter_keys(wav_arg, kwargs)
     
@@ -324,12 +451,12 @@ def create_file(name, **kwargs):
         #Assumes the data to be in shape (time_samples, 1)
         train_data = training.create_dataset('train_data', shape=(split_index, (tmp_sample[0]).shape[0], (tmp_sample[0]).shape[1]), dtype=tmp_sample[0].dtype)
         
-        #Assumes the data to be in shape (time_samples, )
-        train_raw = training.create_dataset('train_raw', shape=(split_index, (tmp_sample[1]).shape[0], ), dtype=tmp_sample[1].dtype)
+        #Assumes the data to be in shape ()
+        train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=tmp_sample[2].dtype)
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
-        train_labels = training.create_dataset('train_labels', shape=(split_index, 1), dtype=tmp_sample[2].dtype)
+        train_labels = training.create_dataset('train_labels', shape=(split_index, 1), dtype=tmp_sample[1].dtype)
         
         #Assumes the shape () for the provided data
         train_wav_parameters = train_parameters.create_dataset('wav_parameters', shape=(split_index, ), dtype=tmp_sample[3].dtype)
@@ -339,12 +466,12 @@ def create_file(name, **kwargs):
         #Assumes the data to be in shape (time_samples, 1)
         test_data = testing.create_dataset('test_data', shape=(num_of_templates - split_index, (tmp_sample[0]).shape[0], (tmp_sample[0]).shape[1]), dtype=tmp_sample[0].dtype)
         
-        #Assumes the data to be in shape (time_samples, )
-        test_raw = testing.create_dataset('test_raw', shape=(num_of_templates - split_index, (tmp_sample[1]).shape[0], ), dtype=tmp_sample[1].dtype)
+        #Assumes the data to be in shape ()
+        test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=tmp_sample[2].dtype)
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
-        test_labels = testing.create_dataset('test_labels', shape=(num_of_templates - split_index, 1), dtype=tmp_sample[2].dtype)
+        test_labels = testing.create_dataset('test_labels', shape=(num_of_templates - split_index, 1), dtype=tmp_sample[1].dtype)
         
         #Assumes the shape () for the provided data
         test_wav_parameters = test_parameters.create_dataset('wav_parameters', shape=(num_of_templates - split_index, ), dtype=tmp_sample[3].dtype)
@@ -357,60 +484,15 @@ def create_file(name, **kwargs):
                 #write to training
                 i = idx
                 train_data[i] = dat[0]
-                train_raw[i] = dat[1]
-                train_labels[i] = dat[2]
+                train_labels[i] = dat[1]
+                train_snr_calculated[i] = dat[2]
                 train_wav_parameters[i] = dat[3]
                 train_ext_parameters[i] = dat[4]
             else:
                 #write to testing
                 i = idx - num_of_templates
                 test_data[i] = dat[0]
-                test_raw[i] = dat[1]
-                test_labels[i] = dat[2]
+                test_labels[i] = dat[1]
+                test_snr_calculated[i] = dat[2]
                 test_wav_parameters[i] = dat[3]
                 test_ext_parameters[i] = dat[4]
-        
-        
-    
-    
-    
-    
-    """
-    pool = Pool()
-    data = pool.map(partial(payload, **kwargs), range(opt_arg['num_of_templates']))
-    
-    T_SAMPLES = int(kwargs['t_len']/kwargs['delta_t'])
-    DELTA_F = 1.0/kwargs['t_len']
-    F_LEN = int(2.0/(DELTA_F * kwargs['delta_t']))
-    
-    data_0 = np.array([x[0] for x in data])
-    data_1 = np.array([x[1]for x in data])
-    data_2 = np.array([x[2] for x in data])
-    data_3 = [x[3] for x in data]
-    data_4 = [x[4] for x in data]
-    data_5 = np.array(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DELTA_F, low_freq_cutoff=kwargs['f_lower']))
-    data_6 = DELTA_F
-    
-    del data
-    
-    in_shape = list(opt_arg['data_shape'])
-    in_shape.insert(0, opt_arg['num_of_templates'])
-    
-    out_shape = list(opt_arg['label_shape'])
-    out_shape.insert(0, opt_arg['num_of_templates'])
-    
-    data_0 = data_0.reshape(in_shape)
-    #data_1 = data_1.reshape(in_shape)
-    print(data_1.shape)
-    data_2 = data_2.reshape(out_shape)
-    
-    prop_dict = {}
-    prop_dict.update(wav_arg)
-    prop_dict.update(opt_arg)
-    for key in prop_dict.keys():
-        prop_dict[key] = np.array(prop_dict[key])
-    
-    data = [data_0, data_1, data_2, data_3, data_4, data_5, data_6, prop_dict]
-    
-    data_to_file(name=os.path.join(opt_arg['path'], name + '.hf5'), data=data, split_index=int(round(opt_arg['train_to_test']*opt_arg['num_of_templates'])))
-    """
