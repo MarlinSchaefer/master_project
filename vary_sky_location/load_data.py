@@ -10,6 +10,8 @@ def load_data(file_path):
     test_data = data['testing']['test_data'][:]
     test_labels = data['testing']['test_labels'][:]
     
+    data.close()
+    
     return(((train_data, train_labels), (test_data, test_labels)))
 
 def load_wiki(file_path):
@@ -23,3 +25,9 @@ def load_wiki(file_path):
     data.close()
     
     return(ret_dict)
+
+def load_calculated_snr(file_path):
+    with h5py.File(file_path, 'r') as data:
+        ret = (data['training']['train_snr_calculated'].value, data['testing']['test_snr_calculated'].value)
+    
+    return(ret)
