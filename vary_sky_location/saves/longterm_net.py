@@ -26,28 +26,28 @@ def get_model():
     SCALE_FACTOR = 4
     model = keras.models.Sequential()
  
-    model.add(keras.layers.Conv1D(64/SCALE_FACTOR, 16, input_shape=(4096,1)))
+    model.add(keras.layers.Conv1D(64/SCALE_FACTOR, 16, input_shape=(4096,2)))
     #model.add(keras.layers.BatchNormalization(axis=1))
     model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
     model.add(keras.layers.MaxPooling1D(4))
     #model.add(keras.layers.Dropout(0.1))
     
-    model.add(keras.layers.Conv1D(128/SCALE_FACTOR, 16, input_shape=(4096,1)))
+    model.add(keras.layers.Conv1D(128/SCALE_FACTOR, 16))
     #model.add(keras.layers.BatchNormalization(axis=1))
     model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
     model.add(keras.layers.MaxPooling1D(4))
     model.add(keras.layers.Dropout(0.1))
     
-    model.add(keras.layers.Conv1D(256/SCALE_FACTOR, 16, input_shape=(4096,1)))
+    model.add(keras.layers.Conv1D(256/SCALE_FACTOR, 16))
     #model.add(keras.layers.BatchNormalization(axis=1))
     model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
     model.add(keras.layers.MaxPooling1D(4))
     model.add(keras.layers.Dropout(0.1))
     
-    model.add(keras.layers.Conv1D(512/SCALE_FACTOR, 8, input_shape=(4096,1)))
+    model.add(keras.layers.Conv1D(512/SCALE_FACTOR, 8))
     #model.add(keras.layers.BatchNormalization(axis=1))
     model.add(keras.layers.BatchNormalization())
     model.add(keras.layers.Activation('relu'))
@@ -150,6 +150,7 @@ def train_model(model, train_data, train_labels, test_data, test_labels, net_pat
             
             #Evaluate the performance of the net after every cycle and store it.
             results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
+            #print("Results: {}".format(results))
     
     #Save the results to a file.
     with open(os.path.join(net_path, name + '_results.json'), "w+") as FILE:
