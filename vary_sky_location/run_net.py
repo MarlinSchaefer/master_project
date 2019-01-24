@@ -1,9 +1,9 @@
 import os
 import keras
-from load_data import load_data, load_wiki
+from load_data import load_data, load_wiki, load_calculated_snr
 import numpy as np
 import imp
-from make_snr_plot import plot
+from make_snr_plot import plot_true_and_calc
 from loss_plot import make_loss_plot
 import time
 from wiki import make_wiki_entry, read_json, model_to_string
@@ -321,7 +321,10 @@ def run_net(net_name, temp_name, **kwargs):
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
     #Plot the distribution of labels against predictions
-    plot(net, test_data, test_labels, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
+    train_calculated_snr, test_calculated_snr = load_calculated_snr(os.path.join(temp_path, temp_name + ".hf5"))
+    #print("Training calculated snr: {}".format(train_calculated_snr))
+    #print("Testing calculated snr: {}".format(test_calculated_snr))
+    plot_true_and_calc(net, test_data, test_labels, test_calculated_snr, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
     
     #Plot the loss over some recorded history
     try:
