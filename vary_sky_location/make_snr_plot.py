@@ -65,4 +65,6 @@ def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'
     
     if show:
         plt.show()
+    else:
+        plt.close()
     
