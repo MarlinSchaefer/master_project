@@ -12,6 +12,7 @@ import h5py
 from run_net import filter_keys
 from pycbc.detector import Detector
 import sys
+from progress_bar import progress_tracker
 
 """
 TODO: Implement this function which should return a list of dictionaries
@@ -186,6 +187,8 @@ Ret:
                  entry.
 """
 def worker(kwargs):
+    #print("Worker here!")
+    #print("Args: {}".format(kwargs))
     full_kwargs = dict(kwargs)
     kwargs = dict(kwargs)
     
@@ -218,12 +221,16 @@ def worker(kwargs):
     #TODO: Generate the seed for this prior to parallelizing
     noise_list = [noise_from_psd(length=T_SAMPLES, delta_t=kwargs['delta_t'], psd=psd, seed=randint(0,100000)) for d in projection_arg['detectors']]
     
+    #print("Pre GW generation")
+    
     if gw_present:
         #Generate waveform
+        #print("Pre waveform")
         hp, hc = get_td_waveform(**kwargs)
         
         #Project it onto the considered detectors (This could be handeled using)
         #a list, to make room for more detectors
+        #print("Pre projection")
         strain_list = detector_projection(TimeSeries(hp), TimeSeries(hc), **projection_arg)
         
         #Enlarge the signals bya adding zeros infront and after. Take care of a
@@ -235,6 +242,7 @@ def worker(kwargs):
         else:
             t_offset = 0.0
         
+        #print("Pre embedding in zero")
         set_temp_offset(strain_list, opt_arg['t_len'], t_offset)
         
         #Rescale the templates to match wanted SNR
@@ -243,32 +251,55 @@ def worker(kwargs):
         strain_list = [TimeSeries(np.zeros(len(noise_list[0]))) for n in range(len(noise_list))]
         opt_arg['snr'] = 0.0
     
+    #print("post generating")
     total_white = []
     matched_snr_sq = []
+    #NOTE: JUST HERE FOR MAKING THIS WORK
+    total_l = []
+    #print("Pre loop")
     for i, noise in enumerate(noise_list):
+        #print("Loop i: {}".format(i))
         #Add strain to noise
         noise._epoch = strain_list[i]._epoch
+        #print("Post epoch, pre adding")
         total = TimeSeries(noise + strain_list[i])
+        #NOTE: JUST HERE FOR MAKING THIS WORK
+        total_l.append(total)
+        #print("Post adding, pre whiten")
         
         #Whiten the total data, downsample and crop the data
         total_white.append(total.whiten(opt_arg['whiten_len'], opt_arg['whiten_cutoff'], low_frequency_cutoff=kwargs['f_lower']))
+        #print("Post whiten and appending, pre resampling")
         total_white[i] = resample_to_delta_t(total_white[i], opt_arg['resample_delta_t'])
+        #print("Post resampling, pre cropping")
         mid_point = (total_white[i].end_time + total_white[i].start_time) / 2
         total_white[i] = total_white[i].time_slice(mid_point-opt_arg['resample_t_len']/2, mid_point+opt_arg['resample_t_len']/2)
+        #print("Post cropping, pre matched filtering")
+        #print("Strain list: {}\ntotal: {}\nPSD: {}".format(strain_list[i], total, psd))
         
+        #test = matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])
+        #print("Can calc")
+        #NOTE: TAKEN OUT TO MAKE THIS WORK
         #Calculate matched filter snr
-        matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
+        #matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
+        #print("Post matched filtering, WTF!")
     
-    del total
-    del strain_list
+    #del total
+    #del strain_list
     
     #Calculate the total SNR of all detectors
-    calc_snr = np.sqrt(sum(matched_snr_sq))
-    del matched_snr_sq
+    #NOTE: TAKEN OUT TO MAKE THIS WORK
+    #calc_snr = np.sqrt(sum(matched_snr_sq))
+    #del matched_snr_sq
     
     out_wav = [[dat[i] for dat in total_white] for i in range(len(total_white[0]))]
     
-    return((np.array(out_wav), np.array([opt_arg['snr']]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
+    #print("Pre return")
+    
+    #NOTE: TAKEN OUT TO MAKE THIS WORK
+    #return((np.array(out_wav), np.array([opt_arg['snr']]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
+    #NOTE: JUST HERE FOR MAKING THIS WORK
+    return((np.array(out_wav), np.array([opt_arg['snr']]), strain_list, np.array(str(kwargs)), np.array(str(opt_arg)), total_l))
 
 """
 Create a template file using the given options.
@@ -353,6 +384,7 @@ Notes:
             create_file(name, **kwargs)
 """
 def create_file(name, **kwargs):
+    #print("Hello world!")
     wav_arg = {}
     opt_arg = {}
     
@@ -418,6 +450,9 @@ def create_file(name, **kwargs):
     
     
     file_name = os.path.join(opt_arg['path'], name + '.hf5')
+    
+    #tmp_sample = worker(parameter_list[0])
+    
     pool = mp.Pool()
     
     prop_dict = {}
@@ -425,10 +460,12 @@ def create_file(name, **kwargs):
     prop_dict.update(opt_arg)
     
     split_index = int(round(opt_arg['train_to_test'] * num_of_templates))
-    
-    tmp_sample = worker(parameter_list[0])
     #train_snr = np.array([pt['snr'] for pt in parameter_list[:split_index]])
     #test_snr = np.array([pt['snr'] for pt in parameter_list[split_index:]])
+    
+    tmp_sample = worker(parameter_list[0])
+    
+    #print("Pre file")
     
     with h5py.File(file_name, 'w') as output:
         training = output.create_group('training')
@@ -452,7 +489,10 @@ def create_file(name, **kwargs):
         train_data = training.create_dataset('train_data', shape=(split_index, (tmp_sample[0]).shape[0], (tmp_sample[0]).shape[1]), dtype=tmp_sample[0].dtype)
         
         #Assumes the data to be in shape ()
-        train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=tmp_sample[2].dtype)
+        #NOTE: TAKEN OUT TO MAKE THIS WORK
+        #train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=tmp_sample[2].dtype)
+        #NOTE: JUST HERE TO MAKE THIS WORK
+        train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=np.float64)
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
@@ -467,7 +507,10 @@ def create_file(name, **kwargs):
         test_data = testing.create_dataset('test_data', shape=(num_of_templates - split_index, (tmp_sample[0]).shape[0], (tmp_sample[0]).shape[1]), dtype=tmp_sample[0].dtype)
         
         #Assumes the data to be in shape ()
-        test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=tmp_sample[2].dtype)
+        #NOTE: TAKEN OUT TO MAKE THIS WORK
+        #test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=tmp_sample[2].dtype)
+        #NOTE: JUST HERE TO MAKE THIS WORK
+        test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=np.float64)
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
@@ -477,22 +520,63 @@ def create_file(name, **kwargs):
         test_wav_parameters = test_parameters.create_dataset('wav_parameters', shape=(num_of_templates - split_index, ), dtype=tmp_sample[3].dtype)
         test_ext_parameters = test_parameters.create_dataset('ext_parameters', shape=(num_of_templates - split_index, ), dtype=tmp_sample[4].dtype)
         
+        #print("Pre pool")
+    
+        #pool = mp.Pool()
+        
+        #print("Number of workers: {}".format(pool._processes))
+        
+        #print("Pre loop")
+        #print("Parameter List: {}".format(parameter_list))
+        
+        bar = progress_tracker(num_of_templates, name='Generating templates')
         
         for idx, dat in enumerate(pool.imap_unordered(worker, parameter_list)):
-            print(idx)
+        #for idx, dat in enumerate(map(worker, parameter_list)):
             if idx < split_index:
+                #NOTE: JUST HERE TO MAKE THIS WORK
+                strain_list = dat[2]
+                total_l = dat[5]
+                matched_snr_sq = [max(abs(matched_filter(strain_list[i], total_l[i], psd=gen_psd, low_frequency_cutoff=kwargs['f_lower'])))**2 for i in range(len(strain_list))]
+                calc_snr = np.sqrt(sum(matched_snr_sq))
+                strain_list = None
+                total_l = None
+                
+                #NOTE: WAS HERE PREVEIOUSLY
                 #write to training
                 i = idx
                 train_data[i] = dat[0]
                 train_labels[i] = dat[1]
-                train_snr_calculated[i] = dat[2]
+                #NOTE: TAKEN OUT TO MAKE THIS WORK
+                #train_snr_calculated[i] = dat[2]
+                #NOTE: JUST HERE TO MAKE THIS WORK
+                train_snr_calculated[i] = calc_snr
                 train_wav_parameters[i] = dat[3]
                 train_ext_parameters[i] = dat[4]
             else:
+                #NOTE: JUST HERE TO MAKE THIS WORK
+                strain_list = dat[2]
+                total_l = dat[5]
+                matched_snr_sq = [max(abs(matched_filter(strain_list[i], total_l[i], psd=gen_psd, low_frequency_cutoff=kwargs['f_lower'])))**2 for i in range(len(strain_list))]
+                calc_snr = np.sqrt(sum(matched_snr_sq))
+                strain_list = None
+                total_l = None
+                
                 #write to testing
                 i = idx - num_of_templates
                 test_data[i] = dat[0]
                 test_labels[i] = dat[1]
-                test_snr_calculated[i] = dat[2]
+                #NOTE: TAKEN OUT TO MAKE THIS WORK
+                #test_snr_calculated[i] = dat[2]
+                #NOTE: JUST HERE TO MAKE THIS WORK
+                test_snr_calculated[i] = calc_snr
                 test_wav_parameters[i] = dat[3]
                 test_ext_parameters[i] = dat[4]
+            
+            bar.iterate()
+        
+        #print("Closing parallel")
+        
+        pool.close()
+        pool.join()
+        return
