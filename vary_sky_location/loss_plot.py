@@ -11,6 +11,9 @@ def make_loss_plot(data_path, image_path):
     
     plt.plot(x_markers, tr_loss, color='blue', label='Training set loss')
     plt.plot(x_markers, te_loss, color='red', label='Testing set loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
     plt.legend()
     plt.savefig(image_path)
+    plt.close()
     
