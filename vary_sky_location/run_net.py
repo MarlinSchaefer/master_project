@@ -149,6 +149,9 @@ def _train_net(net, net_name, train_data, test_data, train_labels, test_labels, 
     
     return(hist)
 
+def date_to_file_string(t):
+    return("{}{}{}{}{}{}".format(t.tm_mday, t.tm_mon, t.tm_year, t.tm_hour, t.tm_min, t.tm_sec))
+
 """
 Function to handle running a neural net.
 
@@ -324,11 +327,14 @@ def run_net(net_name, temp_name, **kwargs):
     train_calculated_snr, test_calculated_snr = load_calculated_snr(os.path.join(temp_path, temp_name + ".hf5"))
     #print("Training calculated snr: {}".format(train_calculated_snr))
     #print("Testing calculated snr: {}".format(test_calculated_snr))
-    plot_true_and_calc(net, test_data, test_labels, test_calculated_snr, os.path.join(net_path, net_name + '_snr.png'), show=opt_arg['show_snr_plot'], net_name=net_name)
+    t_string = date_to_file_string(wiki_data['training']['time_start'])
+    wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
+    plot_true_and_calc(net, test_data, test_labels, test_calculated_snr, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
     
     #Plot the loss over some recorded history
     try:
-        make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), net_name + "_loss_plot.png"))
+        wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
+        make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
     except IOError:
         print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
     
