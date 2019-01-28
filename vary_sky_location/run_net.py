@@ -236,6 +236,7 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['only_print_image'] = False
     opt_arg['use_custom_train_function'] = False
     opt_arg['epoch_break'] = 10
+    opt_arg['create_wiki_entry'] = True
     
     wiki_data['programm_internals'] = {}
     
@@ -361,4 +362,5 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['network'] = model_to_string(net)
     
     #Create a wiki-entry
-    make_wiki_entry(wiki_data)
+    if opt_arg['create_wiki_entry']:
+        make_wiki_entry(wiki_data)
