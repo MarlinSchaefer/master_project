@@ -23,44 +23,88 @@ def get_model():
     
 
 def get_model():
-    SCALE_FACTOR = 4
     model = keras.models.Sequential()
- 
-    model.add(keras.layers.Conv1D(64/SCALE_FACTOR, 16, input_shape=(4096,2)))
-    #model.add(keras.layers.BatchNormalization(axis=1))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.Activation('relu'))
-    model.add(keras.layers.MaxPooling1D(4))
-    #model.add(keras.layers.Dropout(0.1))
     
-    model.add(keras.layers.Conv1D(128/SCALE_FACTOR, 16))
-    #model.add(keras.layers.BatchNormalization(axis=1))
+    model.add(keras.layers.Conv1D(64, 16, input_shape=(4096, 2)))
     model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.Activation('relu'))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Dropout(0.1))
+    #Output shape: (None, 4081, 64)
     
-    model.add(keras.layers.Conv1D(256/SCALE_FACTOR, 16))
-    #model.add(keras.layers.BatchNormalization(axis=1))
+    model.add(keras.layers.Permute((2, 1)))
+    #Output shape: (None, 64, 4081)
+    model.add(keras.layers.Conv1D(64, 4))
+    #Output shape: (None, 61, 64)
     model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.Activation('relu'))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Dropout(0.1))
-    
-    model.add(keras.layers.Conv1D(512/SCALE_FACTOR, 8))
-    #model.add(keras.layers.BatchNormalization(axis=1))
-    model.add(keras.layers.BatchNormalization())
-    model.add(keras.layers.Activation('relu'))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Dropout(0.25))
     
     model.add(keras.layers.Flatten())
-    #model.add(keras.layers.Dense(128,activation='relu'))
-    #model.add(keras.layers.Dropout(0.25))
-    model.add(keras.layers.Dense(64,activation='relu'))
-    model.add(keras.layers.Dropout(0.25))
+    model.add(keras.layers.Dropout(0.4))
+    model.add(keras.layers.Dense(128))
+    model.add(keras.layers.Dropout(0.4))
+    model.add(keras.layers.Dense(64))
+    model.add(keras.layers.Dropout(0.4))
     model.add(keras.layers.Dense(1))
     
+    
+    #SCALE_FACTOR = 4
+    #model = keras.models.Sequential()
+ 
+    #model.add(keras.layers.Conv1D(64/SCALE_FACTOR, 16, input_shape=(4096,2)))
+    #model.add(keras.layers.BatchNormalization())
+    
+    #model.add(keras.layers.Flatten())
+    #model.add(keras.layers.Dense(64))
+    #model.add(keras.layers.Dense(4081 * 16))
+    #model.add(keras.layers.Reshape((4081, 16)))
+    
+    ##model.add(keras.layers.BatchNormalization())
+    #model.add(keras.layers.Activation('relu'))
+    #model.add(keras.layers.MaxPooling1D(4))
+    ##model.add(keras.layers.Dropout(0.1))
+    
+    
+    ##model.add(keras.layers.Conv1D(128/SCALE_FACTOR, 16))
+    ##model.add(keras.layers.BatchNormalization())
+    
+    #"""
+    #model.add(keras.layers.Flatten())
+    #model.add(keras.layers.Dense(128))
+    #model.add(keras.layers.Dense(128 / SCALE_FACTOR * 16))
+    #model.add(keras.layers.Reshape((128 / SCALE_FACTOR, 16)))
+    #"""
+    
+    ###model.add(keras.layers.BatchNormalization())
+    ##model.add(keras.layers.Activation('relu'))
+    ##model.add(keras.layers.MaxPooling1D(4))
+    ###model.add(keras.layers.Dropout(0.1))
+    
+    ##model.add(keras.layers.Conv1D(256/SCALE_FACTOR, 16))
+    ##model.add(keras.layers.BatchNormalization())
+    
+    #"""
+    #model.add(keras.layers.Flatten())
+    #model.add(keras.layers.Dense(256))
+    #model.add(keras.layers.Dense(256 / SCALE_FACTOR * 16))
+    #model.add(keras.layers.Reshape((256 / SCALE_FACTOR, 16)))
+    #"""
+    
+    ###model.add(keras.layers.BatchNormalization())
+    ##model.add(keras.layers.Activation('relu'))
+    ##model.add(keras.layers.MaxPooling1D(4))
+    ##model.add(keras.layers.Dropout(0.5))
+    
+    ##model.add(keras.layers.Conv1D(512/SCALE_FACTOR, 8))
+    ##model.add(keras.layers.BatchNormalization())
+    ###model.add(keras.layers.BatchNormalization())
+    ##model.add(keras.layers.Activation('relu'))
+    ##model.add(keras.layers.MaxPooling1D(4))
+    ##model.add(keras.layers.Dropout(0.5))
+    
+    ##model.add(keras.layers.Flatten())
+    ###model.add(keras.layers.Dense(128,activation='relu'))
+    ###model.add(keras.layers.Dropout(0.25))
+    ##model.add(keras.layers.Dense(64,activation='relu'))
+    ##model.add(keras.layers.Dropout(0.25))
+    ##model.add(keras.layers.Dense(1))
+    #print(model.summary())
     return(model)
 
 def evaluate_overfitting(train_loss, test_loss):
