@@ -2,4 +2,11 @@
 *.hdf5
 *.pyc
 *.png
+*.json
 /vary_sky_location/testing
+/vary_sky_location/saves/*/
+plan_for_wiki.txt
+test*
+Network_Dev/
+combined/
+experimental/
