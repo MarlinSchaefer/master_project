@@ -13,6 +13,7 @@ from run_net import filter_keys
 from pycbc.detector import Detector
 import sys
 from progress_bar import progress_tracker
+from ini_handeling import make_template_bank_defaults
 
 """
 TODO: Implement this function which should return a list of dictionaries
@@ -254,8 +255,7 @@ def worker(kwargs):
     #print("post generating")
     total_white = []
     matched_snr_sq = []
-    #NOTE: JUST HERE FOR MAKING THIS WORK
-    total_l = []
+    
     #print("Pre loop")
     for i, noise in enumerate(noise_list):
         #print("Loop i: {}".format(i))
@@ -263,8 +263,7 @@ def worker(kwargs):
         noise._epoch = strain_list[i]._epoch
         #print("Post epoch, pre adding")
         total = TimeSeries(noise + strain_list[i])
-        #NOTE: JUST HERE FOR MAKING THIS WORK
-        total_l.append(total)
+        
         #print("Post adding, pre whiten")
         
         #Whiten the total data, downsample and crop the data
@@ -279,27 +278,23 @@ def worker(kwargs):
         
         #test = matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])
         #print("Can calc")
-        #NOTE: TAKEN OUT TO MAKE THIS WORK
+        
         #Calculate matched filter snr
-        #matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
+        matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
         #print("Post matched filtering, WTF!")
     
-    #del total
-    #del strain_list
+    del total
+    del strain_list
     
     #Calculate the total SNR of all detectors
-    #NOTE: TAKEN OUT TO MAKE THIS WORK
-    #calc_snr = np.sqrt(sum(matched_snr_sq))
-    #del matched_snr_sq
+    calc_snr = np.sqrt(sum(matched_snr_sq))
+    del matched_snr_sq
     
     out_wav = [[dat[i] for dat in total_white] for i in range(len(total_white[0]))]
     
     #print("Pre return")
     
-    #NOTE: TAKEN OUT TO MAKE THIS WORK
-    #return((np.array(out_wav), np.array([opt_arg['snr']]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
-    #NOTE: JUST HERE FOR MAKING THIS WORK
-    return((np.array(out_wav), np.array([opt_arg['snr']]), strain_list, np.array(str(kwargs)), np.array(str(opt_arg)), total_l))
+    return((np.array(out_wav), np.array([opt_arg['snr']]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
 
 """
 Create a template file using the given options.
@@ -385,36 +380,38 @@ Notes:
 """
 def create_file(name, **kwargs):
     #print("Hello world!")
-    wav_arg = {}
-    opt_arg = {}
+    #wav_arg = {}
+    #opt_arg = {}
     
-    #Properties the payload function needs
-    #Properties for the waveform itself
-    wav_arg['approximant'] = "SEOBNRv4_opt"
-    wav_arg['mass1'] = 30.0
-    wav_arg['mass2'] = 30.0
-    wav_arg['delta_t'] = 1.0 / 4096
-    wav_arg['f_lower'] = 20.0
-    wav_arg['coa_phase'] = [0., 2 * np.pi]
-    wav_arg['distance'] = 1.0
+    ##Properties the payload function needs
+    ##Properties for the waveform itself
+    #wav_arg['approximant'] = "SEOBNRv4_opt"
+    #wav_arg['mass1'] = 30.0
+    #wav_arg['mass2'] = 30.0
+    #wav_arg['delta_t'] = 1.0 / 4096
+    #wav_arg['f_lower'] = 20.0
+    #wav_arg['coa_phase'] = [0., 2 * np.pi]
+    #wav_arg['distance'] = 1.0
     
-    #Properties for handeling the process of generating the waveform
-    wav_arg['snr'] = [6.0, 15.0]
-    wav_arg['gw_prob'] = 1.0
-    wav_arg['random_starting_time'] = True
-    wav_arg['time_offset'] = [-0.5, 0.5]
-    wav_arg['resample_delta_t'] = 1.0 / 1024
-    wav_arg['t_len'] = 64.0
-    wav_arg['resample_t_len'] = 4.0
-    wav_arg['whiten_len'] = 4.0
-    wav_arg['whiten_cutoff'] = 4.0
+    ##Properties for handeling the process of generating the waveform
+    #wav_arg['snr'] = [6.0, 15.0]
+    #wav_arg['gw_prob'] = 1.0
+    #wav_arg['random_starting_time'] = True
+    #wav_arg['time_offset'] = [-0.5, 0.5]
+    #wav_arg['resample_delta_t'] = 1.0 / 1024
+    #wav_arg['t_len'] = 64.0
+    #wav_arg['resample_t_len'] = 4.0
+    #wav_arg['whiten_len'] = 4.0
+    #wav_arg['whiten_cutoff'] = 4.0
     
-    #Skyposition
-    wav_arg['end_time'] = 1337 * 137 * 42
-    wav_arg['declination'] = 0.0
-    wav_arg['right_ascension'] = 0.0
-    wav_arg['polarization'] = 0.0
-    wav_arg['detectors'] = ['L1', 'H1']
+    ##Skyposition
+    #wav_arg['end_time'] = 1337 * 137 * 42
+    #wav_arg['declination'] = 0.0
+    #wav_arg['right_ascension'] = 0.0
+    #wav_arg['polarization'] = 0.0
+    #wav_arg['detectors'] = ['L1', 'H1']
+    
+    wav_arg, opt_arg = make_template_bank_defaults()
     
     """
     #These are just here to remember the values each one of these can take
@@ -431,12 +428,12 @@ def create_file(name, **kwargs):
                 wav_arg[key] = [min(val), max(val)]
     
     #Properties for the generating program
-    opt_arg['num_of_templates'] = 20000
-    opt_arg['seed'] = 12345
-    opt_arg['train_to_test'] = 0.7
-    opt_arg['path'] = ""
-    opt_arg['data_shape'] = (int(1.0 / wav_arg['delta_t']),)
-    opt_arg['label_shape'] = (1,)
+    #opt_arg['num_of_templates'] = 20000
+    #opt_arg['seed'] = 12345
+    #opt_arg['train_to_test'] = 0.7
+    #opt_arg['path'] = ""
+    #opt_arg['data_shape'] = (int(1.0 / wav_arg['delta_t']),)
+    #opt_arg['label_shape'] = (1,)
     
     opt_arg, kwargs = filter_keys(opt_arg, kwargs)
     
@@ -467,6 +464,9 @@ def create_file(name, **kwargs):
     
     #print("Pre file")
     
+    #for idx, dat in enumerate(pool.imap_unordered(worker, parameter_list)):
+        #print(idx)
+    
     with h5py.File(file_name, 'w') as output:
         training = output.create_group('training')
         testing = output.create_group('testing')
@@ -489,10 +489,7 @@ def create_file(name, **kwargs):
         train_data = training.create_dataset('train_data', shape=(split_index, (tmp_sample[0]).shape[0], (tmp_sample[0]).shape[1]), dtype=tmp_sample[0].dtype)
         
         #Assumes the data to be in shape ()
-        #NOTE: TAKEN OUT TO MAKE THIS WORK
-        #train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=tmp_sample[2].dtype)
-        #NOTE: JUST HERE TO MAKE THIS WORK
-        train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=np.float64)
+        train_snr_calculated = training.create_dataset('train_snr_calculated', shape=(split_index, ), dtype=tmp_sample[2].dtype)
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
@@ -507,10 +504,7 @@ def create_file(name, **kwargs):
         test_data = testing.create_dataset('test_data', shape=(num_of_templates - split_index, (tmp_sample[0]).shape[0], (tmp_sample[0]).shape[1]), dtype=tmp_sample[0].dtype)
         
         #Assumes the data to be in shape ()
-        #NOTE: TAKEN OUT TO MAKE THIS WORK
-        #test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=tmp_sample[2].dtype)
-        #NOTE: JUST HERE TO MAKE THIS WORK
-        test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=np.float64)
+        test_snr_calculated = testing.create_dataset('test_snr_calculated', shape=(num_of_templates - split_index, ), dtype=tmp_sample[2].dtype)
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
@@ -521,7 +515,7 @@ def create_file(name, **kwargs):
         test_ext_parameters = test_parameters.create_dataset('ext_parameters', shape=(num_of_templates - split_index, ), dtype=tmp_sample[4].dtype)
         
         #print("Pre pool")
-    
+        
         #pool = mp.Pool()
         
         #print("Number of workers: {}".format(pool._processes))
@@ -532,44 +526,20 @@ def create_file(name, **kwargs):
         bar = progress_tracker(num_of_templates, name='Generating templates')
         
         for idx, dat in enumerate(pool.imap_unordered(worker, parameter_list)):
-        #for idx, dat in enumerate(map(worker, parameter_list)):
             if idx < split_index:
-                #NOTE: JUST HERE TO MAKE THIS WORK
-                strain_list = dat[2]
-                total_l = dat[5]
-                matched_snr_sq = [max(abs(matched_filter(strain_list[i], total_l[i], psd=gen_psd, low_frequency_cutoff=kwargs['f_lower'])))**2 for i in range(len(strain_list))]
-                calc_snr = np.sqrt(sum(matched_snr_sq))
-                strain_list = None
-                total_l = None
-                
-                #NOTE: WAS HERE PREVEIOUSLY
                 #write to training
                 i = idx
                 train_data[i] = dat[0]
                 train_labels[i] = dat[1]
-                #NOTE: TAKEN OUT TO MAKE THIS WORK
-                #train_snr_calculated[i] = dat[2]
-                #NOTE: JUST HERE TO MAKE THIS WORK
-                train_snr_calculated[i] = calc_snr
+                train_snr_calculated[i] = dat[2]
                 train_wav_parameters[i] = dat[3]
                 train_ext_parameters[i] = dat[4]
             else:
-                #NOTE: JUST HERE TO MAKE THIS WORK
-                strain_list = dat[2]
-                total_l = dat[5]
-                matched_snr_sq = [max(abs(matched_filter(strain_list[i], total_l[i], psd=gen_psd, low_frequency_cutoff=kwargs['f_lower'])))**2 for i in range(len(strain_list))]
-                calc_snr = np.sqrt(sum(matched_snr_sq))
-                strain_list = None
-                total_l = None
-                
                 #write to testing
                 i = idx - num_of_templates
                 test_data[i] = dat[0]
                 test_labels[i] = dat[1]
-                #NOTE: TAKEN OUT TO MAKE THIS WORK
-                #test_snr_calculated[i] = dat[2]
-                #NOTE: JUST HERE TO MAKE THIS WORK
-                test_snr_calculated[i] = calc_snr
+                test_snr_calculated[i] = dat[2]
                 test_wav_parameters[i] = dat[3]
                 test_ext_parameters[i] = dat[4]
             
