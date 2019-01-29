@@ -7,6 +7,7 @@ from make_snr_plot import plot_true_and_calc
 from loss_plot import make_loss_plot
 import time
 from wiki import make_wiki_entry, read_json, model_to_string
+from ini_handeling import run_net_defaults, load_options
 
 """
 TODO:
@@ -217,6 +218,10 @@ Notes:
            parameter and needs to return the trained model.
 """
 def run_net(net_name, temp_name, **kwargs):
+    if 'ini_file' in kwargs and os.path.isfile(kwarsg['ini_file']):
+        kwargs, temp = filter_keys(load_options(kwargs['ini_file']), kwargs)
+        kwargs.update(temp)
+        del temp
     ignored_error = False
     
     wiki_data = {}
@@ -225,18 +230,19 @@ def run_net(net_name, temp_name, **kwargs):
     #Properties for this function
     opt_arg['net_path'] = get_net_path()
     opt_arg['temp_path'] = get_templates_path()
-    opt_arg['ignore_fixable_errors'] = False
-    opt_arg['loss'] = 'mean_squared_error'
-    opt_arg['optimizer'] = 'adam'
-    opt_arg['metrics'] = ['mape']
-    opt_arg['epochs'] = 10
-    opt_arg['overwrite_template_file'] = False
-    opt_arg['overwrite_net_file'] = True
-    opt_arg['show_snr_plot'] = True
-    opt_arg['only_print_image'] = False
-    opt_arg['use_custom_train_function'] = False
-    opt_arg['epoch_break'] = 10
-    opt_arg['create_wiki_entry'] = True
+    opt_arg.update(run_net_defaults())
+    #opt_arg['ignore_fixable_errors'] = False
+    #opt_arg['loss'] = 'mean_squared_error'
+    #opt_arg['optimizer'] = 'adam'
+    #opt_arg['metrics'] = ['mape']
+    #opt_arg['epochs'] = 10
+    #opt_arg['overwrite_template_file'] = False
+    #opt_arg['overwrite_net_file'] = True
+    #opt_arg['show_snr_plot'] = True
+    #opt_arg['only_print_image'] = False
+    #opt_arg['use_custom_train_function'] = False
+    #opt_arg['epoch_break'] = 10
+    #opt_arg['create_wiki_entry'] = True
     
     wiki_data['programm_internals'] = {}
     
