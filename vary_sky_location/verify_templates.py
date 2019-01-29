@@ -1,116 +1,59 @@
-import h5py
-from pycbc.waveform import get_td_waveform
-from pycbc.filter import matched_filter
-from pycbc.types.frequencyseries import FrequencySeries
-from pycbc.types.timeseries import TimeSeries
-from pycbc.psd import interpolate, inverse_spectrum_truncation
-from pycbc.psd import aLIGOZeroDetHighPower
-import ast
-import numpy as np
-import matplotlib.pyplot as plt
 from scipy.stats import normaltest
-
-def load_templates(file_path):
-    inp = h5py.File(file_path, "r")
-    
-    data_psd = inp['psd']['data'].value
-    delta_f_psd = inp['psd']['delta_f'].value
-    psd = FrequencySeries(data_psd, delta_f=delta_f_psd)
-    
-    train_data = inp['training']['train_data'].value
-    train_labels = inp['training']['train_labels'].value
-    train_raw = inp['training']['train_raw'].value
-    
-    tr_wav_par = inp['training']['parameters']['wav_parameters']
-    tr_ext_par = inp['training']['parameters']['ext_parameters']
-    
-    train_wav_par = [ast.literal_eval(dic) for dic in tr_wav_par]
-    
-    train_ext_par = [ast.literal_eval(dic) for dic in tr_ext_par]
-    
-    
-    
-    test_data = inp['testing']['test_data'].value
-    test_labels = inp['testing']['test_labels'].value
-    test_raw = inp['testing']['test_raw'].value
-    
-    te_wav_par = inp['testing']['parameters']['wav_parameters']
-    te_ext_par = inp['testing']['parameters']['ext_parameters']
-    
-    test_wav_par = [ast.literal_eval(dic) for dic in te_wav_par]
-    
-    test_ext_par = [ast.literal_eval(dic) for dic in te_ext_par]
-
-    
-    inp.close()
-    
-    return(((train_data, train_raw, train_labels, train_wav_par, train_ext_par),(test_data, test_raw, test_labels, test_wav_par, test_ext_par), psd))
-
-def whiten(ts, psd, f_low):
-    return((ts.to_frequencyseries() / psd**0.5).to_timeseries())
+from ini_handeling import run_net_defaults, make_template_bank_defaults
+from run_net import filter_keys
+from load_data import load_parameter_space, load_training_labels, load_training_calculated_snr, load_testing_labels, load_testing_calculated_snr
 
 def verify_templates(file_path):
+    tr_labels = load_training_labels()
+    tr_snr = load_training_calculated_snr()
+    te_labels = load_testing_labels()
+    te_snr = load_testing_calculated_snr()
     
-    #Can I merge train_data and test_data (and all the according parameters)?
-    (train_data, train_raw, train_labels, train_wav_par, train_ext_par), (test_data, test_raw, test_labels, test_wav_par, test_ext_par), psd = load_templates(file_path)
+    total_labels = list(tr_labels) + list(te_labels)
+    del tr_labels
+    del te_labels
+    total_snr = list(tr_snr) + list(te_snr)
+    del tr_snr
+    del te_snr
     
-    print(type(psd.delta_f))
+    THRESHOLD = 0.4
     
-    snr_res = []
-    
-    
-    #psd.resize(len(true_wav)/2+1)
-    #psd = inverse_spectrum_truncation(psd, len(true_wav), low_frequency_cutoff=train_wav_par[i]['f_lower'])
-    
-    for i in range(len(train_data)):
-        print(i)
-        true_wav = get_td_waveform(**(train_wav_par[i]))[0]
-        #print('Length of waveform = {}'.format(len(true_wav)))
-        #plt.show(plt.plot(true_wav))
-        #print(train_ext_par[i])
-        true_wav.prepend_zeros(train_ext_par[i]['samples_before'])
-        #print('Will append: {}'.format(len(train_raw[i]) - len(true_wav)))
-        true_wav.append_zeros(len(train_raw[i]) - len(true_wav))
-        
-        #plt.show(plt.plot(true_wav * 10**25))
-        
-        
-        
-        #print(true_wav)
-        #true_wav = whiten(true_wav, psd, train_wav_par[i]['f_lower'])
-        #print(true_wav)
-        
-        #snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_data[i].transpose()[0], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), max(abs(matched_filter(true_wav, TimeSeries(train_raw[i], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
-        snr_res.append((max(abs(matched_filter(true_wav, TimeSeries(train_raw[i], true_wav.delta_t), psd=psd, low_frequency_cutoff=train_wav_par[i]['f_lower']))), train_labels[i][0]))#Is this correct. Can I take max(abs(TimeSeries))? Is that well defined?
-    
-    #print(train_data[0])
-    
-    diff = [pt[0] - pt[1] for pt in snr_res]
-    mean = sum(diff) / len(diff)
-    #for i in range(len(diff)):
-        #diff[i] -= mean
-    
-    bin_borders = np.linspace(-10,10,21)
-    bins = np.zeros(20)
-    
-    for pt in diff:
-        for j in range(len(bins)):
-            if pt < bin_borders[j+1] and pt >= bin_borders[j]:
-                bins[j] += 1
-    
-    
-    
-    #binned = np.digitize(bins,np.arange(-9-5,10.5,1.0))
-    
-    plt.show(plt.bar(np.arange(-9.5,10.5,1.0),bins))
-    
-    x_vals = [pt[1] for pt in snr_res]
-    y_vals = [pt[0] for pt in snr_res]
-    plt.scatter(x_vals, y_vals)
-    plt.plot(np.linspace(0.0,13.0, 1000), np.linspace(0.0,13.0, 1000), color='red')
-    plt.show()
+    diff = [total_labels[i] - total_snr[i] for i in range(len(total_labels))]
+    del total_labels
+    del total_snr
     
     stats, pval = normaltest(diff)
     
-    return((snr_res, pval))
+    return(pval > THRESHOLD)
+
+def check_input(file_path, **kwargs):
+    used_data = dict(kwargs)
+    run_net_def = run_net_defaults()
+    wav_arg, opt_arg = make_template_bank_defaults()
+        
+    run_net_def, used_data = filter_keys(run_net_def, used_data)
+    wav_arg, used_data = filter_keys(wav_arg, used_data)
+    opt_arg, used_data = filter_keys(opt_arg, used_data)
+    
+    used_data.update(run_net_def)
+    del run_net_def
+    used_data.update(wav_arg)
+    del wav_arg
+    used_data.update(opt_arg)
+    del opt_arg
+    
+    file_data = load_parameter_space(file_path)
+    
+    for key, val in file_data.items():
+        if key in used_data:
+            #Protect against mismatched array length
+            try:
+                if not (val == used_data[key]).all():
+                    return(False)
+            except AttributeError:
+                return(False)
+        else:
+            return(False)
+    
+    return(True)
 
