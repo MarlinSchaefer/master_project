@@ -438,6 +438,8 @@ Trainable params: 214,353
 Non-trainable params: 480
 _________________________________________________________________
 
+comment:
+    -Dropout rates in order: (0.1, 0.1, 0.25, 0.25)
 
 loss:
 	last_training: (600, 0.2814308724743979)
@@ -494,4 +496,1483 @@ template_generation:
 	time_end: 23.1.2019: 23:4.20
 
 ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 24.1.2019: 12:12.30
+	time_end: 24.1.2019: 16:15.55
+
+loss:
+	last_training: (150, 0.824635732786996)
+	min_training: (135, 0.18171629648549217)
+	min_testing: (135, 2.0971523447036744)
+	last_testing: (150, 2.545431274731954)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (150, 0.824635732786996)
+	min_training: (135, 0.18171629648549217)
+	min_testing: (135, 2.0971523447036744)
+	last_testing: (150, 2.545431274731954)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 6. 15.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: False
+	epochs: 150
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 24.1.2019: 12:12.30
+	time_end: 24.1.2019: 12:12.30
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 24.1.2019: 23:42.50
+	time_end: 25.1.2019: 6:29.32
+
+loss:
+	last_training: (150, 1.5524979741232736)
+	min_training: (115, 0.3495133076735905)
+	min_testing: (15, 2.727667425473531)
+	last_testing: (150, 4.244217447280883)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          16324     
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          4020      
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           944       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           208       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 235,369
+Trainable params: 224,621
+Non-trainable params: 10,748
+_________________________________________________________________
+
+
+loss:
+	last_training: (150, 1.5524979741232736)
+	min_training: (115, 0.3495133076735905)
+	min_testing: (15, 2.727667425473531)
+	last_testing: (150, 4.244217447280883)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 6. 15.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: False
+	epochs: 150
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 24.1.2019: 23:42.50
+	time_end: 24.1.2019: 23:42.50
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 25.1.2019: 14:21.51
+	time_end: 25.1.2019: 18:58.50
+
+loss:
+	last_training: (150, 2.8760353170122417)
+	min_training: (70, 0.3368711291381291)
+	min_testing: (70, 2.329401154836019)
+	last_testing: (150, 4.743796300252279)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          16324     
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 231,093
+Trainable params: 222,483
+Non-trainable params: 8,610
+_________________________________________________________________
+
+
+loss:
+	last_training: (150, 2.8760353170122417)
+	min_training: (70, 0.3368711291381291)
+	min_testing: (70, 2.329401154836019)
+	last_testing: (150, 4.743796300252279)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 6. 15.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: False
+	epochs: 150
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 25.1.2019: 14:21.51
+	time_end: 25.1.2019: 14:21.51
+
+ignored_errors: False
+
+###############################################################################
+
+
+training:
+	time_start: 26.1.2019: 12:23.29
+	time_end: 26.1.2019: 19:21.43
+
+loss:
+	last_training: (150, 0.3537915734563555)
+	min_training: (150, 0.3537915734563555)
+	min_testing: (5, 9.520569677988687)
+	last_testing: (150, 30.98087351989746)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 64)          2112      
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 64)          256       
+_________________________________________________________________
+permute_1 (Permute)          (None, 64, 4081)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 61, 64)            1044800   
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 61, 64)            256       
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 3904)              0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 3904)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 128)               499840    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 128)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 64)                8256      
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 1,555,585
+Trainable params: 1,555,329
+Non-trainable params: 256
+_________________________________________________________________
+
+
+loss:
+	last_training: (150, 0.3537915734563555)
+	min_training: (150, 0.3537915734563555)
+	min_testing: (5, 9.520569677988687)
+	last_testing: (150, 30.98087351989746)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 10000
+	snr: [ 6. 15.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: False
+	epochs: 150
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 26.1.2019: 12:23.29
+	time_end: 26.1.2019: 12:23.29
+
+ignored_errors: False
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 10:37.5
+	time_end: 29.1.2019: 10:42.1
+
+loss:
+	last_training: (50, 14.48507948739188)
+	min_training: (25, 9.607128873552595)
+	min_testing: (5, 10.576653188069661)
+	last_testing: (50, 17.096982549031576)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 14.48507948739188)
+	min_training: (25, 9.607128873552595)
+	min_testing: (5, 10.576653188069661)
+	last_testing: (50, 17.096982549031576)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [ 90. 100.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 10:22.2
+	time_end: 29.1.2019: 10:37.5
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_291201910375.png
+
+SNR_plot_name: progressive_net_snr_291201910375.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 10:57.7
+	time_end: 29.1.2019: 11:2.3
+
+loss:
+	last_training: (50, 3.616970089503697)
+	min_training: (50, 3.616970089503697)
+	min_testing: (50, 4.453955046335856)
+	last_testing: (50, 4.453955046335856)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 3.616970089503697)
+	min_training: (50, 3.616970089503697)
+	min_testing: (50, 4.453955046335856)
+	last_testing: (50, 4.453955046335856)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [80. 90.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 10:42.5
+	time_end: 29.1.2019: 10:57.7
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_291201910577.png
+
+SNR_plot_name: progressive_net_snr_291201910577.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 11:17.8
+	time_end: 29.1.2019: 11:22.6
+
+loss:
+	last_training: (50, 66.06437759399414)
+	min_training: (10, 3.4606708322252544)
+	min_testing: (5, 4.542924941380819)
+	last_testing: (50, 68.20223663330079)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 66.06437759399414)
+	min_training: (10, 3.4606708322252544)
+	min_testing: (5, 4.542924941380819)
+	last_testing: (50, 68.20223663330079)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [70. 80.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 11:2.7
+	time_end: 29.1.2019: 11:17.8
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_291201911178.png
+
+SNR_plot_name: progressive_net_snr_291201911178.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 11:37.13
+	time_end: 29.1.2019: 11:42.11
+
+loss:
+	last_training: (50, 4.042517182486398)
+	min_training: (35, 2.7157169818878173)
+	min_testing: (35, 4.57079091389974)
+	last_testing: (50, 4.851381956736247)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 4.042517182486398)
+	min_training: (35, 2.7157169818878173)
+	min_testing: (35, 4.57079091389974)
+	last_testing: (50, 4.851381956736247)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [60. 70.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 11:22.11
+	time_end: 29.1.2019: 11:37.13
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_2912019113713.png
+
+SNR_plot_name: progressive_net_snr_2912019113713.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 11:57.45
+	time_end: 29.1.2019: 12:3.14
+
+loss:
+	last_training: (50, 5.146590418134417)
+	min_training: (40, 1.7073037093026298)
+	min_testing: (40, 2.901732791264852)
+	last_testing: (50, 6.2005029296875)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 5.146590418134417)
+	min_training: (40, 1.7073037093026298)
+	min_testing: (40, 2.901732791264852)
+	last_testing: (50, 6.2005029296875)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [50. 60.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 11:42.17
+	time_end: 29.1.2019: 11:57.45
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_2912019115745.png
+
+SNR_plot_name: progressive_net_snr_2912019115745.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 12:19.2
+	time_end: 29.1.2019: 12:24.31
+
+loss:
+	last_training: (50, 3.7910688618251256)
+	min_training: (10, 1.6267072221211025)
+	min_testing: (10, 2.433507089614868)
+	last_testing: (50, 4.5596574115753175)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 3.7910688618251256)
+	min_training: (10, 1.6267072221211025)
+	min_testing: (10, 2.433507089614868)
+	last_testing: (50, 4.5596574115753175)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [40. 50.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 12:3.22
+	time_end: 29.1.2019: 12:19.2
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_291201912192.png
+
+SNR_plot_name: progressive_net_snr_291201912192.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 12:40.52
+	time_end: 29.1.2019: 12:46.10
+
+loss:
+	last_training: (50, 9.118135435921806)
+	min_training: (45, 0.6729450140680585)
+	min_testing: (45, 1.8299152819315592)
+	last_testing: (50, 10.77114938100179)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 9.118135435921806)
+	min_training: (45, 0.6729450140680585)
+	min_testing: (45, 1.8299152819315592)
+	last_testing: (50, 10.77114938100179)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [30. 40.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 12:24.41
+	time_end: 29.1.2019: 12:40.52
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_2912019124052.png
+
+SNR_plot_name: progressive_net_snr_2912019124052.png
+
+###############################################################################
+
+
+training:
+	time_start: 29.1.2019: 13:2.24
+	time_end: 29.1.2019: 13:7.46
+
+loss:
+	last_training: (50, 0.4002861973217555)
+	min_training: (50, 0.4002861973217555)
+	min_testing: (10, 1.7409934775034586)
+	last_testing: (50, 1.8421435658137004)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 16)          528       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 16)          64        
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 16)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 16)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 32)          8224      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 32)          128       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 32)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 32)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 64)           32832     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 64)           256       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 64)           0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 64)            0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 52, 128)           65664     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 52, 128)           512       
+_________________________________________________________________
+activation_4 (Activation)    (None, 52, 128)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 13, 128)           0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 13, 128)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 1664)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                106560    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1)                 65        
+=================================================================
+Total params: 214,833
+Trainable params: 214,353
+Non-trainable params: 480
+_________________________________________________________________
+
+
+loss:
+	last_training: (50, 0.4002861973217555)
+	min_training: (50, 0.4002861973217555)
+	min_testing: (10, 1.7409934775034586)
+	last_testing: (50, 1.8421435658137004)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 1.0
+	whiten_len: 4.0
+	coa_phase: [0.         6.28318531]
+	resample_delta_t: 0.0009765625
+	random_starting_time: True
+	polarization: [0.         3.14159265]
+	t_len: 64.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [1]
+	num_of_templates: 1000
+	snr: [20. 30.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	distance: 1.0
+	resample_t_len: 4.0
+	mass1: [10. 30.]
+	mass2: [10. 30.]
+	detectors: ['H1' 'L1']
+	right_ascension: [-3.14159265  3.14159265]
+	approximant: SEOBNRv4_opt
+	declination: [-1.57079633  1.57079633]
+	end_time: 7693098
+	time_offset: [-0.5  0.5]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/vary_sky_location/saves
+	create_wiki_entry: True
+	metrics: ['mape']
+	overwrite_net_file: False
+	show_snr_plot: False
+	use_custom_train_function: True
+	epoch_break: 5
+	ignore_fixable_errors: False
+
+template_generation:
+	time_start: 29.1.2019: 12:46.21
+	time_end: 29.1.2019: 13:2.24
+
+ignored_errors: False
+
+loss_plot_name: progressive_net_loss_plot_291201913224.png
+
+SNR_plot_name: progressive_net_snr_291201913224.png
 
