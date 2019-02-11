@@ -91,9 +91,9 @@ def set_template_file(temp_name, temp_path, args):
     return(ignored_error)
 
 def reshape_data(train_data, test_data, final_shape, **opt_arg):
-    print('Train Data shape: {}'.format(train_data.shape))
-    print('Test Data shape: {}'.format(test_data.shape))
-    print('Final shape: {}'.format(final_shape))
+    #print('Train Data shape: {}'.format(train_data.shape))
+    #print('Test Data shape: {}'.format(test_data.shape))
+    #print('Final shape: {}'.format(final_shape))
     do_reshape = False
     ignored_error = False
     #print('Output shape: {}'.format(output_layer_shape))
@@ -303,18 +303,28 @@ def run_net(net_name, temp_name, **kwargs):
     
     #Load templates
     print(os.path.join(temp_path, temp_name + ".hf5"))
-    (train_data, train_labels), (test_data, test_labels) = load_data(os.path.join(temp_path, temp_name + ".hf5"))
+    if opt_arg['format_data']:
+        try:
+            #NOTE: The module needs to have a method 'train_model', which returns the trained model.
+            net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+            (train_data, train_labels), (test_data, test_labels) = net_mod.get_formatted_data(os.path.join(temp_path, temp_name + ".hf5"))
+        except IOError:
+            raise NameError('There is no function named "get_formatted_data" in %s.py.' % (net_name))
+            return()
+    else:
+        (train_data, train_labels), (test_data, test_labels) = load_data(os.path.join(temp_path, temp_name + ".hf5"))
+    
     
     #Check sizes of loaded data against the input and output shape of the net
-    train_data, test_data, ignored_error_reshaping = reshape_data(train_data, test_data, input_layer_shape, **opt_arg)
+    #train_data, test_data, ignored_error_reshaping = reshape_data(train_data, test_data, input_layer_shape, **opt_arg)
     
-    if ignored_error_reshaping:
-        ignored_error = True
+    #if ignored_error_reshaping:
+        #ignored_error = True
     
-    train_labels, test_labels, ignored_error_reshaping = reshape_data(train_labels, test_labels, output_layer_shape, **opt_arg)
+    #train_labels, test_labels, ignored_error_reshaping = reshape_data(train_labels, test_labels, output_layer_shape, **opt_arg)
     
-    if ignored_error_reshaping:
-        ignored_error = True
+    #if ignored_error_reshaping:
+        #ignored_error = True
     
     #Training takes place here
     if not opt_arg['only_print_image']:
