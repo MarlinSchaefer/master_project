@@ -14,6 +14,7 @@ from pycbc.detector import Detector
 import sys
 from progress_bar import progress_tracker
 from ini_handeling import make_template_bank_defaults
+import lal
 
 """
 TODO: Implement this function which should return a list of dictionaries
@@ -127,24 +128,21 @@ def set_temp_offset(sig_list, t_len, t_offset, t_from_right):
     #Convert time to samples
     prep_list = [int(dat / dt) for dat in prep_list]
     
-    #print(len(sig_list[0]) / 4096.0)
-    
     #Calculate for every signal how many zeros have to be prepended for the
     #first signal to have a temporal offset of T_OFFSET and the other signals
     #to stay in relation to this first signal
     prep_list = [int(t_len / dt) - len(sig_list[0]) - dat + int(t_offset / dt) - int(t_from_right / dt) for dat in prep_list]
-    print(len(sig_list[1]))
-    print(prep_list)
-    a = TimeSeries(np.arange(len(sig_list[0])),1)
-    a.prepend_zeros(prep_list[0])
-    print(a)
     
     for i, dat in enumerate(sig_list):
-        #print("Prep_list: {}".format(prep_list[i]))
         #Prepend the zeros calculated before
-        dat.prepend_zeros(prep_list[i])
+        if prep_list[i] < 0 and abs(prep_list[i]) > len(dat) / 2:
+            #This already deals with setting the epcoh correctly by default
+            sig_list[i] = sig_list[i][abs(prep_list[i]):]
+        else:
+            sig_list[i].prepend_zeros(prep_list[i])
+        
         #Append as many zeros as needed to get to a final length of T_LEN seconds
-        dat.append_zeros(int(t_len / dt) - len(dat))
+        sig_list[i].append_zeros(int(t_len / dt) - len(sig_list[i]))
     
     return
 
@@ -167,6 +165,11 @@ def rescale_to_snr(sig_list, snr, psd, f_lower):
     list
         A list of the rescaled strain data in the order it was given in sig_list
     """
+    #for strain in sig_list:
+        #print(strain.delta_f)
+        #print("Length: {}".format(len(strain)))
+    #print("Length PSD: {}".format(len(psd)))
+    #print(psd.delta_f)
     snrsq_list = [sigmasq(strain, psd=psd, low_frequency_cutoff=f_lower) for strain in sig_list]
     div = np.sqrt(sum(snrsq_list))
     return([pt / div * snr for pt in sig_list])
