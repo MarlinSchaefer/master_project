@@ -130,7 +130,17 @@ def _train_net(net, net_name, train_data, test_data, train_labels, test_labels, 
     hist = None
     
     #If everything is fine, train and evaluate the net
-    net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
+    if opt_arg['use_custom_compilation']:
+        try:
+            #NOTE: The module needs to have a method 'train_model', which returns the trained model.
+            print("Using custom compilation function")
+            net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+            net_mod.compile_model(net)
+        except IOError:
+            raise NameError('There is no net named %s in %s.' % (net_name, net_path))
+            return()
+    else:
+        net.compile(loss=opt_arg['loss'], optimizer=opt_arg['optimizer'], metrics=opt_arg['metrics'])
         
     print(net.summary())
     if opt_arg['use_custom_train_function']:
