@@ -205,7 +205,7 @@ def worker(kwargs):
     kwargs = dict(kwargs)
     
     opt_arg = {}
-    opt_keys = ['snr', 'gw_prob', 'random_starting_time', 'resample_delta_t', 't_len', 'resample_t_len', 'time_offset', 'whiten_len', 'whiten_cutoff', 't_from_right']
+    opt_keys = ['snr', 'gw_prob', 'random_starting_time', 'resample_delta_t', 't_len', 'resample_t_len', 'time_offset', 'whiten_len', 'whiten_cutoff', 't_from_right', 'no_gw_snr']
     
     for key in opt_keys:
         try:
@@ -260,8 +260,8 @@ def worker(kwargs):
         #Rescale the templates to match wanted SNR
         strain_list = rescale_to_snr(strain_list, opt_arg['snr'], psd, kwargs['f_lower'])
     else:
-        strain_list = [TimeSeries(np.zeros(len(noise_list[0]))) for n in range(len(noise_list))]
-        opt_arg['snr'] = 0.0
+        strain_list = [TimeSeries(np.zeros(len(n)), n.delta_t) for n in noise_list]
+        opt_arg['snr'] = opt_arg['no_gw_snr']
     
     #print("post generating")
     total_white = []
@@ -308,7 +308,11 @@ def worker(kwargs):
         #print("Can calc")
         
         #Calculate matched filter snr
-        matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
+        if gw_present:
+            matched_snr_sq.append(max(abs(matched_filter(strain_list[i], total, psd=psd, low_frequency_cutoff=kwargs['f_lower'])))**2)
+        else:
+            #TODO: Implement matched filtering against template bank
+            matched_snr_sq.append(opt_arg['no_gw_snr']**2/len(noise_list))
         #print("Post matched filtering, WTF!")
     
     if not len(tmp_white) == 0:
@@ -341,7 +345,7 @@ def worker(kwargs):
     
     #print("Pre return")
     
-    return((np.array(out_wav), np.array([opt_arg['snr']]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
+    return((np.array(out_wav), np.array([opt_arg['snr'], int(gw_present)]), np.array(calc_snr), np.array(str(kwargs)), np.array(str(opt_arg))))
 
 """
 Create a template file using the given options.
@@ -540,7 +544,7 @@ def create_file(name, **kwargs):
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
-        train_labels = training.create_dataset('train_labels', shape=(split_index, 1), dtype=tmp_sample[1].dtype)
+        train_labels = training.create_dataset('train_labels', shape=(split_index, len(tmp_sample[1])), dtype=tmp_sample[1].dtype)
         
         #Assumes the shape () for the provided data
         train_wav_parameters = train_parameters.create_dataset('wav_parameters', shape=(split_index, ), dtype=tmp_sample[3].dtype)
@@ -555,7 +559,7 @@ def create_file(name, **kwargs):
         
         #Needs the SNR to be a single number. This has to be returned as the
         #second entry and as a numpy array of shape '()'
-        test_labels = testing.create_dataset('test_labels', shape=(num_of_templates - split_index, 1), dtype=tmp_sample[1].dtype)
+        test_labels = testing.create_dataset('test_labels', shape=(num_of_templates - split_index, len(tmp_sample[1])), dtype=tmp_sample[1].dtype)
         
         #Assumes the shape () for the provided data
         test_wav_parameters = test_parameters.create_dataset('wav_parameters', shape=(num_of_templates - split_index, ), dtype=tmp_sample[3].dtype)
