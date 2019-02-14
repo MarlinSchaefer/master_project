@@ -391,3 +391,133 @@ loss_plot_name: collect_net_loss_plot_1022019111630.png
 
 SNR_plot_name: collect_net_snr_1022019111630.png
 
+###############################################################################
+
+
+training:
+	time_start: 11.2.2019: 23:6.50
+	time_end: 12.2.2019: 1:56.59
+
+loss:
+	last_training: (1, 46817516.0)
+	min_training: (1, 46817516.0)
+	min_testing: (1, 45739792.0)
+	last_testing: (1, 45739792.0)
+
+network: 
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv1d_1 (Conv1D)            (None, 4081, 32)          7200      
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 4081, 32)          128       
+_________________________________________________________________
+activation_1 (Activation)    (None, 4081, 32)          0         
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 1020, 32)          0         
+_________________________________________________________________
+conv1d_2 (Conv1D)            (None, 1005, 64)          32832     
+_________________________________________________________________
+batch_normalization_2 (Batch (None, 1005, 64)          256       
+_________________________________________________________________
+activation_2 (Activation)    (None, 1005, 64)          0         
+_________________________________________________________________
+max_pooling1d_2 (MaxPooling1 (None, 251, 64)           0         
+_________________________________________________________________
+conv1d_3 (Conv1D)            (None, 236, 128)          131200    
+_________________________________________________________________
+batch_normalization_3 (Batch (None, 236, 128)          512       
+_________________________________________________________________
+activation_3 (Activation)    (None, 236, 128)          0         
+_________________________________________________________________
+max_pooling1d_3 (MaxPooling1 (None, 59, 128)           0         
+_________________________________________________________________
+conv1d_4 (Conv1D)            (None, 44, 256)           524544    
+_________________________________________________________________
+batch_normalization_4 (Batch (None, 44, 256)           1024      
+_________________________________________________________________
+activation_4 (Activation)    (None, 44, 256)           0         
+_________________________________________________________________
+max_pooling1d_4 (MaxPooling1 (None, 11, 256)           0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 2816)              0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 2816)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                180288    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 2)                 130       
+=================================================================
+Total params: 878,114
+Trainable params: 877,154
+Non-trainable params: 960
+_________________________________________________________________
+
+
+loss:
+	last_training: (1, 46817516.0)
+	min_training: (1, 46817516.0)
+	min_testing: (1, 45739792.0)
+	last_testing: (1, 45739792.0)
+
+template_properties:
+	data_shape: [4096   14]
+	seed: 12345
+	gw_prob: 0.5
+	whiten_len: 4.0
+	no_gw_snr: 4.0
+	coa_phase: 0.0
+	resample_delta_t: [0.00024414 0.00048828 0.00097656 0.00195312 0.00390625 0.0078125
+ 0.015625  ]
+	random_starting_time: True
+	polarization: 0.0
+	t_len: 96.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [2]
+	num_of_templates: 10000
+	snr: [10. 50.]
+	path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/bns_net/saves
+	distance: 1.0
+	resample_t_len: [ 1.  2.  4.  8. 16. 32. 64.]
+	mass1: 1.4
+	mass2: 1.4
+	detectors: ['H1' 'L1']
+	right_ascension: 0.0
+	approximant: TaylorF2
+	declination: 0.0
+	end_time: 7693098
+	t_from_right: 0.5
+	time_offset: [-0.25  0.25]
+
+programm_internals:
+	loss: mean_squared_error
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/bns_net/saves
+	overwrite_template_file: True
+	epochs: 50
+	net_path: /home/marlin/Documents/Documents/Studium/Masterarbeit/Forschungsphase/Code/Git/master_project/bns_net/saves
+	create_wiki_entry: True
+	ignore_fixable_errors: False
+	metrics: ['mape']
+	overwrite_net_file: True
+	show_snr_plot: True
+	use_custom_train_function: True
+	epoch_break: 2
+	format_data: False
+
+template_generation:
+	time_start: 11.2.2019: 19:26.38
+	time_end: 11.2.2019: 23:6.48
+
+ignored_errors: False
+
+loss_plot_name: testing_net_loss_plot_112201923650.png
+
+SNR_plot_name: testing_net_snr_112201923650.png
+
