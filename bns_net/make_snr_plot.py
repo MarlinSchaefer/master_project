@@ -26,24 +26,7 @@ def plot(net, data, labels, path, show=False, net_name='N/A'):
     if show:
         plt.show()
     
-def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'):
-    #x_pt_1 = labels.reshape(len(labels))
-    x_pt_1 = np.array([pt[0] for pt in labels])
-    x_pt_2 = calc
-    
-    y_pt = net.predict(data)
-    #y_pt = y_pt.reshape(len(y_pt))
-    
-    #Check for multiple outputs. If the network has more than
-    #one, the SNR has to be the first output.
-    if type(y_pt) == list:
-        y_pt = np.array([pt[0] for pt in y_pt[0]])
-    else:
-        y_pt = np.array([pt[0] for pt in y_pt])
-    print("x_pt_1: {}".format(x_pt_1))
-    print("x_pt_2: {}".format(x_pt_2))
-    print("y_pt: {}".format(y_pt))
-    
+def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
     var_arr_1 = y_pt - x_pt_1
     var_1 = np.var(var_arr_1)
     
@@ -75,4 +58,25 @@ def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'
         plt.show()
     else:
         plt.close()
+
+def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'):
+    #x_pt_1 = labels.reshape(len(labels))
+    x_pt_1 = np.array([pt[0] for pt in labels])
+    x_pt_2 = calc
+    
+    y_pt = net.predict(data)
+    #y_pt = y_pt.reshape(len(y_pt))
+    
+    #Check for multiple outputs. If the network has more than
+    #one, the SNR has to be the first output.
+    if type(y_pt) == list:
+        y_pt = np.array([pt[0] for pt in y_pt[0]])
+    else:
+        y_pt = np.array([pt[0] for pt in y_pt])
+    print("x_pt_1: {}".format(x_pt_1))
+    print("x_pt_2: {}".format(x_pt_2))
+    print("y_pt: {}".format(y_pt))
+    
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
+    
     
