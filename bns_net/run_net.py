@@ -1,6 +1,6 @@
 import os
 import keras
-from load_data import load_data, load_parameter_space, load_calculated_snr
+from load_data import load_data, load_parameter_space, load_calculated_snr, load_testing_labels
 import numpy as np
 import imp
 from make_snr_plot import plot_true_and_calc
@@ -313,16 +313,17 @@ def run_net(net_name, temp_name, **kwargs):
     
     #Load templates
     print(os.path.join(temp_path, temp_name + ".hf5"))
+    full_template_path = os.path.join(temp_path, temp_name + ".hf5")
     if opt_arg['format_data']:
         try:
             #NOTE: The module needs to have a method 'train_model', which returns the trained model.
             net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-            (train_data, train_labels), (test_data, test_labels) = net_mod.get_formatted_data(os.path.join(temp_path, temp_name + ".hf5"))
+            (train_data, train_labels), (test_data, test_labels) = net_mod.get_formatted_data(full_template_path)
         except IOError:
             raise NameError('There is no function named "get_formatted_data" in %s.py.' % (net_name))
             return()
     else:
-        (train_data, train_labels), (test_data, test_labels) = load_data(os.path.join(temp_path, temp_name + ".hf5"))
+        (train_data, train_labels), (test_data, test_labels) = load_data(full_template_path)
     
     
     #Check sizes of loaded data against the input and output shape of the net
@@ -351,19 +352,22 @@ def run_net(net_name, temp_name, **kwargs):
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
     #Plot the distribution of labels against predictions
-    train_calculated_snr, test_calculated_snr = load_calculated_snr(os.path.join(temp_path, temp_name + ".hf5"))
+    train_calculated_snr, test_calculated_snr = load_calculated_snr(full_template_path)
+    unformatted_test_labels = load_testing_labels(full_template_path)
     #print("Training calculated snr: {}".format(train_calculated_snr))
     #print("Testing calculated snr: {}".format(test_calculated_snr))
     t_string = date_to_file_string(wiki_data['training']['time_start'])
     wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
-    plot_true_and_calc(net, test_data, test_labels, test_calculated_snr, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
+    plot_true_and_calc(net, test_data, unformatted_test_labels, test_calculated_snr, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
     
     #Plot the loss over some recorded history
-    try:
-        wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
-        make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
-    except IOError:
-        print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
+    wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
+    make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
+    #try:
+        #wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
+        #make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
+    #except IOError:
+        #print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
     
     
     #Store wiki data about the loss
@@ -384,7 +388,7 @@ def run_net(net_name, temp_name, **kwargs):
         
         print(bcolors.OKGREEN + 'Could not store loss history in the wiki, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
     wiki_data['ignored_errors'] = ignored_error
-    wiki_data['template_properties'] = load_parameter_space(os.path.join(temp_path, temp_name + ".hf5"))
+    wiki_data['template_properties'] = load_parameter_space(full_template_path)
     wiki_data['network'] = model_to_string(net)
     
     #Create a wiki-entry
