@@ -390,6 +390,7 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['ignored_errors'] = ignored_error
     wiki_data['template_properties'] = load_parameter_space(full_template_path)
     wiki_data['network'] = model_to_string(net)
+    wiki_data['custom_message'] = opt_arg['custom_message']
     
     #Create a wiki-entry
     if opt_arg['create_wiki_entry']:
