@@ -6,7 +6,7 @@ import os
 import matplotlib.pyplot as plt
 from make_snr_plot import _do_plot
 
-def evaluate_dual_output(net_name, temp_name):
+def evaluate_dual_output(net_name, temp_name, show=True):
     """Evaluates the performance of a network with two outputs.
     
     This function expects the network to have two outputs. The first should be
@@ -82,7 +82,7 @@ def evaluate_dual_output(net_name, temp_name):
     x_pt_2 = [pt for i, pt in enumerate(te_c) if predicted_bool[i]]
     y_pt = [pt[0] for i, pt in enumerate(res[0]) if predicted_bool[i]]
     
-    _do_plot(net_name, np.array(x_pt_1), np.array(x_pt_2), np.array(y_pt), plot_path, show=True)
+    _do_plot(net_name, np.array(x_pt_1), np.array(x_pt_2), np.array(y_pt), plot_path, show=show)
     
     
     return(l)
