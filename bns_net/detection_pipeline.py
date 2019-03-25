@@ -1,134 +1,149 @@
-import keras
-import numpy as np
-from pycbc.types.timeseries import TimeSeries
+from pycbc.noise import noise_from_string
+from pycbc.filter import resample_to_delta_t, matched_filter
+from pycbc.waveform import get_td_waveform
+from pycbc.psd import interpolate
+from detection_pipeline_mod import get_snr_timeseries, get_output_timeseries
+from make_template_bank_bns import detector_projection, set_temp_offset, rescale_to_snr
+import random as r
+from run_net import get_store_path
+import matplotlib.pyplot as plt
 import os
-from pycbc.filter import resample_to_delta_t
+import numpy as np
+import keras
+from pycbc.types.timeseries import TimeSeries
+import time
 from progress_bar import progress_tracker
+from datetime import datetime, timedelta
+import multiprocessing as mp
+import ctypes as c
+from contextlib import closing
 
-#TODO: Implement this. Make it act on data of the correct length
-def format_data(data):
-    """Correctly formats the data for the network.
+def load_data():
+    path = '~/Downloads/tseries.hdf'
+    with h5py.File(path, 'r') as FILE:
+        raw = [FILE['L1'].value, FILE['H1'].value]
     
-    Arguments
-    ---------
-    data : list
-        A list containing the raw strain data from the different detectors
+    return([TimeSeries(d, delta_t=1.0/4096) for d in raw])
+
+def find_max(ts):
+    curr_max = [-np.inf, -np.inf]
+    for i in range(len(ts)):
+        if ts[i] > curr_max[1]:
+            curr_max[0] = ts.sample_times[i]
+            curr_max[1] = ts[i]
+    return(curr_max)
+
+def resample(ts):
+    time_slices = [TimeSeries(ts.data[len(ts)-int(i * ts.sample_rate):], delta_t=ts.delta_t) for i in [1, 2, 4, 8, 16, 32, 64]]
+    res_slices = []
+    for i, t in enumerate(time_slices):
+        res_slices.append(list(resample_to_delta_t(t, 1.0 / 2 ** (12 - i))))
+    del time_slices
+    return(res_slices)
+
+def init(mp_arr_, aux_info_):
+    global mp_arr
+    global aux_info
     
-    Returns
-    -------
-    numpy array
-        numpy array containg the data in the correct shape.
-    """
+    mp_arr = mp_arr_
+    aux_info = aux_info_
+
+def tonumpyarray(arr):
+    return np.frombuffer(arr.get_obj())
+
+def get_slice(offset):
+    print("Offset: {}".format(offset))
     
-    #Formats data to suite
+    print("Offset: {} | Before first access".format(offset))
     
-    print("Length of data: {}".format(len(data)))
+    whiten_here = aux_info[2] < 0.5
     
-    dat_1s = []
+    print("Offset: {} | After first access".format(offset))
     
-    np.array([ret])
+    cache = tonumpyarray(mp_arr)
+    
+    print("Offset: {} | After numpy".format(offset))
+    
+    numpy_array = cache.reshape((int(aux_info[0]), int(aux_info[1])))
+    
+    print("Offset: {} | After reshape".format(offset))
+    
+    sample_list = []
+    
+    print("Offset: {} | aux[0] = {}".format(offset, int(aux_info[0])))
+    for i in range(int(aux_info[0])):
+        
+        dt = numpy_array[i][-2]
+        epoch = numpy_array[i][-1]
+        sample_rate = int(round(1.0 / dt))
+        endpoint = int(len(numpy_array[i]) - 2 - offset * sample_rate)
+        print("Offset: {} | endpoint: {}".format(offset, endpoint))
+        if whiten_here:
+            white = TimeSeries(numpy_array[i][endpoint-int((64. + shared_white_crop)*sample_rate):endpoint], delta_t=dt, epoch=epoch).whiten(aux_info[3], aux_info[4])
+        else:
+            white = TimeSeries(numpy_array[i][endpoint-int(64.*sample_rate):endpoint], delta_t=dt, epoch=epoch)
+        sample_list.append(resample(white))
+    
+    ret = []
+    for d in sample_list:
+        ret += d
+    
+    print("Will return now! | Offset: {}".format(offset))
     
     return(ret)
 
-#TODO: Make this run in parallel
-def get_slices(data, shift, window_length):
-    ret = []
-    
-    #inverse delta t
-    idt = [4096, 2048, 1024, 512, 256, 128, 64]
-    
-    window_factor = [int(4096.0 / pt) for pt in idt]
-    
-    window_sizes = [window_length * wf for wf in window_factor]
-    
-    max_window_size = max(window_sizes)
-    
-    num_of_shifts = (len(data[0]) - max_window_size) // shift
-    
-    bar = progress_tracker(num_of_shifts, name='Generating slices')
-    
-    for i in range(num_of_shifts):
-        total = []
-        for idx, ws in enumerate(window_sizes):
-            for dat in data:
-                resampled = resample_to_delta_t(dat[i*shift+(max_window_size-ws):i*shift+max_window_size], 1.0 / idt[idx])
-                total.append(resampled)
-        ret.append(np.array(total).transpose())
-        
-        bar.iterate()
-    
-    del data
-    return(np.array(ret))
+###############################################################################
 
-def get_snr_timeseries(net_path, data, time_shift=0.5, window_length=4096):
-    """Return a TimeSeries with the datapoints containing the SNR as estimated
-    by the given network.
-    
-    Arguments
-    ---------
-    net_path : str
-        Full path to the network. The function expects a .hf5 file at that
-        location
-    
-    data : list
-        A list containing the raw strain data from the different detectors.
-        This is expected to consist of TimeSeries objects that have already
-        been aligned such that their epochs are the same.
-    
-    time_shift : float
-        How much time (in seconds) should pass between SNR calculations. (Time 
-        by which the analyzing window will be shifted.)
-    
-    window_length : int
-        How many samples should be passed to the network. (This will be
-        dictated by the networks input layer)
-    
-    Returns
-    -------
-    TimeSeries
-        A time series containing a value for the SNR at every sampled point.
-        The epoch will be the same as for the data provided.
-    """
-    
-    #Sanity checks
-    if not net_path[-4:] == '.hf5':
-        raise ValueError('%s is not in the correct format. Please provide a path .hf5 file containing the network.' % net_path)
-    
-    if not isinstance(data, list):
-        raise ValueError("The data argument needs to be of type 'list' and contain TimeSeries objects.")
-    
-    for dat in data:
-        if not isinstance(dat, TimeSeries):
-            raise ValueError("The data argument needs to be of type 'list' and contain TimeSeries objects.")
-        if not dat._epoch == data[0]._epoch:
-            continue
-            #raise ValueError("The TimeSeries objects provided need to have matching epochs.")
-        if not dat.delta_t == data[0].delta_t:
-            raise ValueError("The TimeSeries need to have matching delta_t.")
-    
-    #Chop data into pieces of correct length to feed them to the network. This way memory should be minimized.
-    
-    #Find the maximum length
-    len_data = min([len(dat) for dat in data])
-    
-    data = [dat[:len_data].whiten(4, 4) for dat in data]
-    
-    DELTA_T = data[0].delta_t
-    shift = int(time_shift / DELTA_T)
-    
-    slices = get_slices(data, shift, window_length)
-    
-    return_time_series = TimeSeries(np.zeros(len(slices)), delta_t=time_shift, epoch=data[0].start_time)
-    
+def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_len=4., whiten_crop=4.):
     net = keras.models.load_model(net_path)
     
-    res = net.predict(slices)
+    if preemptive_whiten:
+        for i in range(len(ts)):
+            ts[i] = ts[i].whiten(whiten_len, whiten_crop)
     
-    print(res)
+    mp_arr = mp.Array(c.c_double, len(ts) * (len(ts[0]) + 2))
     
-    for i, r in enumerate(res[0]):
-        print(r.flatten())
-        return_time_series[i] = r.flatten()[0]
+    cache = tonumpyarray(mp_arr)
     
-    return(return_time_series)
-            
+    numpy_array = cache.reshape((len(ts), len(ts[0]) + 2))
+    
+    for idx, d in enumerate(ts):
+        numpy_array[idx][:len(ts[i])] = ts[i].data[:]
+        numpy_array[idx][-2] = ts[i].delta_t
+        numpy_array[idx][-1] = ts[i].start_time
+    
+    aux_info = mp.Array(c.c_double, 5)
+    
+    aux_info[0] = len(ts)
+    aux_info[1] = len(ts[0]) + 2
+    aux_info[2] = 1 if preemptive_whiten else 0
+    aux_info[3] = whiten_len
+    aux_info[4] = whiten_crop
+    
+    time_shift_back = ts[0].duration - ((64.0+whiten_crop) if preemptive_whiten else 64.0)
+    
+    indexes = list(np.arange(time_shift_back, 0.0, -time_step))
+    
+    with closing(mp.Pool(initializer=init, initargs=(mp_arr, aux_info))) as pool:
+        inp =  list(pool.imap(get_slice, np.arange(time_shift_back, 0.0, -time_step)))
+    pool.join()
+    
+    print("Inp")
+    
+    #print(inp)
+    
+    inp = np.array(inp)
+
+    inp = inp.transpose((0,2,1))
+
+    true_pred = net.predict(inp, verbose=1)
+    
+    snrs = list(true_pred[0].flatten())
+    bools = [pt[0] for pt in true_pred[1]]
+
+    snr_ts = TimeSeries(snrs, delta_t=time_step)
+    bool_ts = TimeSeries(bools, delta_t=time_step)
+    snr_ts.start_time = ts[0].start_time + (64.0 if preemptive_whiten else (64.0 + whiten_crop / 2.0))
+    bool_ts.start_time = ts[0].start_time + (64.0 if preemptive_whiten else (64.0 + whiten_crop / 2.0))
+    
+    return((snr_ts, bool_ts))
