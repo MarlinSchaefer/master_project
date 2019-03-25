@@ -8,6 +8,7 @@ class progress_tracker():
         self.steps_taken = steps_taken
         self.name = name
         self._printed_header = False
+        self.last_string_length = 0
         
     
     @property
@@ -39,7 +40,16 @@ class progress_tracker():
         eta = str(timedelta(seconds=self.eta)) + 's'
         perc_str = ' ' * (len('100') - len(str(real_perc))) + str(real_perc)
         
-        return('\r' + curr_str + '/' + tot_str + ': ' + s + ' ' + perc_str + '%' + ' ETA: ' + eta)
+        out_str = curr_str + '/' + tot_str + ': ' + s + ' ' + perc_str + '%' + ' ETA: ' + eta
+        
+        if self.last_string_length > len(out_str):
+            back = '\b \b' * (self.last_string_length - len(out_str))
+        else:
+            back = ''
+        
+        self.last_string_length = len(out_str)
+        
+        return('\r' + back + out_str)
     
     def print_progress_bar(self, update=True):
         if not self._printed_header:
@@ -50,12 +60,23 @@ class progress_tracker():
             sys.stdout.write('\r' + self.get_print_string())
             sys.stdout.flush()
             if self.steps_taken == self.num_of_steps:
-                sys.stdout.write('\n')
-                sys.stdout.flush()
+                self.print_final(update=update)
         else:
             print(self.get_print_string())
+            if self.steps_taken == self.num_of_steps:
+                self.print_final(update=update)
     
     def iterate(self, iterate_by=1, print_prog_bar=True, update=True):
         self.steps_taken += iterate_by
         if print_prog_bar:
             self.print_progress_bar(update=update)
+    
+    def print_final(self, update=True):
+        final_str = str(self.steps_taken) + '/' + str(self.num_of_steps) + ': [' + 25 * '=' + '] 100% - Time elapsed: ' + str(timedelta(seconds=(datetime.now() - self.t_start).seconds)) + 's'
+        if update:
+            clear_str = '\b \b' * self.last_string_length
+            
+            sys.stdout.write(clear_str + final_str + '\n')
+            sys.stdout.flush()
+        else:
+            print(final_str)
