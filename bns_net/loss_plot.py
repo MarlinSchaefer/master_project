@@ -1,4 +1,6 @@
 import json
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def make_loss_plot(data_path, image_path):
