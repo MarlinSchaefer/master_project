@@ -147,7 +147,7 @@ def evaluate_overfitting(train_loss, test_loss):
 
 def train_model(model, train_data, train_labels, test_data, test_labels, net_path, epochs=None, epoch_break=10):
     print("Epochs: {}\nEpoch_break={}".format(epochs, epoch_break))
-    name = __file__[:-3]
+    name = __file__[:-4]
     
     #Store the results of training (i.e. the loss)
     results = []
