@@ -330,3 +330,13 @@ def load_full_data(file_path):
     parameter_space = load_parameter_space(file_path)
     
     return(((tr_data, tr_labels, tr_snr, tr_wav, tr_ext), (te_data, te_labels, te_snr, te_wav, te_ext), (psd_dat, df), parameter_space))
+
+def get_number_training_samples(file_path):
+    with h5py.File(file_path, 'r') as data:
+        n = len(data['training']['train_data'])
+    return(n)
+
+def get_number_testing_samples(file_path):
+    with h5py.File(file_path, 'r') as data:
+        n = len(data['testing']['test_data'])
+    return(n)
