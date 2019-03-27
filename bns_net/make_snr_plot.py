@@ -3,6 +3,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import keras
+import h5py
 
 def plot(net, data, labels, path, show=False, net_name='N/A'):
     x_pt = labels.reshape(len(labels))
@@ -80,5 +81,34 @@ def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'
     print("y_pt: {}".format(y_pt))
     
     _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
+
+def plot_true_and_calc_partial(net, data_path, path, batch_size=32, show=False, net_name='N/A'):
+    with h5py.File(data_path, 'r') as data:
+        te_d = data['testing']['test_data']
+        te_l = data['testing']['test_labels']
+        te_c = data['testing']['test_snr_calculated']
+        
+        x_pt_1 = np.zeros(len(te_d))
+        x_pt_2 = np.zeros(len(te_d))
+        y_pt = np.zeros(len(te_d))
+        
+        steps = int(np.ceil(float(len(te_d)) / batch_size)) - 1
+        
+        for i in range(steps):
+            lower = i * batch_size
+            upper = (i+1) * batch_size
+            
+            if upper > len(te_d):
+                upper = len(te_d)
+            
+            for j in range(lower, upper):
+                x_pt_1[j] = te_l[j][0]
+                x_pt_2[j] = te_c[j]
+                cache = net.predict(np.array([te_d[j]]))
+                
+                if type(cache) == list:
+                    y_pt[j] = cache[0][0]
+                else:
+                    y_pt[j] = cache[0]
     
-    
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
