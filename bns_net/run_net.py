@@ -3,7 +3,7 @@ import keras
 from load_data import load_data, load_parameter_space, load_calculated_snr, load_testing_labels
 import numpy as np
 import imp
-from make_snr_plot import plot_true_and_calc
+from make_snr_plot import plot_true_and_calc_partial
 from loss_plot import make_loss_plot
 import time
 from wiki import make_wiki_entry, read_json, model_to_string
@@ -90,43 +90,14 @@ def set_template_file(temp_name, temp_path, args):
     
     return(ignored_error)
 
-def reshape_data(train_data, test_data, final_shape, **opt_arg):
-    #print('Train Data shape: {}'.format(train_data.shape))
-    #print('Test Data shape: {}'.format(test_data.shape))
-    #print('Final shape: {}'.format(final_shape))
-    do_reshape = False
-    ignored_error = False
-    #print('Output shape: {}'.format(output_layer_shape))
-    #print('data shape: {}'.format(train_labels.shape))
-    if not train_data[0].shape == final_shape:
-        if not opt_arg['ignore_fixable_errors']:
-            inp = 'False'
-            inp = raw_input("The provided data does not fit the provided net.\nDo you want to try and reshape the data?\n")
-            if input_to_bool(inp):
-                do_reshape = True
-            else:
-                exit()
-        else:
-            do_reshape = True
-            ignored_error = True
-    
-    if do_reshape:
-        cache = list(final_shape)
-        cache.insert(0, len(train_data))
-        np.reshape(train_data, tuple(cache))
-        
-        cache[0] = len(test_data)
-        np.reshape(test_data, tuple(cache))
-    
-    return((train_data, test_data, ignored_error))
-
-def _train_net(net, net_name, train_data, test_data, train_labels, test_labels, **opt_arg):
+def _train_net(net, data_path, **opt_arg):
     """Function to handle different ways of training the network.
     
     
     
     """
     net_path = opt_arg['net_path']
+    net_name = opt_arg['net_name']
     hist = None
     
     #If everything is fine, train and evaluate the net
@@ -147,21 +118,34 @@ def _train_net(net, net_name, train_data, test_data, train_labels, test_labels, 
         try:
             #NOTE: The module needs to have a method 'train_model', which returns the trained model.
             net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-            net = net_mod.train_model(net, train_data, train_labels, test_data, test_labels, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'])
+            net = net_mod.train_model(net, data_path, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
         except IOError:
             raise NameError('There is no net named %s in %s.' % (net_name, net_path))
             return()
     else:
+        (train_data, train_labels), (test_data, test_labels) = get_data(data_path, **opt_arg)
         hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
         
     net.save(os.path.join(net_path, net_name + '.hf5'))
         
-    print(net.evaluate(test_data, test_labels))
+    #print(net.evaluate(test_data, test_labels))
     
     return(hist)
 
 def date_to_file_string(t):
     return("{}{}{}{}{}{}".format(t.tm_mday, t.tm_mon, t.tm_year, t.tm_hour, t.tm_min, t.tm_sec))
+
+def get_data(data_path, **opt_arg):
+    if opt_arg['format_data']:
+        try:
+            #NOTE: The module needs to have a method 'train_model', which returns the trained model.
+            net_mod = imp.load_source("net_mod", str(os.path.join(opt_arg['net_path'], opt_arg['net_name'] + '.py')))
+            return(net_mod.get_formatted_data(data_path))
+        except IOError:
+            raise NameError('There is no function named "get_formatted_data" in %s.py.' % (net_name))
+            return()
+    else:
+        return(load_data(data_path))
 
 """
 Function to handle running a neural net.
@@ -240,19 +224,9 @@ def run_net(net_name, temp_name, **kwargs):
     #Properties for this function
     opt_arg['net_path'] = get_net_path()
     opt_arg['temp_path'] = get_templates_path()
+    opt_arg['net_name'] = net_name
+    opt_arg['temp_name'] = temp_name
     opt_arg.update(run_net_defaults())
-    #opt_arg['ignore_fixable_errors'] = False
-    #opt_arg['loss'] = 'mean_squared_error'
-    #opt_arg['optimizer'] = 'adam'
-    #opt_arg['metrics'] = ['mape']
-    #opt_arg['epochs'] = 10
-    #opt_arg['overwrite_template_file'] = False
-    #opt_arg['overwrite_net_file'] = True
-    #opt_arg['show_snr_plot'] = True
-    #opt_arg['only_print_image'] = False
-    #opt_arg['use_custom_train_function'] = False
-    #opt_arg['epoch_break'] = 10
-    #opt_arg['create_wiki_entry'] = True
     
     wiki_data['programm_internals'] = {}
     
@@ -314,35 +288,14 @@ def run_net(net_name, temp_name, **kwargs):
     #Load templates
     print(os.path.join(temp_path, temp_name + ".hf5"))
     full_template_path = os.path.join(temp_path, temp_name + ".hf5")
-    if opt_arg['format_data']:
-        try:
-            #NOTE: The module needs to have a method 'train_model', which returns the trained model.
-            net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-            (train_data, train_labels), (test_data, test_labels) = net_mod.get_formatted_data(full_template_path)
-        except IOError:
-            raise NameError('There is no function named "get_formatted_data" in %s.py.' % (net_name))
-            return()
-    else:
-        (train_data, train_labels), (test_data, test_labels) = load_data(full_template_path)
     
-    
-    #Check sizes of loaded data against the input and output shape of the net
-    #train_data, test_data, ignored_error_reshaping = reshape_data(train_data, test_data, input_layer_shape, **opt_arg)
-    
-    #if ignored_error_reshaping:
-        #ignored_error = True
-    
-    #train_labels, test_labels, ignored_error_reshaping = reshape_data(train_labels, test_labels, output_layer_shape, **opt_arg)
-    
-    #if ignored_error_reshaping:
-        #ignored_error = True
     
     #Training takes place here
     if not opt_arg['only_print_image']:
         wiki_data['training'] = {}
         wiki_data['training']['time_start'] = time.gmtime(time.time())
         
-        hist = _train_net(net, net_name, train_data, test_data, train_labels, test_labels, **opt_arg)
+        hist = _train_net(net, full_template_path, **opt_arg)
         
         wiki_data['training']['time_end'] = time.gmtime(time.time())
         
@@ -358,7 +311,7 @@ def run_net(net_name, temp_name, **kwargs):
     #print("Testing calculated snr: {}".format(test_calculated_snr))
     t_string = date_to_file_string(wiki_data['training']['time_start'])
     wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
-    plot_true_and_calc(net, test_data, unformatted_test_labels, test_calculated_snr, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
+    plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
     
     #Plot the loss over some recorded history
     wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
@@ -373,8 +326,13 @@ def run_net(net_name, temp_name, **kwargs):
     #Store wiki data about the loss
     try:
         wiki_data['loss'] = read_json(os.path.join(get_store_path(), net_name + "_results.json"))
-    except IOError:
-        losses = hist.history['loss']
+        pass
+    except (IOError, IndexError):
+        if not hist == None:
+            losses = hist.history['loss']
+        else:
+            losses = [None]
+        
         wiki_data['loss'] = {}
         wiki_data['loss']['min_training'] = (0, np.inf)
         wiki_data['loss']['min_testing'] = (0, np.inf)
