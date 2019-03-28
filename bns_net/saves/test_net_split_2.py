@@ -3,58 +3,9 @@ import numpy as np
 import json
 import os
 import load_data
-import h5py
-
-"""
-def get_model():
-    model = keras.models.Sequential()
-    
-    model.add(keras.layers.Conv1D(64, 16, input_shape=(4096,1)))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Conv1D(64, 16))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Conv1D(128, 16))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Conv1D(128, 16))
-    model.add(keras.layers.MaxPooling1D(4))
-    model.add(keras.layers.Flatten())
-    model.add(keras.layers.Dense(1))
-    
-    return(model)
-"""    
-    
+import h5py 
 
 def get_model():
-    #model = keras.models.Sequential()
-    
-    #model.add(keras.layers.Conv1D(32, 16, input_shape=(4096, 14)))
-    #model.add(keras.layers.BatchNormalization())
-    #model.add(keras.layers.Activation('relu'))
-    #model.add(keras.layers.MaxPooling1D(4))
-    
-    #model.add(keras.layers.Conv1D(64, 16))
-    #model.add(keras.layers.BatchNormalization())
-    #model.add(keras.layers.Activation('relu'))
-    #model.add(keras.layers.MaxPooling1D(4))
-    
-    #model.add(keras.layers.Conv1D(128, 16))
-    #model.add(keras.layers.BatchNormalization())
-    #model.add(keras.layers.Activation('relu'))
-    #model.add(keras.layers.MaxPooling1D(4))
-    
-    #model.add(keras.layers.Conv1D(256, 16))
-    #model.add(keras.layers.BatchNormalization())
-    #model.add(keras.layers.Activation('relu'))
-    #model.add(keras.layers.MaxPooling1D(4))
-    
-    #model.add(keras.layers.Flatten())
-    ##model.add(keras.layers.Dropout(0.4))
-    ##model.add(keras.layers.Dense(128))
-    #model.add(keras.layers.Dropout(0.4))
-    #model.add(keras.layers.Dense(64))
-    #model.add(keras.layers.Dropout(0.4))
-    #model.add(keras.layers.Dense(2))
-    
     inp = keras.layers.Input(shape=(4096,14))
     bn_0 = keras.layers.BatchNormalization()(inp)
     
@@ -73,10 +24,10 @@ def get_model():
     act_3 = keras.layers.Activation('relu')(bn_3)
     pool_3 = keras.layers.MaxPooling1D(4)(act_3)
     
-    conv_4 = keras.layers.Conv1D(256, 16)(pool_2)
-    bn_4 = keras.layers.BatchNormalization()(conv_3)
-    act_4 = keras.layers.Activation('relu')(bn_3)
-    pool_4 = keras.layers.MaxPooling1D(4)(act_3)
+    conv_4 = keras.layers.Conv1D(256, 16)(act_3)
+    bn_4 = keras.layers.BatchNormalization()(conv_4)
+    act_4 = keras.layers.Activation('relu')(bn_4)
+    pool_4 = keras.layers.MaxPooling1D(4)(act_4)
     
     flat = keras.layers.Flatten()(pool_4)
     
@@ -263,7 +214,11 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
                     epoch_break += epoch_break
             
             #Fit data to model
-            model.fit_generator(generator_fit(data_path, batch_size=batch_size), epochs=epoch_break, steps_per_epoch=np.ceil(float(load_data.get_number_training_samples(data_path)) / batch_size))
+            #model.fit_generator(generator_fit(data_path, batch_size=batch_size), epochs=epoch_break, steps_per_epoch=np.ceil(float(load_data.get_number_training_samples(data_path)) / batch_size))
+            (train_data, train_labels), (test_data, test_labels) = load_data.load_data(data_path)
+            train_labels = format_label_segment(train_labels)
+            test_labels = format_label_segment(test_labels)
+            model.fit(train_data, train_labels, epochs=epoch_break)
             
             #Iterate counter
             curr_counter += epoch_break
@@ -274,7 +229,8 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             print("Stored net")
             
             #Evaluate the performance of the net after every cycle and store it.
-            results.append([curr_counter, model.evaluate_generator(generator_fit(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size)), model.evaluate_generator(generator_evaluate(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size))])
+            #results.append([curr_counter, model.evaluate_generator(generator_fit(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size)), model.evaluate_generator(generator_evaluate(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size))])
+            results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
             #print("Results: {}".format(results))
     
     #Save the results to a file.
