@@ -45,42 +45,55 @@ def init(mp_arr_, aux_info_):
     global mp_arr
     global aux_info
     
-    mp_arr = mp_arr_
-    aux_info = aux_info_
+    mp_arr = tonumpyarray(mp_arr_)
+    aux_info = tonumpyarray(aux_info_)
 
 def tonumpyarray(arr):
     return np.frombuffer(arr.get_obj())
 
 def get_slice(offset):
-    print("Offset: {}".format(offset))
+    #print("Offset: {}".format(offset))
     
-    print("Offset: {} | Before first access".format(offset))
+    #print("Offset: {} | Before first access".format(offset))
     
     whiten_here = aux_info[2] < 0.5
     
-    print("Offset: {} | After first access".format(offset))
+    #print("Offset: {} | After first access".format(offset))
     
-    cache = tonumpyarray(mp_arr)
+    #cache = tonumpyarray(mp_arr)
     
-    print("Offset: {} | After numpy".format(offset))
+    #print("Offset: {} | After numpy".format(offset))
     
-    numpy_array = cache.reshape((int(aux_info[0]), int(aux_info[1])))
+    #numpy_array = cache.reshape((int(aux_info[0]), int(aux_info[1])))
     
-    print("Offset: {} | After reshape".format(offset))
+    #print("Offset: {} | After reshape: {}".format(offset, numpy_array.shape))
+    
+    #print("Offset: {} | Array: {}".format(offset, mp_arr.shape))
+    
+    numpy_array = mp_arr.reshape((int(aux_info[0]), int(aux_info[1])))
+    #numpy_array = numpy_array.reshape((int(aux_info[0]), int(aux_info[1])))
+    
+    #print("Offset: {} | Numpy Array: {}".format(offset, numpy_array[0]))
     
     sample_list = []
     
-    print("Offset: {} | aux[0] = {}".format(offset, int(aux_info[0])))
+    #print("Offset: {} | aux[0] = {}".format(offset, int(aux_info[0])))
     for i in range(int(aux_info[0])):
-        
+        #print("Offset: {} | i: {}".format(offset, i))
         dt = numpy_array[i][-2]
         epoch = numpy_array[i][-1]
         sample_rate = int(round(1.0 / dt))
         endpoint = int(len(numpy_array[i]) - 2 - offset * sample_rate)
-        print("Offset: {} | endpoint: {}".format(offset, endpoint))
+        #print("Offset: {} | endpoint: {}".format(offset, endpoint))
         if whiten_here:
-            white = TimeSeries(numpy_array[i][endpoint-int((64. + shared_white_crop)*sample_rate):endpoint], delta_t=dt, epoch=epoch).whiten(aux_info[3], aux_info[4])
+            #print("Offset: {} | in if".format(offset))
+            #print("Offset: {} | Trying to access: {}".format(offset, (i, endpoint-int((64.0+aux_info[4])*sample_rate), endpoint)))
+            #print("Offset: {} | Array: {}".format(offset, numpy_array))
+            #print("aux_info[4]: {}".format(aux_info[4]))
+            white = TimeSeries(numpy_array[i][endpoint-int((64.0 + aux_info[4])*sample_rate):endpoint], delta_t=dt, epoch=epoch).whiten(aux_info[3], aux_info[4], low_frequency_cutoff=20.0)
+            #print("Offset: {} | after white".format(offset))
         else:
+            #print("Offset: {} | in else".format(offset))
             white = TimeSeries(numpy_array[i][endpoint-int(64.*sample_rate):endpoint], delta_t=dt, epoch=epoch)
         sample_list.append(resample(white))
     
@@ -88,7 +101,7 @@ def get_slice(offset):
     for d in sample_list:
         ret += d
     
-    print("Will return now! | Offset: {}".format(offset))
+    #print("Will return now! | Offset: {}".format(offset))
     
     return(ret)
 
@@ -99,7 +112,7 @@ def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_le
     
     if preemptive_whiten:
         for i in range(len(ts)):
-            ts[i] = ts[i].whiten(whiten_len, whiten_crop)
+            ts[i] = ts[i].whiten(whiten_len, whiten_crop, low_frequency_cutoff=20.0)
     
     mp_arr = mp.Array(c.c_double, len(ts) * (len(ts[0]) + 2))
     
@@ -108,9 +121,11 @@ def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_le
     numpy_array = cache.reshape((len(ts), len(ts[0]) + 2))
     
     for idx, d in enumerate(ts):
-        numpy_array[idx][:len(ts[i])] = ts[i].data[:]
-        numpy_array[idx][-2] = ts[i].delta_t
-        numpy_array[idx][-1] = ts[i].start_time
+        numpy_array[idx][:len(d)] = d.data[:]
+        numpy_array[idx][-2] = d.delta_t
+        numpy_array[idx][-1] = d.start_time
+    
+    #print(numpy_array)
     
     aux_info = mp.Array(c.c_double, 5)
     
@@ -120,15 +135,22 @@ def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_le
     aux_info[3] = whiten_len
     aux_info[4] = whiten_crop
     
-    time_shift_back = ts[0].duration - ((64.0+whiten_crop) if preemptive_whiten else 64.0)
+    time_shift_back = ts[0].duration - (64.0 if preemptive_whiten else (64.0+whiten_crop) )
     
     indexes = list(np.arange(time_shift_back, 0.0, -time_step))
     
+    inp = []
+    
+    bar = progress_tracker(len(np.arange(time_shift_back, 0.0, -time_step)), name='Generating slices')
+    
     with closing(mp.Pool(initializer=init, initargs=(mp_arr, aux_info))) as pool:
-        inp =  list(pool.imap(get_slice, np.arange(time_shift_back, 0.0, -time_step)))
+        #inp =  list(pool.imap(get_slice, np.arange(time_shift_back, 0.0, -time_step)))
+        for idx, l in enumerate(pool.imap(get_slice, np.arange(time_shift_back, 0.0, -time_step))):
+            inp.append(l)
+            bar.iterate()
     pool.join()
     
-    print("Inp")
+    #print("Inp")
     
     #print(inp)
     
@@ -146,4 +168,6 @@ def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_le
     snr_ts.start_time = ts[0].start_time + (64.0 if preemptive_whiten else (64.0 + whiten_crop / 2.0))
     bool_ts.start_time = ts[0].start_time + (64.0 if preemptive_whiten else (64.0 + whiten_crop / 2.0))
     
-    return((snr_ts, bool_ts))
+    print(snr_ts.sample_times)
+    
+    return((snr_ts.copy(), bool_ts.copy()))
