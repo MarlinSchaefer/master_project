@@ -340,3 +340,94 @@ def get_number_testing_samples(file_path):
     with h5py.File(file_path, 'r') as data:
         n = len(data['testing']['test_data'])
     return(n)
+
+def get_training_data_slice(file_path, start_index, stop_index):
+    with h5py.File(file_path, 'r') as data:
+        return(data['training']['train_data'][start_index:stop_index])
+    
+def get_training_labels_slice(file_path, start_index, stop_index):
+    with h5py.File(file_path, 'r') as data:
+        return(data['training']['train_labels'][start_index:stop_index])
+
+def get_training_calculated_snr_slice(file_path, start_index, stop_index):
+    with h5py.File(file_path, 'r') as data:
+        return(data['training']['train_calculated_snr'][start_index:stop_index])
+
+def get_testing_data_slice(file_path, start_index, stop_index):
+    with h5py.File(file_path, 'r') as data:
+        return(data['testing']['test_data'][start_index:stop_index])
+    
+def get_testing_labels_slice(file_path, start_index, stop_index):
+    with h5py.File(file_path, 'r') as data:
+        return(data['testing']['test_data'][start_index:stop_index])
+
+def get_testing_calculated_snr_slice(file_path, start_index, stop_index):
+    with h5py.File(file_path, 'r') as data:
+        return(data['testing']['test_calculated_snr'][start_index:stop_index])
+
+def get_point_sequence_training_data(file_path, samples):
+    with h5py.File(file_path, 'r') as data:
+        shape = list(data['training']['train_data'].shape)
+        shape[0] = len(samples)
+        ret = np.zeros(shape)
+        
+        for i, s in enumerate(samples):
+            ret[i] = data['training']['train_data'][s]
+        
+        return(ret)
+
+def get_point_sequence_training_labels(file_path, samples):
+    with h5py.File(file_path, 'r') as data:
+        shape = list(data['training']['train_labels'].shape)
+        shape[0] = len(samples)
+        ret = np.zeros(shape)
+        
+        for i, s in enumerate(samples):
+            ret[i] = data['training']['train_labels'][s]
+        
+        return(ret)
+
+def get_point_sequence_training_calculated_snr(file_path, samples):
+    with h5py.File(file_path, 'r') as data:
+        shape = list(data['training']['train_calculated_snr'].shape)
+        shape[0] = len(samples)
+        ret = np.zeros(shape)
+        
+        for i, s in enumerate(samples):
+            ret[i] = data['training']['train_calculated_snr'][s]
+        
+        return(ret)
+
+def get_point_sequence_testing_data(file_path, samples):
+    with h5py.File(file_path, 'r') as data:
+        shape = list(data['testing']['test_data'].shape)
+        shape[0] = len(samples)
+        ret = np.zeros(shape)
+        
+        for i, s in enumerate(samples):
+            ret[i] = data['testing']['test_data'][s]
+        
+        return(ret)
+
+def get_point_sequence_testing_labels(file_path, samples):
+    with h5py.File(file_path, 'r') as data:
+        shape = list(data['testing']['test_labels'].shape)
+        shape[0] = len(samples)
+        ret = np.zeros(shape)
+        
+        for i, s in enumerate(samples):
+            ret[i] = data['testing']['test_labels'][s]
+        
+        return(ret)
+
+def get_point_sequence_testing_calculated_snr(file_path, samples):
+    with h5py.File(file_path, 'r') as data:
+        shape = list(data['testing']['test_calculated_snr'].shape)
+        shape[0] = len(samples)
+        ret = np.zeros(shape)
+        
+        for i, s in enumerate(samples):
+            ret[i] = data['testing']['test_calculated_snr'][s]
+        
+        return(ret)
+    
