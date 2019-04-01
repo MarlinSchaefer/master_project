@@ -79,7 +79,6 @@ def format_label_segment(segment):
     formatted_label = [[],[]]
     for l in segment:
         formatted_label[0].append([l[0]])
-        print(l[1])
         formatted_label[1].append([1, 0] if bool(l[1]) else [0, 1])
     formatted_label = [np.array(dat) for dat in formatted_label]
     return(formatted_label)
@@ -206,6 +205,8 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
         curr_counter = 0
         
         (train_data, train_labels), (test_data, test_labels) = load_data.load_data(data_path)
+        train_labels = format_label_segment(train_labels)
+        test_labels = format_label_segment(test_labels)
         
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
@@ -218,9 +219,6 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             
             #Fit data to model
             #model.fit_generator(generator_fit(data_path, batch_size=batch_size), epochs=epoch_break, steps_per_epoch=np.ceil(float(load_data.get_number_training_samples(data_path)) / batch_size))
-            
-            train_labels = format_label_segment(train_labels)
-            test_labels = format_label_segment(test_labels)
             model.fit(train_data, train_labels, epochs=epoch_break)
             
             #Iterate counter
