@@ -203,7 +203,9 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
         
         #Count how many epochs have passed
         curr_counter = 0
-            
+        
+        (train_data, train_labels), (test_data, test_labels) = load_data.load_data(data_path)
+        
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
             #If epochs were not an integer multiple of epoch_break, the last training cycle has to be smaller
@@ -215,7 +217,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             
             #Fit data to model
             #model.fit_generator(generator_fit(data_path, batch_size=batch_size), epochs=epoch_break, steps_per_epoch=np.ceil(float(load_data.get_number_training_samples(data_path)) / batch_size))
-            (train_data, train_labels), (test_data, test_labels) = load_data.load_data(data_path)
+            
             train_labels = format_label_segment(train_labels)
             test_labels = format_label_segment(test_labels)
             model.fit(train_data, train_labels, epochs=epoch_break)
