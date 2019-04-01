@@ -79,6 +79,7 @@ def format_label_segment(segment):
     formatted_label = [[],[]]
     for l in segment:
         formatted_label[0].append([l[0]])
+        print(l[1])
         formatted_label[1].append([1, 0] if bool(l[1]) else [0, 1])
     formatted_label = [np.array(dat) for dat in formatted_label]
     return(formatted_label)
