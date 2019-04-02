@@ -3,7 +3,8 @@ import numpy as np
 import json
 import os
 import load_data
-import h5py 
+import h5py
+from . import generator as g
 
 def get_model():
     inp = keras.layers.Input(shape=(4096,14))
@@ -208,6 +209,9 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
         train_labels = format_label_segment(train_labels)
         test_labels = format_label_segment(test_labels)
         
+        training_generator = g.DataGenerator(train_data, train_labels, batch_size=batch_size)
+        testing_generator = g.DataGenerator(test_data, test_labels, batch_size=batch_size)
+        
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
             #If epochs were not an integer multiple of epoch_break, the last training cycle has to be smaller
@@ -219,7 +223,8 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             
             #Fit data to model
             #model.fit_generator(generator_fit(data_path, batch_size=batch_size), epochs=epoch_break, steps_per_epoch=np.ceil(float(load_data.get_number_training_samples(data_path)) / batch_size))
-            model.fit(train_data, train_labels, epochs=epoch_break)
+            #model.fit(train_data, train_labels, epochs=epoch_break)
+            model.fit_generator(generator=training_generator, epochs=epoch_break, use_multiprocessing=True)
             
             #Iterate counter
             curr_counter += epoch_break
@@ -231,7 +236,8 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             
             #Evaluate the performance of the net after every cycle and store it.
             #results.append([curr_counter, model.evaluate_generator(generator_fit(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size)), model.evaluate_generator(generator_evaluate(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size))])
-            results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
+            #results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
+            results.append([curr_counter, model.evaluate_generator(generator=training_generator, use_multiprocessing=True), model.evaluate_generator(generator=training_generator, use_multiprocessing=True)])
             #print("Results: {}".format(results))
     
     #Save the results to a file.
