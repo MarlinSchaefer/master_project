@@ -58,7 +58,10 @@ class DataGenerator(keras.utils.Sequence):
         print("In __data_generation")
         X = np.empty([self.batch_size] + list(self.data[0].shape))
         print("Allocated X")
-        y = np.empty([self.batch_size] + list(self.labels[0].shape))
+        
+        y_1 = np.empty((self.batch_size, 1))
+        
+        y_2 = np.empty((self.batch_size, 2))
         
         print("Allocated y, before loop, len(indexes) = {}".format(len(list_IDs_temp)))
         
@@ -66,14 +69,16 @@ class DataGenerator(keras.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             print("In loop | i: {}; ID: {}".format(i,ID))
             print("data.shape = {}".format(self.data.shape))
-            print("label.shape = {}".format(self.labels.shape))
+            print("label[0].shape = {}".format(self.labels[0].shape))
+            print("label[1].shape = {}".format(self.labels[1].shape))
             print("X.shape = {}".format(X.shape))
             print("y.shape = {}".format(y.shape))
             # Store sample
             X[i] = self.data[ID]
 
             # Store class
-            y[i] = self.labels[ID]
+            y_1[i] = self.labels[0][ID]
+            y_2[i] = self.labels[1][ID]
         
         print("After loop")
         
