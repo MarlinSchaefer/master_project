@@ -86,9 +86,9 @@ class DataGenerator(keras.utils.Sequence):
         if not format_data == None:
             X = format_data(X)
         
-        if not format_labels == None:
-            y = format_labels(y)
+        #if not format_labels == None:
+            #y = format_labels(y)
         
         print("Pre returning from __data_generation")
         
-        return X, y
+        return X, [y_1, y_2]
