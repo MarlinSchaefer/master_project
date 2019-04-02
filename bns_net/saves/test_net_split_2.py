@@ -82,7 +82,10 @@ def format_label_segment(segment):
         formatted_label[0].append([l[0]])
         formatted_label[1].append([1, 0] if bool(l[1]) else [0, 1])
     formatted_label = [np.array(dat) for dat in formatted_label]
-    return(formatted_label)
+    ret = np.empty([len(formatted_label)] + list(np.array(formatted_label[0]).shape))
+    for i, dat in enumerate(formatted_label):
+        ret[i] = np.array(dat)
+    return(ret)
 
 def compile_model(model):
     model.compile(loss={'out_snr': 'mean_squared_error', 'out_bool': 'categorical_crossentropy'}, loss_weights={'out_snr': 1.0, 'out_bool': 0.5}, optimizer='adam', metrics={'out_snr': 'mape', 'out_bool': 'accuracy'})
