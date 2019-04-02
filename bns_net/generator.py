@@ -64,8 +64,11 @@ class DataGenerator(keras.utils.Sequence):
         
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
-            print("In loop | i: {}; ID: {}, data.shape = {}, label.shape = {}, X.shape = {}, y.shape = {}".format(i,ID, self.data.shape, self.labels.shape, X.shape, y.shape))
-            
+            print("In loop | i: {}; ID: {}".format(i,ID))
+            print("data.shape = {}".format(self.data.shape))
+            print("label.shape = {}".format(self.labels.shape))
+            print("X.shape = {}".format(X.shape))
+            print("y.shape = {}".format(y.shape))
             # Store sample
             X[i] = self.data[ID]
 
