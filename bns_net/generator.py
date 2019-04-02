@@ -60,10 +60,12 @@ class DataGenerator(keras.utils.Sequence):
         print("Allocated X")
         y = np.empty([self.batch_size] + list(self.labels[0].shape))
         
-        print("Allocated y, before loop")
+        print("Allocated y, before loop, len(indexes) = {}".format(len(list_IDs_temp)))
         
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
+            print("In loop | i: {}; ID: {}".format(i,ID))
+            
             # Store sample
             X[i] = self.data[ID]
 
