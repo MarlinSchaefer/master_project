@@ -224,7 +224,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             #Fit data to model
             #model.fit_generator(generator_fit(data_path, batch_size=batch_size), epochs=epoch_break, steps_per_epoch=np.ceil(float(load_data.get_number_training_samples(data_path)) / batch_size))
             #model.fit(train_data, train_labels, epochs=epoch_break)
-            model.fit_generator(generator=training_generator, epochs=epoch_break, use_multiprocessing=False)
+            model.fit_generator(generator=training_generator, epochs=epoch_break, use_multiprocessing=True, workers=0)
             
             #Iterate counter
             curr_counter += epoch_break
