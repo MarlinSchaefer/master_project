@@ -4,7 +4,7 @@ import json
 import os
 import load_data
 import h5py
-from . import generator as g
+import generator as g
 
 def get_model():
     inp = keras.layers.Input(shape=(4096,14))
