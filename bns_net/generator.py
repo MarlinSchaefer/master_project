@@ -31,19 +31,10 @@ class DataGenerator(keras.utils.Sequence):
     def __getitem__(self, index):
         'Generate one batch of data'
         # Generate indexes of the batch
-        print("In get item")
         indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
-        
-        print("After setting index list")
-        
-        print("After temp index list")
-        
-        print("Now trying to call __data_generation")
 
         # Generate data
         X, y = self.__data_generation(indexes)
-        
-        print("After __data_generation, pre returning")
         
         return X, y
 
@@ -56,26 +47,14 @@ class DataGenerator(keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        
-        print("In __data_generation")
         X = np.empty([self.batch_size] + list(self.data[0].shape))
-        print("Allocated X")
         
         y_1 = np.empty((self.batch_size, 1))
         
         y_2 = np.empty((self.batch_size, 2))
         
-        print("Allocated y, before loop, len(indexes) = {}".format(len(list_IDs_temp)))
-        
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
-            print("In loop | i: {}; ID: {}".format(i,ID))
-            print("data.shape = {}".format(self.data.shape))
-            print("label[0].shape = {}".format(self.labels[0].shape))
-            print("label[1].shape = {}".format(self.labels[1].shape))
-            print("X.shape = {}".format(X.shape))
-            print("y_1.shape = {}".format(y_1.shape))
-            print("y_2.shape = {}".format(y_2.shape))
             # Store sample
             X[i] = self.data[ID]
 
@@ -83,14 +62,10 @@ class DataGenerator(keras.utils.Sequence):
             y_1[i] = self.labels[0][ID]
             y_2[i] = self.labels[1][ID]
         
-        print("After loop")
-        
         if not self.format_data == None:
             X = format_data(X)
         
         #if not format_labels == None:
             #y = format_labels(y)
-        
-        print("Pre returning from __data_generation")
         
         return X, [y_1, y_2]
