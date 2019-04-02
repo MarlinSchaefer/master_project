@@ -20,6 +20,8 @@ class DataGenerator(keras.utils.Sequence):
         self.list_IDs = np.arange(len(data))
         self.n_channels = n_channels
         self.shuffle = shuffle
+        self.format_data = format_data
+        self.format_label=format_label
         self.on_epoch_end()
 
     def __len__(self):
@@ -83,7 +85,7 @@ class DataGenerator(keras.utils.Sequence):
         
         print("After loop")
         
-        if not format_data == None:
+        if not self.format_data == None:
             X = format_data(X)
         
         #if not format_labels == None:
