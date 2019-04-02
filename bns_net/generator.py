@@ -56,7 +56,7 @@ class DataGenerator(keras.utils.Sequence):
         # Initialization
         
         print("In __data_generation")
-        X = np.empty([self.batch_size] + list(self.data[0].shape)))
+        X = np.empty([self.batch_size] + list(self.data[0].shape))
         print("Allocated X")
         y = np.empty([self.batch_size] + list(self.labels[0].shape))
         
