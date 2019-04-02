@@ -72,7 +72,8 @@ class DataGenerator(keras.utils.Sequence):
             print("label[0].shape = {}".format(self.labels[0].shape))
             print("label[1].shape = {}".format(self.labels[1].shape))
             print("X.shape = {}".format(X.shape))
-            print("y.shape = {}".format(y.shape))
+            print("y_1.shape = {}".format(y_1.shape))
+            print("y_2.shape = {}".format(y_2.shape))
             # Store sample
             X[i] = self.data[ID]
 
