@@ -237,7 +237,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             #Evaluate the performance of the net after every cycle and store it.
             #results.append([curr_counter, model.evaluate_generator(generator_fit(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size)), model.evaluate_generator(generator_evaluate(data_path, batch_size=batch_size), steps=np.ceil(float(load_data.get_number_testing_samples(data_path)) / batch_size))])
             #results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
-            results.append([curr_counter, model.evaluate_generator(generator=training_generator, use_multiprocessing=True), model.evaluate_generator(generator=training_generator, use_multiprocessing=True)])
+            results.append([curr_counter, model.evaluate_generator(generator=training_generator), model.evaluate_generator(generator=training_generator)])
             #print("Results: {}".format(results))
     
     #Save the results to a file.
