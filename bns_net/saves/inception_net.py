@@ -3,6 +3,7 @@ import numpy as np
 import json
 import os
 import load_data
+import generator as g
 
 def incp_lay(x, filter_num):
     l = keras.layers.Conv1D(3 * filter_num, 1, padding='same', activation='relu')(x)
@@ -86,7 +87,7 @@ def get_formatted_data(file_path):
         formatted_te_labels[1].append([1, 0] if bool(l[1]) else [0, 1])
     formatted_te_labels = [np.array(dat) for dat in formatted_te_labels]
     
-    print(formatted_tr_labels)
+    #print(formatted_tr_labels)
     
     return(((formatted_tr_data, formatted_tr_labels), (formatted_te_data, formatted_te_labels)))
 
@@ -115,7 +116,7 @@ def evaluate_overfitting(train_loss, test_loss):
     
     return(True)
 
-def train_model(model, train_data, train_labels, test_data, test_labels, net_path, epochs=None, epoch_break=10):
+def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_size=32):
     print("Epochs: {}\nEpoch_break={}".format(epochs, epoch_break))
     name = __file__[:-4]
     
@@ -124,6 +125,7 @@ def train_model(model, train_data, train_labels, test_data, test_labels, net_pat
     
     #Check if epochs is None, if so try to train until the loss of the trainingsset and the one of the testingset seperate by too much
     if epochs == None:
+        raise NotImplementedError('Self stopping at overfitting is not implemented.')
         keepRunning = True
         curr_counter = 0
         
@@ -157,7 +159,12 @@ def train_model(model, train_data, train_labels, test_data, test_labels, net_pat
         
         #Count how many epochs have passed
         curr_counter = 0
-            
+        
+        (train_data, train_labels), (test_data, test_labels) = get_formatted_data(data_path)
+        
+        training_generator = g.DataGenerator(train_data, train_labels, batch_size=batch_size)
+        testing_generator = g.DataGenerator(test_data, test_labels, batch_size=batch_size)
+        
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
             #If epochs were not an integer multiple of epoch_break, the last training cycle has to be smaller
@@ -168,7 +175,7 @@ def train_model(model, train_data, train_labels, test_data, test_labels, net_pat
                     epoch_break += epoch_break
             
             #Fit data to model
-            model.fit(train_data, train_labels, epochs=epoch_break)
+            model.fit_generator(generator=training_generator, epochs=epoch_break)
             
             #Iterate counter
             curr_counter += epoch_break
@@ -179,7 +186,7 @@ def train_model(model, train_data, train_labels, test_data, test_labels, net_pat
             print("Stored net")
             
             #Evaluate the performance of the net after every cycle and store it.
-            results.append([curr_counter, model.evaluate(train_data, train_labels), model.evaluate(test_data, test_labels)])
+            results.append([curr_counter, model.evaluate_generator(generator=training_generator), model.evaluate(generator=testing_generator)])
             #print("Results: {}".format(results))
     
     #Save the results to a file.
