@@ -186,7 +186,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             print("Stored net")
             
             #Evaluate the performance of the net after every cycle and store it.
-            results.append([curr_counter, model.evaluate_generator(generator=training_generator), model.evaluate(generator=testing_generator)])
+            results.append([curr_counter, model.evaluate_generator(generator=training_generator), model.evaluate_generator(generator=testing_generator)])
             #print("Results: {}".format(results))
     
     #Save the results to a file.
