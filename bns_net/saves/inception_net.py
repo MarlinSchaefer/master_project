@@ -22,9 +22,9 @@ def incp_lay(x, filter_num):
 def get_model():
     inp = keras.layers.Input(shape=(4096,14))
     bn_0 = keras.layers.BatchNormalization()(inp)
-    drop_inp = keras.layers.Dropout(1-0.25)(bn_0)
+    #drop_inp = keras.layers.Dropout(0.1)(bn_0)
     
-    conv_1 = keras.layers.Conv1D(64, 32, activation='relu')(drop_inp)
+    conv_1 = keras.layers.Conv1D(64, 32, activation='relu')(bn_0)
     
     bn_1 = keras.layers.BatchNormalization()(conv_1)
     
