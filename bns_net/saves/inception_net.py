@@ -6,12 +6,12 @@ import load_data
 import generator as g
 
 def incp_lay(x, filter_num):
-    l = keras.layers.Conv1D(3 * filter_num, 1, padding='same', activation='relu')(x)
+    l = keras.layers.Conv1D(3 * filter_num, 4, padding='same', activation='relu')(x)
     lm_1 = keras.layers.Conv1D(int(round(filter_num / 2.0)), 1, activation='relu')(x)
-    lm_2 = keras.layers.Conv1D(2 * filter_num, 3, padding='same', activation='relu')(lm_1)
+    lm_2 = keras.layers.Conv1D(2 * filter_num, 8, padding='same', activation='relu')(lm_1)
     rm_1 = keras.layers.Conv1D(int(round(filter_num / 2.0)), 1, activation='relu')(x)
-    rm_2 = keras.layers.Conv1D(filter_num, 5, padding='same', activation='relu')(rm_1)
-    r_1 = keras.layers.MaxPooling1D(3, strides=1, padding='same')(x)
+    rm_2 = keras.layers.Conv1D(filter_num, 16, padding='same', activation='relu')(rm_1)
+    r_1 = keras.layers.MaxPooling1D(4, strides=1, padding='same')(x)
     r_2 = keras.layers.Conv1D(int(round(filter_num)), 1, activation='relu')(r_1)
     
     outp = keras.layers.concatenate([l, lm_2, rm_2, r_2])
