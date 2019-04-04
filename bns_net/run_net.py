@@ -3,7 +3,6 @@ import keras
 from load_data import load_data, load_parameter_space, load_calculated_snr, load_testing_labels
 import numpy as np
 import imp
-from make_snr_plot import plot_true_and_calc_partial
 from loss_plot import make_loss_plot
 import time
 from wiki import make_wiki_entry, read_json, model_to_string
@@ -26,6 +25,8 @@ class bcolors:
 
 def get_store_path():
     return(os.path.join(os.path.dirname(os.path.abspath(__file__)), "saves"))
+
+from make_snr_plot import plot_true_and_calc_partial
 
 def get_templates_path():
     return(get_store_path())
