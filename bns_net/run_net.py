@@ -311,7 +311,7 @@ def run_net(net_name, temp_name, **kwargs):
     #print("Testing calculated snr: {}".format(test_calculated_snr))
     t_string = date_to_file_string(wiki_data['training']['time_start'])
     wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
-    plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
+    plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
     
     #Plot the loss over some recorded history
     wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
