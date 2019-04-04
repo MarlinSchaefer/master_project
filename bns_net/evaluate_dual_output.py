@@ -47,7 +47,7 @@ def evaluate_dual_output(net_name, temp_name, show=True):
     te_l = load_testing_labels(temp_path)
     te_c = load_testing_calculated_snr(temp_path)
     
-    res = net.predict(te_d)
+    res = net.predict(te_d, verbose=1)
     
     predicted_snr = [pt[0] for pt in res[0]]
     
@@ -67,9 +67,10 @@ def evaluate_dual_output(net_name, temp_name, show=True):
         else:
             #Falsly predicted
             if predicted_bool[i]:
-                #GW is not in the signal
+                #Network predicts signal but there is none in the data
                 l[3] += 1
             else:
+                #Network predicts no signal but there is one in the data
                 l[2] += 1
         
         if abs(res[1][i][0] - 0.5) < 0.1:
