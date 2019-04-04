@@ -70,39 +70,30 @@ def get_model():
     
     return(model)
 
+def format_data_segment(data):
+    tmp = data.transpose((2, 1, 0))
+    ret = np.zeros((2, len(data[0]), len(data)))
+    ret[0] = tmp[1]
+    ret[1] = tmp[8]
+    ret = ret.transpose((2, 1, 0))
+    return(ret)
+
+def format_label_segment(data):
+    ret = [[], []]
+    for l in data:
+        ret[0].append([l[0]])
+        ret[1].append([1, 0] if bool(l[1]) else [0, 1])
+    ret = [np.array(dat) for dat in ret]
+    return(ret)
+
 def get_formatted_data(file_path):
-    unformatted_tr_data = load_data.load_training_data(file_path)
-    unformatted_tr_labels = load_data.load_training_labels(file_path)
-    unformatted_te_data = load_data.load_testing_data(file_path)
-    unformatted_te_labels = load_data.load_testing_labels(file_path)
+    tr_d = format_data_segment(load_data.load_training_data(file_path))
+    tr_l = format_label_segment(load_data.load_training_labels(file_path))
     
-    tmp = unformatted_tr_data.transpose((2, 1, 0))
-    formatted_tr_data = np.zeros((2, len(unformatted_tr_data[0]), len(unformatted_tr_data)))
-    formatted_tr_data[0] = tmp[1]
-    formatted_tr_data[1] = tmp[8]
-    formatted_tr_data = formatted_tr_data.transpose((2, 1, 0))
+    te_d = format_data_segment(load_data.load_testing_data(file_path))
+    te_l = format_label_segment(load_data.load_testing_labels(file_path))
     
-    tmp = unformatted_te_data.transpose((2, 1, 0))
-    formatted_te_data = np.zeros((2, len(unformatted_te_data[0]), len(unformatted_te_data)))
-    formatted_te_data[0] = tmp[1]
-    formatted_te_data[1] = tmp[8]
-    formatted_te_data = formatted_te_data.transpose((2, 1, 0))
-    
-    formatted_tr_labels = [[],[]]
-    for l in unformatted_tr_labels:
-        formatted_tr_labels[0].append([l[0]])
-        formatted_tr_labels[1].append([1, 0] if bool(l[1]) else [0, 1])
-    formatted_tr_labels = [np.array(dat) for dat in formatted_tr_labels]
-    
-    formatted_te_labels = [[],[]]
-    for l in unformatted_te_labels:
-        formatted_te_labels[0].append([l[0]])
-        formatted_te_labels[1].append([1, 0] if bool(l[1]) else [0, 1])
-    formatted_te_labels = [np.array(dat) for dat in formatted_te_labels]
-    
-    #print(formatted_tr_labels)
-    
-    return(((formatted_tr_data, formatted_tr_labels), (formatted_te_data, formatted_te_labels)))
+    return(((tr_d, tr_l), (te_d, te_l)))
 
 def compile_model(model):
     model.compile(loss={'out_snr': 'mean_squared_error', 'out_bool': 'categorical_crossentropy'}, loss_weights={'out_snr': 1.0, 'out_bool': 0.5}, optimizer='adam', metrics={'out_snr': 'mape', 'out_bool': 'accuracy'})
