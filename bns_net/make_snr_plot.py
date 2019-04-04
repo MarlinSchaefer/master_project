@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import keras
 import h5py
+import imp
+import os
+from run_net import get_store_path
 
 def plot(net, data, labels, path, show=False, net_name='N/A'):
     x_pt = labels.reshape(len(labels))
@@ -82,7 +85,8 @@ def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'
     
     _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
 
-def plot_true_and_calc_partial(net, data_path, path, batch_size=32, show=False, net_name='N/A'):
+def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, show=False, net_name='N/A'):
+    d_form = imp.load_source('d_form', net_path)
     with h5py.File(data_path, 'r') as data:
         te_d = data['testing']['test_data']
         te_l = data['testing']['test_labels']
@@ -104,7 +108,7 @@ def plot_true_and_calc_partial(net, data_path, path, batch_size=32, show=False, 
             for j in range(lower, upper):
                 x_pt_1[j] = te_l[j][0]
                 x_pt_2[j] = te_c[j]
-                cache = net.predict(np.array([te_d[j]]))
+                cache = net.predict(d_form.format_data_segment(np.array([te_d[j]])))
                 
                 if type(cache) == list:
                     y_pt[j] = cache[0][0]
