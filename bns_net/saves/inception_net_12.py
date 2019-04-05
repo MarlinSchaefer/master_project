@@ -72,7 +72,7 @@ def get_model():
 
 def format_data_segment(data):
     tmp = data.transpose((2, 1, 0))
-    ret = np.zeros((10, len(data[0]), len(data)))
+    ret = np.zeros((12, len(data[0]), len(data)))
     ret[0] = tmp[1]
     ret[1] = tmp[2]
     ret[2] = tmp[3]
