@@ -100,7 +100,7 @@ def get_formatted_data(file_path):
     return(((tr_d, tr_l), (te_d, te_l)))
 
 def compile_model(model):
-    model.compile(loss={'out_snr': 'mean_squared_error', 'out_bool': 'categorical_crossentropy'}, loss_weights={'out_snr': 1.0, 'out_bool': 0.5}, optimizer='adam', metrics={'out_snr': 'mape', 'out_bool': 'accuracy'})
+    model.compile(loss={'out_snr': 'mean_squared_error', 'out_bool': 'categorical_crossentropy'}, loss_weights={'out_snr': 1.0, 'out_bool': 0.5}, optimizer=keras.optimizers.Adadelta(), metrics={'out_snr': 'mape', 'out_bool': 'accuracy'})
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
