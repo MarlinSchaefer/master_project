@@ -238,6 +238,31 @@ def format_label_segment(data):
     ret = [np.array(dat) for dat in ret]
     return(ret)
 
+def get_model_memory_usage(batch_size, model):
+    from keras import backend as K
+
+    shapes_mem_count = 0
+    for l in model.layers:
+        single_layer_mem = 1
+        for s in l.output_shape:
+            if s is None:
+                continue
+            single_layer_mem *= s
+        shapes_mem_count += single_layer_mem
+
+    trainable_count = np.sum([K.count_params(p) for p in set(model.trainable_weights)])
+    non_trainable_count = np.sum([K.count_params(p) for p in set(model.non_trainable_weights)])
+
+    number_size = 4.0
+    if K.floatx() == 'float16':
+         number_size = 2.0
+    if K.floatx() == 'float64':
+         number_size = 8.0
+
+    total_memory = number_size*(batch_size*shapes_mem_count + trainable_count + non_trainable_count)
+    gbytes = np.round(total_memory / (1024.0 ** 3), 3)
+    return gbytes
+
 def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_size=32):
     print("Epochs: {}\nEpoch_break={}".format(epochs, epoch_break))
     name = 'collect_net'
@@ -281,6 +306,8 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
         #Count how many epochs have passed
         curr_counter = 0
         
+        print("Expected memory_size: {}".format(get_model_memory_usage(batch_size, model)))
+        
         (train_data, train_labels), (test_data, test_labels) = get_formatted_data(data_path)
         
         training_generator = g.DataGeneratorMultInput(train_data, train_labels, batch_size=batch_size)
@@ -295,7 +322,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
                 if epoch_break < 0:
                     epoch_break += epoch_break
             
-            #Fit data to model
+            #Fit data to model            
             model.fit_generator(generator=training_generator, epochs=epoch_break, max_q_size=1)
             
             #Iterate counter
