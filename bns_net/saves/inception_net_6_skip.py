@@ -44,11 +44,7 @@ def get_model():
     
     incp_4 = incp_lay(incp_3, 32)
     
-    incp_5 = incp_lay(incp_4, 32)
-    
-    incp_6 = incp_lay(incp_5, 32)
-    
-    norm = keras.layers.BatchNormalization()(incp_6)
+    norm = keras.layers.BatchNormalization()(incp_4)
     
     pool_4 = keras.layers.MaxPooling1D(4)(norm)
     
