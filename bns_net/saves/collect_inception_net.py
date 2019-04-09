@@ -148,12 +148,12 @@ def get_model():
     
     combined = keras.layers.concatenate([flatten_1_1s, flatten_1_2s, flatten_1_4s, flatten_1_8s, flatten_1_16s, flatten_1_32s, flatten_1_64s])
     
-    batch_4 = keras.layers.BatchNormalization()(combined)
+    #batch_4 = keras.layers.BatchNormalization()(combined)
     
-    dense_1 = keras.layers.Dense(4)(batch_4)
+    dense_1 = keras.layers.Dense(4)(combined)
     dense_2 = keras.layers.Dense(1, activation='relu', name='Out_SNR')(dense_1)
     
-    dense_3 = keras.layers.Dense(4)(batch_4)
+    dense_3 = keras.layers.Dense(4)(combined)
     dense_4 = keras.layers.Dense(2, activation='softmax', name='Out_Bool')(dense_3)
     
     model = keras.models.Model(inputs=[inp_1s, inp_2s, inp_4s, inp_8s, inp_16s, inp_32s, inp_64s], outputs=[dense_2, dense_4])
