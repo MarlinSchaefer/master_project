@@ -322,8 +322,10 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
                 if epoch_break < 0:
                     epoch_break += epoch_break
             
+            q_size = 5
+            
             #Fit data to model            
-            model.fit_generator(generator=training_generator, epochs=epoch_break, max_q_size=10)
+            model.fit_generator(generator=training_generator, epochs=epoch_break, max_q_size=q_size)
             
             #Iterate counter
             curr_counter += epoch_break
@@ -334,7 +336,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             print("Stored net")
             
             #Evaluate the performance of the net after every cycle and store it.
-            results.append([curr_counter, model.evaluate_generator(generator=training_generator, max_q_size=10), model.evaluate_generator(generator=testing_generator, max_q_size=10)])
+            results.append([curr_counter, model.evaluate_generator(generator=training_generator, max_q_size=q_size), model.evaluate_generator(generator=testing_generator, max_q_size=q_size)])
             #print("Results: {}".format(results))
     
     #Save the results to a file.
