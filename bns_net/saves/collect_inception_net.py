@@ -138,13 +138,21 @@ def get_model():
     pool_2_32s = keras.layers.MaxPooling1D(4)(batch_6_32s)
     pool_2_64s = keras.layers.MaxPooling1D(4)(batch_4_64s)
     
-    flatten_1_1s = keras.layers.Flatten()(pool_2_1s)
-    flatten_1_2s = keras.layers.Flatten()(pool_2_2s)
-    flatten_1_4s = keras.layers.Flatten()(pool_2_4s)
-    flatten_1_8s = keras.layers.Flatten()(pool_2_8s)
-    flatten_1_16s = keras.layers.Flatten()(pool_2_16s)
-    flatten_1_32s = keras.layers.Flatten()(pool_2_32s)
-    flatten_1_64s = keras.layers.Flatten()(pool_2_64s)
+    dim_red_1_1s = keras.layers.Conv1D(16, 1)(pool_2_1s)
+    dim_red_1_2s = keras.layers.Conv1D(16, 1)(pool_2_2s)
+    dim_red_1_4s = keras.layers.Conv1D(16, 1)(pool_2_4s)
+    dim_red_1_8s = keras.layers.Conv1D(16, 1)(pool_2_8s)
+    dim_red_1_16s = keras.layers.Conv1D(16, 1)(pool_2_16s)
+    dim_red_1_32s = keras.layers.Conv1D(16, 1)(pool_2_32s)
+    dim_red_1_64s = keras.layers.Conv1D(16, 1)(pool_2_64s)
+    
+    flatten_1_1s = keras.layers.Flatten()(dim_red_1_1s)
+    flatten_1_2s = keras.layers.Flatten()(dim_red_1_2s)
+    flatten_1_4s = keras.layers.Flatten()(dim_red_1_4s)
+    flatten_1_8s = keras.layers.Flatten()(dim_red_1_8s)
+    flatten_1_16s = keras.layers.Flatten()(dim_red_1_16s)
+    flatten_1_32s = keras.layers.Flatten()(dim_red_1_32s)
+    flatten_1_64s = keras.layers.Flatten()(dim_red_1_64s)
     
     combined = keras.layers.concatenate([flatten_1_1s, flatten_1_2s, flatten_1_4s, flatten_1_8s, flatten_1_16s, flatten_1_32s, flatten_1_64s])
     
