@@ -23,7 +23,7 @@ if __name__ == "__main__":
     #except:
         #pass
     
-    run_net('collect_inception_net', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=1, num_of_templates=20000, format_data=True, epoch_break=5, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32, custom_message='This net takes all frequency channels as input. It combines the idea of collect_net with the method of the inception layers and tries to incorporate the findings of 05.04.2019 by givining higher frequencies shallower networks, whilest having deeper networks in the arms of lower frequencies.')
+    run_net('collect_inception_net', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=1, num_of_templates=20000, format_data=True, epoch_break=5, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=8, custom_message='This net takes all frequency channels as input. It combines the idea of collect_net with the method of the inception layers and tries to incorporate the findings of 05.04.2019 by givining higher frequencies shallower networks, whilest having deeper networks in the arms of lower frequencies.')
     
     #try:
         #run_net('inception_net_2_small', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=ep, num_of_templates=20000, format_data=True, epoch_break=5, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32)
