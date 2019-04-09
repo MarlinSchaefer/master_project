@@ -150,10 +150,10 @@ def get_model():
     
     #batch_4 = keras.layers.BatchNormalization()(combined)
     
-    dense_1 = keras.layers.Dense(4)(combined)
+    dense_1 = keras.layers.Dense(2)(combined)
     dense_2 = keras.layers.Dense(1, activation='relu', name='Out_SNR')(dense_1)
     
-    dense_3 = keras.layers.Dense(4)(combined)
+    dense_3 = keras.layers.Dense(3)(combined)
     dense_4 = keras.layers.Dense(2, activation='softmax', name='Out_Bool')(dense_3)
     
     model = keras.models.Model(inputs=[inp_1s, inp_2s, inp_4s, inp_8s, inp_16s, inp_32s, inp_64s], outputs=[dense_2, dense_4])
