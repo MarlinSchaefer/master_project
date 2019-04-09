@@ -108,7 +108,7 @@ class DataGeneratorMultInput(keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = [np.empty([self.batch_size] + list(self.data[0].shape[-2:])) for j in range(self.data.shape[0])]
+        X = [np.empty([self.batch_size] + list(self.data[0].shape[-2:])) for j in range(len(self.data))]
         
         y_1 = np.empty((self.batch_size, 1))
         
