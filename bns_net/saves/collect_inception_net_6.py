@@ -323,7 +323,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             
             #Store model after each training-cycle
             model.save(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5"))
-            print("Stored net")
+            print("Stored net at: {}".format(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5")))
             
             #Evaluate the performance of the net after every cycle and store it.
             results.append([curr_counter, model.evaluate_generator(generator=training_generator, max_q_size=q_size), model.evaluate_generator(generator=testing_generator, max_q_size=q_size)])
