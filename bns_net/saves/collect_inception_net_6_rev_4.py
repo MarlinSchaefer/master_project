@@ -146,7 +146,7 @@ def get_model():
     dim_red = keras.layers.Conv1D(16, 1)(batch_5)
     
     #FLAT LAYERS
-    flatten = keras.Flatten()(dim_red)
+    flatten = keras.layers.Flatten()(dim_red)
     
     dense_1 = keras.layers.Dense(2)(flatten)
     dense_2 = keras.layers.Dense(1, activation='relu', name='Out_SNR')(dense_1)
