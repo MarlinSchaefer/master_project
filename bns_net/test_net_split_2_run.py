@@ -1,7 +1,7 @@
 from run_net import run_net
 import numpy as np
 
-ep = 100
+ep = 20
 wiki_e = True
 
 if __name__ == "__main__":
@@ -23,7 +23,11 @@ if __name__ == "__main__":
     #except:
         #pass
     
-    run_net('collect_inception_net_6_rev_2', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=150, num_of_templates=200, format_data=True, epoch_break=3, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32, custom_message='This network in architecture is close to the inception_net_6_skip, but adds 2 convolution layers in the beginning of each step, as those showed promising results in the pure inception nets.')
+    run_net('collect_inception_net_6_rev_2', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=ep, num_of_templates=200, format_data=True, epoch_break=3, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32, custom_message='This network in architecture is close to the inception_net_6_skip, but adds 2 convolution layers in the beginning of each step, as those showed promising results in the pure inception nets.')
+    
+    run_net('collect_inception_net_6_rev_3', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=ep, num_of_templates=200, format_data=True, epoch_break=3, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32, custom_message='This network in architecture is close to the inception_net_6_rev_2, but removes two inception layers in the lowest frequency channel, such that all stacks are of the same height.')
+    
+    run_net('collect_inception_net_6_rev_4', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=ep, num_of_templates=200, format_data=True, epoch_break=3, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32, custom_message='This network in architecture is close to the inception_net_6_rev_3, but concatenates the stacks after only three inception layers on each stack. Afterwards two more inception layers were added to help learning.')
     
     #try:
         #run_net('inception_net_6_skip', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=wiki_e, overwrite_template_file=False, epochs=300, num_of_templates=20000, format_data=True, epoch_break=5, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32, custom_message='This net takes as input the channels 2048Hz, 512Hz, 128Hz. Reduced the depth of the model to 4 inception layers to see if that improves things. The reason for this decision is the results from 05.04.2019 as they can be found in the wiki.')
