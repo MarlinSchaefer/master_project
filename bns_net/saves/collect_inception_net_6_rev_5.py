@@ -224,7 +224,7 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
                 if epoch_break < 0:
                     epoch_break += epoch_break
             
-            q_size = 0
+            q_size = 2
             
             #Fit data to model            
             model.fit_generator(generator=training_generator, epochs=epoch_break, max_q_size=q_size)
