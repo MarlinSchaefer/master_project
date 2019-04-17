@@ -101,6 +101,7 @@ class DataGeneratorMultInput(keras.utils.Sequence):
 
     def on_epoch_end(self):
         'Updates indexes after each epoch'
+        print("Max index: {}".format(len(self.data[1])))
         self.indexes = np.arange(len(self.data[1]))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
