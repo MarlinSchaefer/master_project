@@ -20,7 +20,7 @@ def incp_lay(x, filter_num):
     return(outp)
 
 def stack(x, NUM_DETECTORS, DROPOUT_RATE):
-    batch_1 = keras.layers.BatchNormalization()(inp)
+    batch_1 = keras.layers.BatchNormalization()(x)
     dropout_1 = keras.layers.Dropout(DROPOUT_RATE)(batch_1)
     conv_1 = keras.layers.Conv1D(64, 32)(dropout_1)
     bn_conv_1 = keras.layers.BatchNormalization()(conv_1)
