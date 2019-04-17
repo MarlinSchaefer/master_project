@@ -7,6 +7,7 @@ import h5py
 import imp
 import os
 from run_net import get_store_path
+from progress_bar import progress_tracker
 
 def plot(net, data, labels, path, show=False, net_name='N/A'):
     x_pt = labels.reshape(len(labels))
@@ -63,6 +64,8 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
     if show:
         plt.show()
     else:
+        plt.cla()
+        plt.clf()
         plt.close()
 
 def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'):
@@ -98,6 +101,8 @@ def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, sh
         
         steps = int(np.ceil(float(len(te_d)) / batch_size)) - 1
         
+        bar = progress_tracker(steps, name='Creating plot')
+        
         for i in range(steps):
             lower = i * batch_size
             upper = (i+1) * batch_size
@@ -114,5 +119,7 @@ def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, sh
                     y_pt[j] = cache[0][0]
                 else:
                     y_pt[j] = cache[0]
+            
+            bar.iterate()
     
     _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
