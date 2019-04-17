@@ -102,6 +102,7 @@ class DataGeneratorMultInput(keras.utils.Sequence):
     def on_epoch_end(self):
         'Updates indexes after each epoch'
         print("Max index: {}".format(len(self.data[1])))
+        print("Data shape: {}".format(self.data.shape))
         self.indexes = np.arange(len(self.data[1]))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
@@ -110,6 +111,8 @@ class DataGeneratorMultInput(keras.utils.Sequence):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
         X = [np.empty([self.batch_size] + list(self.data[0].shape[-2:])) for j in range(len(self.data))]
+        
+        print("Len X: {}".format(len(X)))
         
         y_1 = np.empty((self.batch_size, 1))
         
