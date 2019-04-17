@@ -118,19 +118,31 @@ def evaluate_overfitting(train_loss, test_loss):
     return(True)
 
 def format_data_segment(data):
-    #tmp = data.transpose((2, 1, 0))
-    #ret = [np.zeros((2, len(data[0]), len(data))) for i in range(3)]
-    #ret[0][0] = tmp[1]
-    #ret[0][1] = tmp[8]
+    tmp = data.transpose((2, 1, 0))
+    ret = [np.zeros((2, len(data[0]), len(data))) for i in range(7)]
+    ret[0][0] = tmp[0]
+    ret[0][1] = tmp[7]
     
-    #ret[1][0] = tmp[3]
-    #ret[1][1] = tmp[10]
+    ret[1][0] = tmp[1]
+    ret[1][1] = tmp[8]
     
-    #ret[2][0] = tmp[5]
-    #ret[2][1] = tmp[12]
+    ret[2][0] = tmp[2]
+    ret[2][1] = tmp[9]
     
-    #ret = [dat.transpose((2, 1, 0)) for dat in ret]
-    return(data)
+    ret[3][0] = tmp[3]
+    ret[3][1] = tmp[10]
+    
+    ret[4][0] = tmp[4]
+    ret[4][1] = tmp[11]
+    
+    ret[5][0] = tmp[5]
+    ret[5][1] = tmp[12]
+    
+    ret[6][0] = tmp[6]
+    ret[6][1] = tmp[13]
+    
+    ret = [dat.transpose((2, 1, 0)) for dat in ret]
+    return(ret)
 
 def format_label_segment(data):
     ret = [[], []]
