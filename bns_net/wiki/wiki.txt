@@ -11509,7 +11509,7 @@ programm_internals:
 	ignore_fixable_errors: False
 	use_custom_train_function: True
 	overwrite_net_file: True
-	custom_message: This network in architecture is close to the inception_net_6_skip, but adds 2 convolution layers in the beginning of each step, as those showed promising results in the pure inception nets.
+	custom_message: This network in architecture is close to the inception_net_6_rev_4, but adds the missing channels (4096Hz, 1024Hz, 256Hz, 64Hz) back in to see if this significantly improves the performance of the network.
 	show_snr_plot: False
 	temp_name: mult_output_data_medium_small
 	overwrite_template_file: False
