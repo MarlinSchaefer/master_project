@@ -8,6 +8,7 @@ import imp
 import os
 from run_net import get_store_path
 from progress_bar import progress_tracker
+from generator import DataGeneratorMultInput
 
 def plot(net, data, labels, path, show=False, net_name='N/A'):
     x_pt = labels.reshape(len(labels))
@@ -123,3 +124,23 @@ def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, sh
             bar.iterate()
     
     _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
+
+def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_name='N/A'):
+    with h5py.File(file_path, 'r') as ResFile:
+        y_pt = ResFile['data'][:].transpose()[0]
+    
+    x_pt_1 = dobj.loaded_test_labels
+    
+    if type(x_pt_1) == list:
+        x_pt_1 = x_pt_1[0]
+    
+    x_pt_1 = x_pt_1.flatten()
+    
+    x_pt_2 = dobj.loaded_test_snr
+    
+    if type(x_pt_2) == list:
+        x_pt_2 = x_pt_2[0]
+    
+    x_pt_2 = x_pt_2.flatten()
+    
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, image_path, show=show)
