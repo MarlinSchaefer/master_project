@@ -7,6 +7,7 @@ from loss_plot import make_loss_plot
 import time
 from wiki import make_wiki_entry, read_json, model_to_string
 from ini_handeling import run_net_defaults, load_options
+from store_test_results import store_test_results
 
 """
 TODO:
@@ -26,7 +27,7 @@ class bcolors:
 def get_store_path():
     return(os.path.join(os.path.dirname(os.path.abspath(__file__)), "saves"))
 
-from make_snr_plot import plot_true_and_calc_partial
+from make_snr_plot import plot_true_and_calc_partial, plot_true_and_calc_from_file
 
 def get_templates_path():
     return(get_store_path())
@@ -117,15 +118,24 @@ def _train_net(net, data_path, **opt_arg):
     print(net.summary())
     if opt_arg['use_custom_train_function']:
         try:
-            #NOTE: The module needs to have a method 'train_model', which returns the trained model.
-            net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-            net = net_mod.train_model(net, data_path, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
+            if not opt_arg['use_data_object']:
+                #NOTE: The module needs to have a method 'train_model', which returns the trained model.
+                net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+                net = net_mod.train_model(net, data_path, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
+            else:
+                net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+                net = net_mod.train_model(net, opt_arg['dobj'], net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
         except IOError:
             raise NameError('There is no net named %s in %s.' % (net_name, net_path))
             return()
     else:
-        (train_data, train_labels), (test_data, test_labels) = get_data(data_path, **opt_arg)
-        hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+        if not opt_arg['use_data_object']:
+            (train_data, train_labels), (test_data, test_labels) = get_data(data_path, **opt_arg)
+            hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
+        else:
+            train_data = opt_arg['dobj'].loaded_train_data
+            train_labels = opt_arg['dobj'].loaded_train_labels
+            hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
         
     net.save(os.path.join(net_path, net_name + '.hf5'))
         
@@ -228,6 +238,8 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['net_name'] = net_name
     opt_arg['temp_name'] = temp_name
     opt_arg.update(run_net_defaults())
+    if opt_arg['use_data_object'] == 'None':
+        opt_arg['use_data_object'] = None
     
     wiki_data['programm_internals'] = {}
     
@@ -287,9 +299,13 @@ def run_net(net_name, temp_name, **kwargs):
     
     
     #Load templates
-    print(os.path.join(temp_path, temp_name + ".hf5"))
     full_template_path = os.path.join(temp_path, temp_name + ".hf5")
-    
+    print("Loading templates from: {}".format(full_template_path))
+    if opt_arg['use_data_object']:
+        net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+        opt_arg['dobj'] = net_mod.get_data_obj(full_template_path)
+        dobj = opt_arg['dobj']
+        dobj.get_set()
     
     #Training takes place here
     if not opt_arg['only_print_image']:
@@ -306,13 +322,22 @@ def run_net(net_name, temp_name, **kwargs):
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
     #Plot the distribution of labels against predictions
-    train_calculated_snr, test_calculated_snr = load_calculated_snr(full_template_path)
-    unformatted_test_labels = load_testing_labels(full_template_path)
-    #print("Training calculated snr: {}".format(train_calculated_snr))
-    #print("Testing calculated snr: {}".format(test_calculated_snr))
+    if not opt_arg['use_data_object']:
+        train_calculated_snr, test_calculated_snr = load_calculated_snr(full_template_path)
+        unformatted_test_labels = load_testing_labels(full_template_path)
+    else:
+        train_calculated_snr = dobj.get_formatted_data('training', 'train_snr_calculated')
+        test_calculated_snr = dobj.get_formatted_data('testing', 'test_snr_calculated')
+        unformatted_test_labels = dobj.get_raw_data('testing', 'test_labels')
+    
     t_string = date_to_file_string(wiki_data['training']['time_start'])
     wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
-    plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
+    if opt_arg['use_data_object']:
+        result_file_path = os.path.join(get_store_path(), net_name + '_predictions_' + t_string + '.hf5')
+        store_test_results(net, dobj, result_file_path)
+        plot_true_and_calc_from_file(result_file_path, dobj, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
+    else:
+        plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
     
     #Plot the loss over some recorded history
     wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
