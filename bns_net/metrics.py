@@ -10,7 +10,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
         
         SNR = []
         
-        for i, sample in true_vals[1]:
+        for i, sample in enumerate(true_vals[1]):
             if sample[0] < sample[1]:
                 SNR.append((i, FILE['data'][i][0]))
         
