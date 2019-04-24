@@ -338,7 +338,7 @@ def run_net(net_name, temp_name, **kwargs):
         store_test_results(net, dobj, result_file_path, batch_size=opt_arg['batch_size'])
         plot_true_and_calc_from_file(result_file_path, dobj, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
         wiki_data['false_alarm_plot_path'] = os.path.join(get_store_path(), net_name + '_false_alarm_plot_' + t_string + '.png')
-        plot_false_alarm(result_file_path, dobj, wiki_data['false_alarm_plot_path'], show=opt_arg['show_false_alarm'])
+        plot_false_alarm(dobj, result_file_path, wiki_data['false_alarm_plot_path'], show=opt_arg['show_false_alarm'])
     else:
         plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
     
