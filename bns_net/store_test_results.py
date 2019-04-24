@@ -16,7 +16,7 @@ def store_test_results(net, dobj, store_path, batch_size=32):
         j = 0
         for con in res:
             cur = con.transpose()
-            for i in len(cur):
+            for i in range(len(cur)):
                 st[j] = cur[i]
                 j += 1
         st = st.transpose()
