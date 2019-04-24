@@ -294,7 +294,7 @@ class DataSet():
                     if abs(old_low) == np.inf or abs(old_high) == np.inf:
                         return(part1 + part2)
                     else:
-                        return(part1 + FILE[t][s][old_low:old_high] + part2)
+                        return(part1 + list(FILE[t][s][old_low:old_high]) + part2)
         except IOError:
             raise ValueError('The file you are trying to access does not seem to exist.')
     
