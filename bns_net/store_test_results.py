@@ -4,7 +4,6 @@ import h5py
 import generator as g
 
 def store_test_results(net, dobj, store_path, batch_size=32):
-    print("Calculating data to store.")
     res = net.predict_generator(g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size), verbose=1)
     
     if type(res) == list:
@@ -12,14 +11,14 @@ def store_test_results(net, dobj, store_path, batch_size=32):
         shape[0] = len(res[0])
         for con in res:
             shape[1] += con.shape[-1]
-        st = np.empty(shape).transpose()
+        st = np.empty(shape)
         j = 0
         for con in res:
-            cur = con.transpose()
-            for i in range(len(cur)):
-                st[j] = cur[i]
-                j += 1
-        st = st.transpose()
+            for i in range(len(con)):
+                for k in range(len(con[i])):
+                    st[i][j+k] = con[i][k]
+            j += len(con[0])
+        
         with h5py.File(store_path, 'w') as FILE:
             FILE.create_dataset('data', data=st)
     else:
