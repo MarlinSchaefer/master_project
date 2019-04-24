@@ -1,10 +1,11 @@
 import keras
 import numpy as np
 import h5py
+import generator as g
 
-def store_test_results(net, dobj, store_path):
+def store_test_results(net, dobj, store_path, batch_size=32):
     print("Calculating data to store.")
-    res = net.predict_generator(generator, verbose=1)
+    res = net.predict_generator(g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size), verbose=1)
     
     if type(res) == list:
         shape = [0, 0]
