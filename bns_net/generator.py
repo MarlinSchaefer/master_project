@@ -26,12 +26,15 @@ class DataGenerator(keras.utils.Sequence):
 
     def __len__(self):
         'Denotes the number of batches per epoch'
-        return int(np.floor(float(len(self.list_IDs)) / self.batch_size))
+        return int(np.ceil(float(len(self.list_IDs)) / self.batch_size))
 
     def __getitem__(self, index):
         'Generate one batch of data'
         # Generate indexes of the batch
-        indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        if (index+1)*self.batch_size < len(self.indexes):
+            indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        else:
+            indexes = self.indexes[index*self.batch_size:]
 
         # Generate data
         X, y = self.__data_generation(indexes)
@@ -47,11 +50,11 @@ class DataGenerator(keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.empty([self.batch_size] + list(self.data[0].shape))
+        X = np.empty([len(list_IDs_temp)] + list(self.data[0].shape))
         
-        y_1 = np.empty((self.batch_size, 1))
+        y_1 = np.empty((len(list_IDs_temp), 1))
         
-        y_2 = np.empty((self.batch_size, 2))
+        y_2 = np.empty((len(list_IDs_temp), 2))
         
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
@@ -87,12 +90,15 @@ class DataGeneratorMultInput(keras.utils.Sequence):
 
     def __len__(self):
         'Denotes the number of batches per epoch'
-        return int(np.floor(float(len(self.list_IDs)) / self.batch_size))
+        return int(np.ceil(float(len(self.list_IDs)) / self.batch_size))
 
     def __getitem__(self, index):
         'Generate one batch of data'
         # Generate indexes of the batch
-        indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        if (index+1)*self.batch_size < len(self.indexes):
+            indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        else:
+            indexes = self.indexes[index*self.batch_size:]
 
         # Generate data
         X, y = self.__data_generation(indexes)
@@ -108,11 +114,11 @@ class DataGeneratorMultInput(keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = [np.empty([self.batch_size] + list(self.data[0].shape[-2:])) for j in range(len(self.data))]
+        X = [np.empty([len(list_IDs_temp)] + list(self.data[0].shape[-2:])) for j in range(len(self.data))]
         
-        y_1 = np.empty((self.batch_size, 1))
+        y_1 = np.empty((len(list_IDs_temp), 1))
         
-        y_2 = np.empty((self.batch_size, 2))
+        y_2 = np.empty((len(list_IDs_temp), 2))
         
         # Generate data
         for j in range(len(X)):
