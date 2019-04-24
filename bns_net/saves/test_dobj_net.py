@@ -88,8 +88,8 @@ def compile_model(model):
 
 def get_data_obj(file_path):
     class CustomDataSet(DataSet):
-        def format_data_segment(self, np.array(data)):
-            tmp = data.transpose((2, 1, 0))
+        def format_data_segment(self, data):
+            tmp = np.array(data).transpose((2, 1, 0))
             ret = [np.zeros((2, len(data[0]), len(data))) for i in range(7)]
             ret[0][0] = tmp[0]
             ret[0][1] = tmp[7]
