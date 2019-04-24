@@ -5,7 +5,7 @@ ep = 150
 wiki_e = True
 
 if __name__ == "__main__":
-    run_net('test_dobj_net', 'mult_output_data_tiny', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=False, overwrite_template_file=False, epochs=10, num_of_templates=200, gw_prob=0.5, use_data_object=True)
+    run_net('test_dobj_net', 'mult_output_data_tiny', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=False, overwrite_template_file=False, epochs=10, num_of_templates=200, gw_prob=0.5, use_data_object=True, show_snr_plot=False)
     #try:
         #run_net('collect_inception_net_6_rev_6', 'small_snr_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, custom_message='Generated large template file at more realistic SNRs.')
     #except:
