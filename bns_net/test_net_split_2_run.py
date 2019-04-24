@@ -5,35 +5,36 @@ ep = 150
 wiki_e = True
 
 if __name__ == "__main__":
-    try:
-        run_net('collect_inception_net_6_rev_6', 'small_snr_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, custom_message='Generated large template file at more realistic SNRs.')
-    except:
-        pass
+    run_net('test_dobj_net', 'mult_output_data_tiny', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=False, overwrite_template_file=True, epochs=100, num_of_templates=100000, gw_prob=0.5, use_data_object=True)
+    #try:
+        #run_net('collect_inception_net_6_rev_6', 'small_snr_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, custom_message='Generated large template file at more realistic SNRs.')
+    #except:
+        #pass
     
-    try:
-        run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], custom_message='Generated large template file at more realistic SNRs with varied sky position.')
-    except:
-        pass
+    #try:
+        #run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], custom_message='Generated large template file at more realistic SNRs with varied sky position.')
+    #except:
+        #pass
     
-    try:
-        run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_masses_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], mass1=[1.3, 1.5], mass2=[1.3, 1.5], custom_message='Generated large template file at more realistic SNRs with varied sky position and varied masses.')
-    except:
-        pass
+    #try:
+        #run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_masses_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], mass1=[1.3, 1.5], mass2=[1.3, 1.5], custom_message='Generated large template file at more realistic SNRs with varied sky position and varied masses.')
+    #except:
+        #pass
     
-    try:
-        run_net('collect_inception_net_6_rev_6', 'small_snr_3_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, resample_delta_t=(1.0/2048, 1.0/512, 1.0/128), resample_t_len=(2.0, 8.0, 32.0), custom_message='Generated small template file at more realistic SNRs.')
-    except:
-        pass
+    #try:
+        #run_net('collect_inception_net_6_rev_6', 'small_snr_3_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, resample_delta_t=(1.0/2048, 1.0/512, 1.0/128), resample_t_len=(2.0, 8.0, 32.0), custom_message='Generated small template file at more realistic SNRs.')
+    #except:
+        #pass
     
-    try:
-        run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_3_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], resample_delta_t=(1.0/2048, 1.0/512, 1.0/128), resample_t_len=(2.0, 8.0, 32.0), custom_message='Generated small template file at more realistic SNRs with varied sky position.')
-    except:
-        pass
+    #try:
+        #run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_3_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], resample_delta_t=(1.0/2048, 1.0/512, 1.0/128), resample_t_len=(2.0, 8.0, 32.0), custom_message='Generated small template file at more realistic SNRs with varied sky position.')
+    #except:
+        #pass
     
-    try:
-        run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_masses_3_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], mass1=[1.3, 1.5], mass2=[1.3, 1.5], resample_delta_t=(1.0/2048, 1.0/512, 1.0/128), resample_t_len=(2.0, 8.0, 32.0),  custom_message='Generated small template file at more realistic SNRs with varied sky position and varied masses.')
-    except:
-        pass
+    #try:
+        #run_net('collect_inception_net_6_rev_6', 'small_snr_vary_sky_masses_3_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, right_ascension=[-np.pi, np.pi], declination=[-np.pi/2, np.pi/2], polarization=[0.0, np.pi], mass1=[1.3, 1.5], mass2=[1.3, 1.5], resample_delta_t=(1.0/2048, 1.0/512, 1.0/128), resample_t_len=(2.0, 8.0, 32.0),  custom_message='Generated small template file at more realistic SNRs with varied sky position and varied masses.')
+    #except:
+        #pass
     
     #run_net('inception_net_2', 'mult_output_data_medium_small', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=True, overwrite_template_file=False, epochs=ep, num_of_templates=20000, format_data=True, epoch_break=5, gw_prob=0.5, use_custom_compilation=True, show_snr_plot=False, batch_size=32)
     
