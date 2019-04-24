@@ -11,7 +11,7 @@ def store_test_results(net, dobj, store_path, batch_size=32):
         shape = [0, 0]
         shape[0] = len(res[0])
         for con in res:
-            shape[1] += con.chape[-1]
+            shape[1] += con.shape[-1]
         st = np.empty(shape).transpose()
         j = 0
         for con in res:
