@@ -20,10 +20,10 @@ def store_test_results(net, dobj, store_path, batch_size=32):
                 st[j] = cur[i]
                 j += 1
         st = st.transpose()
-        with h5py.File(store_path, 'w+') as FILE:
+        with h5py.File(store_path, 'w') as FILE:
             FILE.create_dataset('data', data=st)
     else:
-        with h5py.File(store_path, 'w+') as FILE:
+        with h5py.File(store_path, 'w') as FILE:
             FILE.create_dataset('data', data=res)
     
     print("Stored data at: {}\n".format(store_path))
