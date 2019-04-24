@@ -139,7 +139,7 @@ def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_na
     x_pt_2 = dobj.loaded_test_snr
     
     if type(x_pt_2) == list:
-        x_pt_2 = x_pt_2[0]
+        x_pt_2 = np.array(x_pt_2)
     
     x_pt_2 = x_pt_2.flatten()
     
