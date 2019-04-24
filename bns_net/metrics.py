@@ -14,7 +14,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
             if sample[0] < sample[1]:
                 SNR.append((i, FILE['data'][i][0]))
         
-        x_pt = [pt[1] for pt in SNR]
+        x_pt = sort([pt[1] for pt in SNR])
         y_pt = []
         for pt in x_pt:
             c = 0
