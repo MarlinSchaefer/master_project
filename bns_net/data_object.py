@@ -308,6 +308,7 @@ class DataSet():
         return(snr_segment)
     
     def get_formatted_data(self, t, st, slice=None, point=None, retDiffOnly=False):
+        print("Now formatting {}: {}".format(t, st))
         #Sanity checks and defining parameters
         if t == 'training':
             if st in ['train_data', 'train_labels', 'train_snr_calculated']:
@@ -375,10 +376,7 @@ class DataSet():
             else:
                 raise RuntimeError('Got an unsupported kind of data handle: {}'.format(s))
                 
-            if not self.loaded_data[t][s] == None:
-                self.loaded_data[t][s] = d[0] + self.loaded_data[t][s] + d[1]
-            else:
-                self.loaded_data[t][s] = d[0] + d[1]
+            self.join_formatted(t, s, d[0], d[1])
             
             self.loaded_indices[t][s] = [low_ind, high_ind]
             
@@ -418,15 +416,42 @@ class DataSet():
     def loaded_test_snr(self, slice=None):
         return(self.loaded_data['testing']['test_snr_calculated'])
     
+    #def get_set(self, slice=None):
+        #print("Called get set")
+        #if self.retType == 'formatted':
+            #return(((self.get_formatted_data('training', 'train_data', slice=slice),
+                    #self.get_formatted_data('training', 'train_labels', slice=slice),
+                    #self.get_formatted_data('training', 'train_snr_calculated', slice=slice)),
+                    #(self.get_formatted_data('testing', 'test_data', slice=slice),
+                     #self.get_formatted_data('testing', 'test_labels', slice=slice),
+                     #self.get_formatted_data('testing', 'test_snr_calculated', slice=slice)))
+            #)
+        #elif self.retType == 'raw':
+            #return(((self.get_raw_data('training', 'train_data', slice=slice),
+                    #self.get_raw_data('training', 'train_labels', slice=slice),
+                    #self.get_raw_data('training', 'train_snr_calculated', slice=slice)),
+                    #(self.get_raw_data('testing', 'test_data', slice=slice),
+                     #self.get_raw_data('testing', 'test_labels', slice=slice),
+                     #self.get_raw_data('testing', 'test_snr_calculated', slice=slice)))
+            #)
+    
     def get_set(self, slice=None):
+        print("Called get set")
         if self.retType == 'formatted':
-            return(((self.get_formatted_data('training', 'train_data', slice=slice),
-                    self.get_formatted_data('training', 'train_labels', slice=slice),
-                    self.get_formatted_data('training', 'train_snr_calculated', slice=slice)),
-                    (self.get_formatted_data('testing', 'test_data', slice=slice),
-                     self.get_formatted_data('testing', 'test_labels', slice=slice),
-                     self.get_formatted_data('testing', 'test_snr_calculated', slice=slice)))
-            )
+            print("Pre training data")
+            tr_d = self.get_formatted_data('training', 'train_data', slice=slice)
+            print("Pre training labels")
+            tr_l = self.get_formatted_data('training', 'train_labels', slice=slice)
+            print("Pre training SNR")
+            tr_s = self.get_formatted_data('training', 'train_snr_calculated', slice=slice)
+            print("Pre testing data")
+            te_d = self.get_formatted_data('testing', 'test_data', slice=slice)
+            print("Pre testing labels")
+            te_l = self.get_formatted_data('testing', 'test_labels', slice=slice)
+            print("Pre testing SNR")
+            te_s = self.get_formatted_data('testing', 'test_snr_calculated', slice=slice)
+            print("Loaded everything, now returning")
+            return(((tr_d, tr_l, tr_s), (te_d, te_l, te_s)))
         elif self.retType == 'raw':
             return(((self.get_raw_data('training', 'train_data', slice=slice),
                     self.get_raw_data('training', 'train_labels', slice=slice),
@@ -474,4 +499,19 @@ class DataSet():
         
         self.__init_indices()
         self.__init_data()
+    
+    def join_formatted(self, t, s, part1, part2):
+        if part1 == None:
+            part1 = []
+        if part2 == None:
+            part2 = []
+        if self.loaded_data[t][s] == None:
+            self.loaded_data[t][s] = part1 + part2
+        else:
+            self.loaded_data[t][s] = part1 + self.loaded_data[t][s] + part2
+        
+        if self.loaded_data[t][s] == []:
+            self.loaded_data[t][s] = None
+        
+        return
         

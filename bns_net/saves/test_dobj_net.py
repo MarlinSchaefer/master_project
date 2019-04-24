@@ -89,6 +89,8 @@ def compile_model(model):
 def get_data_obj(file_path):
     class CustomDataSet(DataSet):
         def format_data_segment(self, data):
+            if data == []:
+                return(data)
             tmp = np.array(data).transpose((2, 1, 0))
             ret = [np.zeros((2, len(data[0]), len(data))) for i in range(7)]
             ret[0][0] = tmp[0]
@@ -122,6 +124,61 @@ def get_data_obj(file_path):
                 ret[1].append([1, 0] if bool(l[1]) else [0, 1])
             ret = [np.array(dat) for dat in ret]
             return(ret)
+        
+        def join_formatted(self, t, s, part1, part2):
+            if part1 == None:
+                part1 = []
+            if part2 == None:
+                part2 = []
+            if self.loaded_data[t][s] == None:
+                self.loaded_data[t][s] = []
+            
+            if s in ['train_data', 'test_data']:
+                max_ind = max([len(part1), len(self.loaded_data[t][s]), len(part2)])
+                if max_ind == 0:
+                    self.loaded_data[t][s] = None
+                    return
+                
+                if part1 == []:
+                    part1 = [[] for i in range(max_ind)]
+                if part2 == []:
+                    part2 = [[] for i in range(max_ind)]
+                if self.loaded_data[t][s] == []:
+                    self.loaded_data[t][s] = [[] for i in range(max_ind)]
+                
+                self.loaded_data[t][s] = [np.array(list(part1[i]) + list(self.loaded_data[t][s][i]) + list(part2[i])) for i in range(max_ind)]
+                
+                if self.loaded_data[t][s] == [[] for i in range(max_ind)]:
+                    self.loaded_data[t][s] = None
+                return
+            elif s in ['train_labels', 'test_labels']:
+                if part1 == None or part1 == []:
+                    part1 = [[], []]
+                if part2 == None or part2 == []:
+                    part2 = [[], []]
+                if self.loaded_data[t][s] == None or self.loaded_data[t][s] == []:
+                    self.loaded_data[t][s] = [[], []]
+                
+                self.loaded_data[t][s] = [np.array(list(part1[0]) + list(self.loaded_data[t][s][0]) + list(part2[0])), np.array(list(part1[1]) + list(self.loaded_data[t][s][1]) + list(part2[1]))]
+                
+                if self.loaded_data[t][s] == [[], []]:
+                    self.loaded_data[t][s] = None
+                
+                return
+            elif s in ['train_snr_calculated', 'test_snr_calculated']:
+                if part1 == None:
+                    part1 = []
+                if part2 == None:
+                    part2 = []
+                if self.loaded_data[t][s] == None:
+                    self.loaded_data[t][s] = part1 + part2
+                else:
+                    self.loaded_data[t][s] = part1 + self.loaded_data[t][s] + part2
+                
+                if self.loaded_data[t][s] == []:
+                    self.loaded_data[t][s] = None
+                
+                return
     
     return(CustomDataSet(file_path)) 
 
