@@ -238,7 +238,7 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['net_name'] = net_name
     opt_arg['temp_name'] = temp_name
     opt_arg.update(run_net_defaults())
-    if opt_arg['use_data_object'] == 'None':
+    if opt_arg['use_data_object'] == False:
         opt_arg['use_data_object'] = None
     
     wiki_data['programm_internals'] = {}
