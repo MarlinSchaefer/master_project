@@ -40,6 +40,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     plt.plot(x_pt, y_pt)
     plt.xlabel('SNR')
     plt.ylabel('#False alarms louder per 30 days')
+    plt.set_yscale('log')
     plt.savefig(image_path)
     if show:
         plt.show()
@@ -83,7 +84,8 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
         FILE.create_dataset('bins', data=act_bins)
         FILE.create_dataset('data', data=np.array(y_pt))
     
-    plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
+    plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
+    #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
     plt.xlabel('SNR')
     plt.ylabel('Fraction of signals louder than highest false positive')
     plt.savefig(image_path)
