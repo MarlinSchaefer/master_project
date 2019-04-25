@@ -514,4 +514,11 @@ class DataSet():
             self.loaded_data[t][s] = None
         
         return
+    
+    def get_file_properties(self):
+        ret = {}
+        with h5py.File(self.file_path, 'r') as FILE:
+            for k in FILE['parameter_space'].keys():
+                ret[str(k)] = FILE['parameter_space'][k]
+        return(ret)
         
