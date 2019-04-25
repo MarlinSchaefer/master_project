@@ -519,6 +519,6 @@ class DataSet():
         ret = {}
         with h5py.File(self.file_path, 'r') as FILE:
             for k in FILE['parameter_space'].keys():
-                ret[str(k)] = FILE['parameter_space'][k]
+                ret[str(k)] = FILE['parameter_space'][k].value
         return(ret)
         
