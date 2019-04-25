@@ -55,7 +55,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     with h5py.File(file_path, 'r') as predFile:
         try:
             with h5py.File(false_alarm_path, 'r') as falseAlarmFile:
-                true_vals = dobj.laoded_test_labels
+                true_vals = dobj.loaded_test_labels
                 max_false_snr = -np.inf
                 snr_vals = []
                 for i in range(len(true_vals[1])):
@@ -66,8 +66,8 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                         snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
                 
                 act_bins = np.arange(bins[0], bins[1], bins[2])
-                SNR_bins = np.zeros(len(act_bins))
-                norm_factor = np.zeros(len(act_bins))
+                SNR_bins = np.zeros(len(act_bins)+1)
+                norm_factor = np.zeros(len(act_bins)+1)
                 bin_order = np.digitize([pt[0] for pt in snr_vals], act_bins)
                 for i in range(len(snr_vals)):
                     norm_factor[bin_order[i]] += 1
@@ -83,7 +83,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
         FILE.create_dataset('bins', data=act_bins)
         FILE.create_dataset('data', data=np.array(y_pt))
     
-    plt.hist(act_bins, y_pt)
+    plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
     plt.xlabel('SNR')
     plt.ylabel('Fraction of signals louder than highest false positive')
     plt.savefig(image_path)
