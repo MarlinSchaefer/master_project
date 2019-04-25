@@ -66,6 +66,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                     else:
                         snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
                 
+                print("True vals: {}".format(true_vals))
                 act_bins = np.arange(bins[0], bins[1], bins[2])
                 SNR_bins = np.zeros(len(act_bins)+1)
                 norm_factor = np.zeros(len(act_bins)+1)
@@ -74,6 +75,9 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                     norm_factor[bin_order[i]] += 1
                     if snr_vals[i][1] > max_false_snr:
                         SNR_bins[bin_order[i]] += 1
+                
+                print("SNR_bins: {}".format(SNR_bins))
+                print("norm_factor: {}".format(norm_factor))
                 
                 y_pt = [SNR_bins[i] / norm_factor[i] if not norm_factor[i] == 0 else 0 for i in range(len(SNR_bins))]
         except IOError:
