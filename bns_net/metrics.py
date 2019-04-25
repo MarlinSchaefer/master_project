@@ -40,7 +40,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     plt.plot(x_pt, y_pt)
     plt.xlabel('SNR')
     plt.ylabel('#False alarms louder per 30 days')
-    plt.set_yscale('log')
+    plt.yscale('log')
     plt.savefig(image_path)
     if show:
         plt.show()
