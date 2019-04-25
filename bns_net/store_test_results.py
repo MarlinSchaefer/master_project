@@ -6,6 +6,8 @@ import generator as g
 def store_test_results(net, dobj, store_path, batch_size=32):
     res = net.predict_generator(g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size), verbose=1)
     
+    print(res)
+    
     if type(res) == list:
         shape = [0, 0]
         shape[0] = len(res[0])
