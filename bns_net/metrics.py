@@ -59,7 +59,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                 max_false_snr = -np.inf
                 snr_vals = []
                 for i in range(len(true_vals[1])):
-                    if true_vals[1][i][0] =< true_vals[1][i][1]:
+                    if true_vals[1][i][0] <= true_vals[1][i][1]:
                         if predFile['data'][i][1] > predFile['data'][i][2]:
                             max_false_snr = max(max_false_snr, predFile['data'][i][0])
                     else:
