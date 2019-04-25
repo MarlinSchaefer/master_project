@@ -8,7 +8,7 @@ import time
 from wiki import make_wiki_entry, read_json, model_to_string
 from ini_handeling import run_net_defaults, load_options
 from store_test_results import store_test_results
-from metrics import plot_false_alarm
+from metrics import plot_false_alarm, plot_sensitivity
 
 """
 TODO:
@@ -338,7 +338,10 @@ def run_net(net_name, temp_name, **kwargs):
         store_test_results(net, dobj, result_file_path, batch_size=opt_arg['batch_size'])
         plot_true_and_calc_from_file(result_file_path, dobj, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
         wiki_data['false_alarm_plot_path'] = os.path.join(get_store_path(), net_name + '_false_alarm_plot_' + t_string + '.png')
-        plot_false_alarm(dobj, result_file_path, wiki_data['false_alarm_plot_path'], show=opt_arg['show_false_alarm'])
+        false_alarm_path = plot_false_alarm(dobj, result_file_path, wiki_data['false_alarm_plot_path'], show=opt_arg['show_false_alarm'])
+        wiki_data['sensitivity_plot_path'] = os.path.join(get_store_path(), net_name + '_sensitivity_plot_' + t_string + '.png')
+        snr_range = dobj.get_file_properties()['snr']
+        plot_sensitivity(dobj, result_file_path, false_alarm_path, wiki_data['sensitivity_plot_path'], bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
     else:
         plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
     
