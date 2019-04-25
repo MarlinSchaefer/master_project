@@ -37,10 +37,10 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     with h5py.File(store_file_path, 'w') as FILE:
         FILE.create_dataset('data', data=np.array([x_pt, y_pt]))
     
-    plt.plot(x_pt, y_pt)
+    plt.semilogy(x_pt, y_pt)
     plt.xlabel('SNR')
     plt.ylabel('#False alarms louder per 30 days')
-    plt.yscale('log')
+    #plt.yscale('log')
     plt.savefig(image_path)
     if show:
         plt.show()
