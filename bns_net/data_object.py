@@ -177,9 +177,9 @@ class DataSet():
             try:
                 with h5py.File(self.file_path) as FILE:
                     l = len(FILE[t][s])
-                    low_ind = self.rel_ind_to_abs(slice[0], l)
+                    low_ind = max(self.rel_ind_to_abs(slice[0], l), 0)
                     
-                    high_ind = self.rel_ind_to_abs(slice[1], l)
+                    high_ind = min(self.rel_ind_to_abs(slice[1], l), l-1)
                     
                     if self.retType == 'formatted':
                         if retDiffOnly and not self.loaded_indices[t][s] == None:
@@ -346,8 +346,9 @@ class DataSet():
                 if not type(slice) in [list, tuple] or not len(slice) == 2:
                     raise ValueError('The slice option needs to be a list or tuple of length 2.')
             
-                low_ind = self.rel_ind_to_abs(slice[0], self.shape[s][0])
-                high_ind = self.rel_ind_to_abs(slice[1], self.shape[s][0])
+                low_ind = max(self.rel_ind_to_abs(slice[0], self.shape[s][0]), 0)
+                with h5py.File(self.file_path) as FILE:
+                    high_ind = min(self.rel_ind_to_abs(slice[1], self.shape[s][0]), len(FILE[t][s]))
             else:
                 low_ind = 0
                 high_ind = self.shape[s][0] - 1
