@@ -8,6 +8,7 @@ from store_test_results import store_test_results
 from metrics import plot_false_alarm, plot_sensitivity
 import imp
 from ini_handeling import evaluate_net_defaults
+from loss_plot import make_loss_plot
 
 def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     """Creates multiple important plots for the last and the best epoch.
