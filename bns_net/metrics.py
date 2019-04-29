@@ -152,7 +152,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     
     return(store_file_path)
 
-def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0, 1, 0.1), show=True):
+def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0, 1, 0.01), show=True):
     with h5py.File(file_path, 'r') as predFile:
         try:
             with h5py.File(false_alarm_path, 'r') as falseAlarmFile:
