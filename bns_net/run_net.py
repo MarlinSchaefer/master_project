@@ -159,6 +159,8 @@ def get_data(data_path, **opt_arg):
     else:
         return(load_data(data_path))
 
+from evaluate_nets import evaluate_training
+
 """
 Function to handle running a neural net.
 
@@ -325,39 +327,6 @@ def run_net(net_name, temp_name, **kwargs):
     if ignored_error:
         print(bcolors.WARNING + "This run ignored errors along the way!" + bcolors.ENDC)
     
-    #Plot the distribution of labels against predictions
-    if not opt_arg['use_data_object']:
-        train_calculated_snr, test_calculated_snr = load_calculated_snr(full_template_path)
-        unformatted_test_labels = load_testing_labels(full_template_path)
-    else:
-        train_calculated_snr = dobj.get_formatted_data('training', 'train_snr_calculated')
-        test_calculated_snr = dobj.get_formatted_data('testing', 'test_snr_calculated')
-        unformatted_test_labels = dobj.get_raw_data('testing', 'test_labels')
-    
-    t_string = date_to_file_string(wiki_data['training']['time_start'])
-    wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
-    if opt_arg['use_data_object']:
-        result_file_path = os.path.join(get_store_path(), net_name + '_predictions_' + t_string + '.hf5')
-        store_test_results(net, dobj, result_file_path, batch_size=opt_arg['batch_size'])
-        plot_true_and_calc_from_file(result_file_path, dobj, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
-        wiki_data['false_alarm_plot_path'] = os.path.join(get_store_path(), net_name + '_false_alarm_plot_' + t_string + '.png')
-        false_alarm_path = plot_false_alarm(dobj, result_file_path, wiki_data['false_alarm_plot_path'], show=opt_arg['show_false_alarm'])
-        wiki_data['sensitivity_plot_path'] = os.path.join(get_store_path(), net_name + '_sensitivity_plot_' + t_string + '.png')
-        snr_range = dobj.get_file_properties()['snr']
-        plot_sensitivity(dobj, result_file_path, false_alarm_path, wiki_data['sensitivity_plot_path'], bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
-    else:
-        plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
-    
-    #Plot the loss over some recorded history
-    wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
-    make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
-    #try:
-        #wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
-        #make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
-    #except IOError:
-        #print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
-    
-    
     #Store wiki data about the loss
     try:
         wiki_data['loss'] = read_json(os.path.join(get_store_path(), net_name + "_results.json"))
@@ -380,6 +349,54 @@ def run_net(net_name, temp_name, **kwargs):
                 wiki_data['loss']['min_training'] = (idx, pt)
         
         print(bcolors.OKGREEN + 'Could not store loss history in the wiki, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
+    
+    kwargs['best_epoch'] = wiki_data['loss']['min_testing'][0]
+    
+    #Create all plots
+    wik = evaluate_training(net_name, dobj, wiki_data['training']['time_start'], batch_size=opt_arg['batch_size'], **kwargs)
+    
+    #Store data to wiki
+    wiki_data['loss_plot_path'] = wik[0]
+    wiki_data['SNR_plot_path_last_epoch'] = wik[1]
+    wiki_data['false_alarm_plot_path_last_epoch'] = wik[2]
+    wiki_data['sensitivity_plot_path_last_epoch'] = wik[3]
+    wiki_data['SNR_plot_path_best_epoch'] = wik[4]
+    wiki_data['false_alarm_plot_path_best_epoch'] = wik[5]
+    wiki_data['sensitivity_plot_path_best_epoch'] = wik[6]
+    wiki_data['plot_options'] = wik[7]
+    
+    ##Plot the distribution of labels against predictions
+    #if not opt_arg['use_data_object']:
+        #train_calculated_snr, test_calculated_snr = load_calculated_snr(full_template_path)
+        #unformatted_test_labels = load_testing_labels(full_template_path)
+    #else:
+        #train_calculated_snr = dobj.get_formatted_data('training', 'train_snr_calculated')
+        #test_calculated_snr = dobj.get_formatted_data('testing', 'test_snr_calculated')
+        #unformatted_test_labels = dobj.get_raw_data('testing', 'test_labels')
+    
+    #t_string = date_to_file_string(wiki_data['training']['time_start'])
+    #wiki_data['SNR_plot_name'] = net_name + '_snr_' + t_string + '.png'
+    #if opt_arg['use_data_object']:
+        #result_file_path = os.path.join(get_store_path(), net_name + '_predictions_' + t_string + '.hf5')
+        #store_test_results(net, dobj, result_file_path, batch_size=opt_arg['batch_size'])
+        #plot_true_and_calc_from_file(result_file_path, dobj, os.path.join(net_path, wiki_data['SNR_plot_name']), show=opt_arg['show_snr_plot'], net_name=net_name)
+        #wiki_data['false_alarm_plot_path'] = os.path.join(get_store_path(), net_name + '_false_alarm_plot_' + t_string + '.png')
+        #false_alarm_path = plot_false_alarm(dobj, result_file_path, wiki_data['false_alarm_plot_path'], show=opt_arg['show_false_alarm'])
+        #wiki_data['sensitivity_plot_path'] = os.path.join(get_store_path(), net_name + '_sensitivity_plot_' + t_string + '.png')
+        #snr_range = dobj.get_file_properties()['snr']
+        #plot_sensitivity(dobj, result_file_path, false_alarm_path, wiki_data['sensitivity_plot_path'], bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
+    #else:
+        #plot_true_and_calc_partial(net, full_template_path, os.path.join(net_path, wiki_data['SNR_plot_name']), os.path.join(net_path, net_name + '.py'), batch_size=opt_arg['batch_size'], show=opt_arg['show_snr_plot'], net_name=net_name)
+    
+    ##Plot the loss over some recorded history
+    #wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
+    #make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
+    ##try:
+        ##wiki_data['loss_plot_name'] = net_name + '_loss_plot_' + t_string + '.png'
+        ##make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), os.path.join(get_store_path(), wiki_data['loss_plot_name']))
+    ##except IOError:
+        ##print(bcolors.OKGREEN + 'Could not create plot of the loss function, as the %s file could not be found.' % (net_name + '_results.json') + bcolors.ENDC)
+    
     wiki_data['ignored_errors'] = ignored_error
     wiki_data['template_properties'] = load_parameter_space(full_template_path)
     wiki_data['network'] = model_to_string(net)

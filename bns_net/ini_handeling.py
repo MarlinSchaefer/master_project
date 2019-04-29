@@ -41,3 +41,10 @@ def make_template_bank_defaults():
     config.read('defaults.ini')
     
     return((_section_to_dict(config, 'make_template_bank_wav'), _section_to_dict(config, 'make_template_bank_opt')))
+
+def evaluate_net_defaults():
+    config = ConfigParser.ConfigParser()
+    
+    config.read('defaults.ini')
+    
+    return(_section_to_dict('evaluate_nets'))
