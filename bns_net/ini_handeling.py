@@ -47,4 +47,4 @@ def evaluate_net_defaults():
     
     config.read('defaults.ini')
     
-    return(_section_to_dict('evaluate_nets'))
+    return(_section_to_dict(config, 'evaluate_nets'))
