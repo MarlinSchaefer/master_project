@@ -239,8 +239,8 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['net_name'] = net_name
     opt_arg['temp_name'] = temp_name
     opt_arg.update(run_net_defaults())
-    if opt_arg['use_data_object'] == False:
-        opt_arg['use_data_object'] = None
+    if opt_arg['dobj'] == False:
+        opt_arg['dobj'] = None
     
     wiki_data['programm_internals'] = {}
     
@@ -295,6 +295,9 @@ def run_net(net_name, temp_name, **kwargs):
     
     if set_template_file(temp_name, temp_path, [opt_arg, kwargs]):
         ignored_error = True
+    
+    if opt_arg['generate_templates_only']:
+        return
         
     wiki_data['template_generation']['time_end'] = time.gmtime(time.time())
     
