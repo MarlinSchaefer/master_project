@@ -359,11 +359,15 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['loss_plot_path'] = wik[0]
     wiki_data['SNR_plot_path_last_epoch'] = wik[1]
     wiki_data['false_alarm_plot_path_last_epoch'] = wik[2]
-    wiki_data['sensitivity_plot_path_last_epoch'] = wik[3]
-    wiki_data['SNR_plot_path_best_epoch'] = wik[4]
-    wiki_data['false_alarm_plot_path_best_epoch'] = wik[5]
-    wiki_data['sensitivity_plot_path_best_epoch'] = wik[6]
-    wiki_data['plot_options'] = wik[7]
+    wiki_data['false_alarm_plot_prob_path_last_epoch'] = wik[3]
+    wiki_data['sensitivity_plot_path_last_epoch'] = wik[4]
+    wiki_data['sensitivity_plot_prob_path_last_epoch'] = wik[5]
+    wiki_data['SNR_plot_path_best_epoch'] = wik[6]
+    wiki_data['false_alarm_plot_path_best_epoch'] = wik[7]
+    wiki_data['false_alarm_plot_prob_path_best_epoch'] = wik[8]
+    wiki_data['sensitivity_plot_path_best_epoch'] = wik[9]
+    wiki_data['sensitivity_plot_prob_path_best_epoch'] = wik[10]
+    wiki_data['plot_options'] = wik[11]
     
     ##Plot the distribution of labels against predictions
     #if not opt_arg['use_data_object']:

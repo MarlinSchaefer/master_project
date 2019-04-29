@@ -5,7 +5,7 @@ import os
 from make_snr_plot import plot_true_and_calc_from_file
 from evaluate_dual_output import evaluate_dual_output_form
 from store_test_results import store_test_results
-from metrics import plot_false_alarm, plot_sensitivity
+from metrics import plot_false_alarm, plot_sensitivity, plot_false_alarm_prob, plot_sensitivity_prob
 import imp
 from ini_handeling import evaluate_net_defaults
 from loss_plot import make_loss_plot
@@ -94,28 +94,52 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     
     tmp_false_alarm_path_last = plot_false_alarm(dobj, prediction_path_last, false_alarm_plot_path_last, show=opt_arg['show_false_alarm'])
     
+    false_alarm_plot_prob_path_last = os.path.join(get_store_path(), net_name + '_false_alarm_plot_prob_last_epoch_' + t_string + '.png')
+    
+    tmp_false_alarm_prob_path_last = plot_false_alarm_prob(dobj, prediction_path_last, false_alarm_plot_prob_path_last, show=opt_arg['show_false_alarm'])
+    
     false_alarm_plot_path_best = ''
     
+    false_alarm_plot_prob_path_best = ''
+    
     tmp_false_alarm_path_best = ''
+    
+    tmp_false_alarm_prob_path_best = ''
     
     if not net_best == None:
         false_alarm_plot_path_best = os.path.join(get_store_path(), net_name + '_false_alarm_plot_best_epoch_' + t_string + '.png')
         
+        false_alarm_plot_prob_path_best = os.path.join(get_store_path(), net_name + '_false_alarm_plot_prob_best_epoch_' + t_string + '.png')
+        
         tmp_false_alarm_path_best = plot_false_alarm(dobj, prediction_path_best, false_alarm_plot_path_best, show=opt_arg['show_false_alarm'])
+        
+        tmp_false_alarm_prob_path_best = plot_false_alarm_prob(dobj, prediction_path_best, false_alarm_plot_prob_path_best, show=opt_arg['show_false_alarm'])
     
     #Make sensitivity plots
     snr_range = dobj.get_file_properties()['snr']
     
     sensitivity_plot_path_last = os.path.join(get_store_path(), net_name + '_sensitivity_plot_last_epoch_' + t_string + '.png')
     
+    sensitivity_plot_prob_path_last = os.path.join(get_store_path(), net_name + '_sensitivity_plot_prob_last_epoch_' + t_string + '.png')
+    
     plot_sensitivity(dobj, prediction_path_last, tmp_false_alarm_path_last, sensitivity_plot_path_last, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
+    
+    plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
+    
+    sensitivity_plot_path_best = ''
+    
+    sensitivity_plot_prob_path_best = ''
     
     if not net_best == None:
         sensitivity_plot_path_best = os.path.join(get_store_path(), net_name + '_sensitivity_plot_best_epoch_' + t_string + '.png')
         
+        sensitivity_plot_prob_path_best = os.path.join(get_store_path(), net_name + '_sensitivity_plot_prob_best_epoch_' + t_string + '.png')
+        
         plot_sensitivity(dobj, prediction_path_best, tmp_false_alarm_path_best, sensitivity_plot_path_best, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
+        
+        plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
     
-    return((loss_plot_path, SNR_plot_path_last, false_alarm_plot_path_last, sensitivity_plot_path_last, SNR_plot_path_best, false_alarm_plot_path_best, sensitivity_plot_path_best, wiki_data))
+    return((loss_plot_path, SNR_plot_path_last, false_alarm_plot_path_last, false_alarm_plot_prob_path_last, sensitivity_plot_path_last, sensitivity_plot_prob_path_last, SNR_plot_path_best, false_alarm_plot_path_best, false_alarm_plot_prob_path_best, sensitivity_plot_path_best, sensitivity_plot_prob_path_best, wiki_data))
 
 
 #def main():
