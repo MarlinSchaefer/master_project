@@ -78,16 +78,16 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), loss_plot_path)
     
     #Make SNR plots
-    SNR_plot_last = os.path.join(get_store_path(), net_name + '_snr_last_epoch_' + t_string + '.png')
+    SNR_plot_path_last = os.path.join(get_store_path(), net_name + '_snr_last_epoch_' + t_string + '.png')
     
-    plot_true_and_calc_from_file(prediction_path_last, dobj, SNR_plot_last, show=opt_arg['show_snr_plot'], net_name=net_name + ' last epoch')
+    plot_true_and_calc_from_file(prediction_path_last, dobj, SNR_plot_path_last, show=opt_arg['show_snr_plot'], net_name=net_name + ' last epoch')
     
     SNR_plot_path_best = ''
     
     if not net_best == None:
         SNR_plot_path_best = os.path.join(get_store_path(), net_name + '_loss_plot_best_epoch_' + t_string + '.png')
         
-        plot_true_and_calc_from_file(prediction_path_best, dobj, SNR_plot_last, show=opt_arg['show_snr_plot'], net_name=net_name + ' best epoch')
+        plot_true_and_calc_from_file(prediction_path_best, dobj, SNR_plot_path_best, show=opt_arg['show_snr_plot'], net_name=net_name + ' best epoch')
     
     #Make false alarm plots
     false_alarm_plot_path_last = os.path.join(get_store_path(), net_name + '_false_alarm_plot_last_epoch' + t_string + '.png')
