@@ -5,7 +5,7 @@ ep = 150
 wiki_e = True
 
 if __name__ == "__main__":
-    run_net('lower_snr_3_net', 'small_snr_3_75000', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=True, overwrite_template_file=False, epochs=2, num_of_templates=200, gw_prob=0.5, use_data_object=True, show_snr_plot=False, custom_message='Trying to reach comparable sensitivities at SNR in [8.0, 15.0].', overwrite_net_file=True)
+    run_net('lower_snr_3_net', 'small_snr_3_75000', ini_file='testing_net.ini', snr=[10.0, 50.0], create_wiki_entry=True, overwrite_template_file=False, epochs=200, num_of_templates=200, gw_prob=0.5, use_data_object=True, show_snr_plot=False, custom_message='Trying to reach comparable sensitivities at SNR in [8.0, 15.0].', overwrite_net_file=True)
     #try:
         #run_net('collect_inception_net_6_rev_6', 'small_snr_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, custom_message='Generated large template file at more realistic SNRs.')
     #except:
