@@ -1,6 +1,6 @@
 import keras
 import numpy as np
-from run_net import get_store_path, filter_keys, date_to_file_string
+from run_net import filter_keys, date_to_file_string
 import os
 from make_snr_plot import plot_true_and_calc_from_file
 from evaluate_dual_output import evaluate_dual_output_form
@@ -10,7 +10,7 @@ import imp
 from ini_handeling import evaluate_net_defaults
 from loss_plot import make_loss_plot
 
-def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
+def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, **kwargs):
     """Creates multiple important plots for the last and the best epoch.
     
     Arguments
@@ -21,6 +21,8 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     dobj : object
         An instance of a DataSet object from the module data_object. It needs to contain
         all the data needed. (the data also needs to be loaded)
+    dir_path : str
+        String giving the path were all the data is supposed to be stored.
     t_start : object
         A datetime.datetime object containing the training starting time.
     batch_size : int
@@ -52,49 +54,49 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
         wiki_data[k] = str(v)
     
     t_string = date_to_file_string(t_start)
-    
-    net_last = keras.models.load_model(os.path.join(get_store_path(), net_name + '.hf5'))
+        
+    net_last = keras.models.load_model(os.path.join(dir_path, net_name + '.hf5'))
     
     #Load networks
     if not opt_arg['best_epoch'] == 0:
-        net_best = keras.models.load_model(os.path.join(get_store_path(), net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'))
+        net_best = keras.models.load_model(os.path.join(dir_path, net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'))
     else:
         net_best = None
     
     #Run predict generator on the test data for each net.
-    prediction_path_last = os.path.join(get_store_path(), net_name + '_predictions_last_epoch_' + t_string + '.hf5')
+    prediction_path_last = os.path.join(dir_path, net_name + '_predictions_last_epoch_' + t_string + '.hf5')
     
     store_test_results(net_last, dobj, prediction_path_last, batch_size=batch_size)
     
     prediction_path_best = ''
     
     if not net_best == None:
-        prediction_path_best = os.path.join(get_store_path(), net_name + '_predictions_best_epoch_' + t_string + '.hf5')
+        prediction_path_best = os.path.join(dir_path, net_name + '_predictions_best_epoch_' + t_string + '.hf5')
         
         store_test_results(net_best, dobj, prediction_path_best, batch_size=batch_size)
     
     #Create loss plot
-    loss_plot_path = os.path.join(get_store_path(), net_name + '_loss_plot_last_epoch_' + t_string + '.png')
-    make_loss_plot(os.path.join(get_store_path(), net_name + "_results.json"), loss_plot_path)
+    loss_plot_path = os.path.join(dir_path, net_name + '_loss_plot_last_epoch_' + t_string + '.png')
+    make_loss_plot(os.path.join(dir_path, net_name + "_results.json"), loss_plot_path)
     
     #Make SNR plots
-    SNR_plot_path_last = os.path.join(get_store_path(), net_name + '_snr_last_epoch_' + t_string + '.png')
+    SNR_plot_path_last = os.path.join(dir_path, net_name + '_snr_plot_last_epoch_' + t_string + '.png')
     
     plot_true_and_calc_from_file(prediction_path_last, dobj, SNR_plot_path_last, show=opt_arg['show_snr_plot'], net_name=net_name + ' last epoch')
     
     SNR_plot_path_best = ''
     
     if not net_best == None:
-        SNR_plot_path_best = os.path.join(get_store_path(), net_name + '_loss_plot_best_epoch_' + t_string + '.png')
+        SNR_plot_path_best = os.path.join(dir_path, net_name + '_snr_plot_best_epoch_' + t_string + '.png')
         
         plot_true_and_calc_from_file(prediction_path_best, dobj, SNR_plot_path_best, show=opt_arg['show_snr_plot'], net_name=net_name + ' best epoch')
     
     #Make false alarm plots
-    false_alarm_plot_path_last = os.path.join(get_store_path(), net_name + '_false_alarm_plot_last_epoch_' + t_string + '.png')
+    false_alarm_plot_path_last = os.path.join(dir_path, net_name + '_false_alarm_plot_last_epoch_' + t_string + '.png')
     
     tmp_false_alarm_path_last = plot_false_alarm(dobj, prediction_path_last, false_alarm_plot_path_last, show=opt_arg['show_false_alarm'])
     
-    false_alarm_plot_prob_path_last = os.path.join(get_store_path(), net_name + '_false_alarm_plot_prob_last_epoch_' + t_string + '.png')
+    false_alarm_plot_prob_path_last = os.path.join(dir_path, net_name + '_false_alarm_plot_prob_last_epoch_' + t_string + '.png')
     
     tmp_false_alarm_prob_path_last = plot_false_alarm_prob(dobj, prediction_path_last, false_alarm_plot_prob_path_last, show=opt_arg['show_false_alarm'])
     
@@ -107,9 +109,9 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     tmp_false_alarm_prob_path_best = ''
     
     if not net_best == None:
-        false_alarm_plot_path_best = os.path.join(get_store_path(), net_name + '_false_alarm_plot_best_epoch_' + t_string + '.png')
+        false_alarm_plot_path_best = os.path.join(dir_path, net_name + '_false_alarm_plot_best_epoch_' + t_string + '.png')
         
-        false_alarm_plot_prob_path_best = os.path.join(get_store_path(), net_name + '_false_alarm_plot_prob_best_epoch_' + t_string + '.png')
+        false_alarm_plot_prob_path_best = os.path.join(dir_path, net_name + '_false_alarm_plot_prob_best_epoch_' + t_string + '.png')
         
         tmp_false_alarm_path_best = plot_false_alarm(dobj, prediction_path_best, false_alarm_plot_path_best, show=opt_arg['show_false_alarm'])
         
@@ -118,9 +120,9 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     #Make sensitivity plots
     snr_range = dobj.get_file_properties()['snr']
     
-    sensitivity_plot_path_last = os.path.join(get_store_path(), net_name + '_sensitivity_plot_last_epoch_' + t_string + '.png')
+    sensitivity_plot_path_last = os.path.join(dir_path, net_name + '_sensitivity_plot_last_epoch_' + t_string + '.png')
     
-    sensitivity_plot_prob_path_last = os.path.join(get_store_path(), net_name + '_sensitivity_plot_prob_last_epoch_' + t_string + '.png')
+    sensitivity_plot_prob_path_last = os.path.join(dir_path, net_name + '_sensitivity_plot_prob_last_epoch_' + t_string + '.png')
     
     plot_sensitivity(dobj, prediction_path_last, tmp_false_alarm_path_last, sensitivity_plot_path_last, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
     
@@ -131,9 +133,9 @@ def evaluate_training(net_name, dobj, t_start, batch_size=32, **kwargs):
     sensitivity_plot_prob_path_best = ''
     
     if not net_best == None:
-        sensitivity_plot_path_best = os.path.join(get_store_path(), net_name + '_sensitivity_plot_best_epoch_' + t_string + '.png')
+        sensitivity_plot_path_best = os.path.join(dir_path, net_name + '_sensitivity_plot_best_epoch_' + t_string + '.png')
         
-        sensitivity_plot_prob_path_best = os.path.join(get_store_path(), net_name + '_sensitivity_plot_prob_best_epoch_' + t_string + '.png')
+        sensitivity_plot_prob_path_best = os.path.join(dir_path, net_name + '_sensitivity_plot_prob_best_epoch_' + t_string + '.png')
         
         plot_sensitivity(dobj, prediction_path_best, tmp_false_alarm_path_best, sensitivity_plot_path_best, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
         

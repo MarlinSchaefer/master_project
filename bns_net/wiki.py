@@ -39,9 +39,13 @@ def model_to_string(model):
         
     return(s)
 
-def export_to_wiki_file(data):
-    file_path = os.path.join(get_wiki_path(), 'wiki.txt')
-    file_already_exists = os.path.isfile(file_path)
+def export_to_wiki_file(data, path=None):
+    if path == None:
+        file_path = os.path.join(get_wiki_path(), 'wiki.txt')
+        file_already_exists = os.path.isfile(file_path)
+    else:
+        file_path = os.path.join(path, 'wiki.txt')
+        file_already_exists = os.path.isfile(file_path)
     
     with open(file_path, 'a+') as FILE:
         if file_already_exists:
@@ -53,7 +57,7 @@ def export_to_wiki_file(data):
         
     return()
 
-def make_wiki_entry(data):
+def make_wiki_entry(data, path=None):
     order = ['training', 'loss', 'network', 'loss', 'template_properties', 'programm_internals', 'template_generation']
     
     output = []
@@ -105,4 +109,4 @@ def make_wiki_entry(data):
                 
                 output.append('\n')
     
-    export_to_wiki_file(output)
+    export_to_wiki_file(output, path=path)

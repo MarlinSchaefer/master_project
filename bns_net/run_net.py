@@ -101,6 +101,7 @@ def _train_net(net, data_path, **opt_arg):
     """
     net_path = opt_arg['net_path']
     net_name = opt_arg['net_name']
+    store_results_path = opt_arg['store_results_path']
     hist = None
     
     #If everything is fine, train and evaluate the net
@@ -122,10 +123,10 @@ def _train_net(net, data_path, **opt_arg):
             if not opt_arg['use_data_object']:
                 #NOTE: The module needs to have a method 'train_model', which returns the trained model.
                 net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-                net = net_mod.train_model(net, data_path, net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
+                net = net_mod.train_model(net, data_path, store_results_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
             else:
                 net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-                net = net_mod.train_model(net, opt_arg['dobj'], net_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
+                net = net_mod.train_model(net, opt_arg['dobj'], store_results_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
         except IOError:
             raise NameError('There is no net named %s in %s.' % (net_name, net_path))
             return()
@@ -138,7 +139,7 @@ def _train_net(net, data_path, **opt_arg):
             train_labels = opt_arg['dobj'].loaded_train_labels
             hist = net.fit(train_data, train_labels, epochs=opt_arg['epochs'])
         
-    net.save(os.path.join(net_path, net_name + '.hf5'))
+    net.save(os.path.join(store_results_path, net_name + '.hf5'))
         
     #print(net.evaluate(test_data, test_labels))
     
@@ -240,6 +241,24 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['temp_path'] = get_templates_path()
     opt_arg['net_name'] = net_name
     opt_arg['temp_name'] = temp_name
+    
+    i = 0
+    created_dir = False
+    dir_path = ''
+    while not created_dir:
+        try:
+            if i == 0:
+                dir_path = os.path.join(get_store_path(), net_name + '_' + t_string)
+            else:
+                dir_path = os.path.join(get_store_path(), net_name + '_' + t_string + '(' + str(i) + ')')
+            os.mkdir(dir_path)
+            created_dir = True
+        except OSError:
+            i += 1
+            pass
+    
+    opt_arg['store_results_path'] = dir_path
+    
     opt_arg.update(run_net_defaults())
     if opt_arg['dobj'] == False:
         opt_arg['dobj'] = None
@@ -353,7 +372,7 @@ def run_net(net_name, temp_name, **kwargs):
     kwargs['best_epoch'] = wiki_data['loss']['min_testing'][0]
     
     #Create all plots
-    wik = evaluate_training(net_name, dobj, wiki_data['training']['time_start'], batch_size=opt_arg['batch_size'], **kwargs)
+    wik = evaluate_training(net_name, dobj, opt_arg['store_results_path'], wiki_data['training']['time_start'], batch_size=opt_arg['batch_size'], **kwargs)
     
     #Store data to wiki
     wiki_data['loss_plot_path'] = wik[0]
@@ -407,5 +426,7 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['custom_message'] = opt_arg['custom_message']
     
     #Create a wiki-entry
+    #Call twice to store with the network and to append to the general file.
     if opt_arg['create_wiki_entry']:
         make_wiki_entry(wiki_data)
+        make_wiki_entry(wiki_data, path=opt_arg['store_results_path'])
