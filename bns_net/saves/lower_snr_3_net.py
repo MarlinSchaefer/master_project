@@ -212,7 +212,7 @@ def get_model_memory_usage(batch_size, model):
 def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=32):
     print("Epochs: {}\nEpoch_break={}".format(epochs, epoch_break))
     print("Net path: {}".format(net_path))
-    name = __file__[:-4]
+    name = os.path.basename(__file__)[:-4]
     
     #Store the results of training (i.e. the loss)
     results = []
