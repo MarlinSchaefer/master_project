@@ -123,11 +123,11 @@ def _train_net(net, data_path, **opt_arg):
             if not opt_arg['use_data_object']:
                 #NOTE: The module needs to have a method 'train_model', which returns the trained model.
                 net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
-                print("opt_arg['store_results_path']: {}".format(opt_arg['store_results_path']))
-                print("Store results path: {}".format(store_results_path))
                 net = net_mod.train_model(net, data_path, store_results_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
             else:
                 net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
+                print("opt_arg['store_results_path']: {}".format(opt_arg['store_results_path']))
+                print("Store results path: {}".format(store_results_path))
                 net = net_mod.train_model(net, opt_arg['dobj'], store_results_path, epochs=opt_arg['epochs'], epoch_break=opt_arg['epoch_break'], batch_size=opt_arg['batch_size'])
         except IOError:
             raise NameError('There is no net named %s in %s.' % (net_name, net_path))
