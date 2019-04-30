@@ -227,6 +227,9 @@ Notes:
            parameter and needs to return the trained model.
 """
 def run_net(net_name, temp_name, **kwargs):
+    wiki_data['time_init'] = time.gmtime(time.time())
+    t_string = date_to_file_string(wiki_data['time_init'])
+    
     if 'ini_file' in kwargs and os.path.isfile(kwargs['ini_file']):
         kwargs, temp = filter_keys(load_options(kwargs['ini_file']), kwargs)
         kwargs.update(temp)
@@ -372,7 +375,7 @@ def run_net(net_name, temp_name, **kwargs):
     kwargs['best_epoch'] = wiki_data['loss']['min_testing'][0]
     
     #Create all plots
-    wik = evaluate_training(net_name, dobj, opt_arg['store_results_path'], wiki_data['training']['time_start'], batch_size=opt_arg['batch_size'], **kwargs)
+    wik = evaluate_training(net_name, dobj, opt_arg['store_results_path'], wiki_data['time_init'], batch_size=opt_arg['batch_size'], **kwargs)
     
     #Store data to wiki
     wiki_data['loss_plot_path'] = wik[0]
