@@ -51,6 +51,7 @@ class progress_tracker():
         
         self.last_string_length = len(out_str)
         
+        #return('\r' + out_str + back)
         return(back + out_str)
     
     def print_progress_bar(self, update=True):
