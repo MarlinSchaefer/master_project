@@ -51,7 +51,7 @@ class progress_tracker():
         
         self.last_string_length = len(out_str)
         
-        return('\r' + back + out_str)
+        return(back + '\r' + out_str)
         #return(back + out_str)
     
     def print_progress_bar(self, update=True):
@@ -60,7 +60,7 @@ class progress_tracker():
             self._printed_header = True
         
         if update:
-            sys.stdout.write('\r' + self.get_print_string())
+            sys.stdout.write(self.get_print_string())
             sys.stdout.flush()
             if self.steps_taken == self.num_of_steps:
                 self.print_final(update=update)
