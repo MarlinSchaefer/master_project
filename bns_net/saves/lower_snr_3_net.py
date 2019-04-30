@@ -277,6 +277,8 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
             print(curr_counter)
             
             #Store model after each training-cycle
+            print("Net path before saving: {}".format(net_path))
+            print("Trying to save at: {}".format(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5")))
             model.save(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5"))
             print("Stored net at: {}".format(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5")))
             
