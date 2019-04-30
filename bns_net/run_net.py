@@ -227,6 +227,7 @@ Notes:
            parameter and needs to return the trained model.
 """
 def run_net(net_name, temp_name, **kwargs):
+    wiki_data = {}
     wiki_data['time_init'] = time.gmtime(time.time())
     t_string = date_to_file_string(wiki_data['time_init'])
     
@@ -236,7 +237,6 @@ def run_net(net_name, temp_name, **kwargs):
         del temp
     ignored_error = False
     
-    wiki_data = {}
     opt_arg = {}
     
     #Properties for this function
