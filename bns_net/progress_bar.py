@@ -47,9 +47,11 @@ class progress_tracker():
         else:
             back = ''
         
+        #back = '\b \b' * self.last_string_length
+        
         self.last_string_length = len(out_str)
         
-        return('\r' + back + out_str)
+        return(back + '\r' + out_str)
     
     def print_progress_bar(self, update=True):
         if not self._printed_header:
