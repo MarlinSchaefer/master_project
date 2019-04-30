@@ -42,16 +42,16 @@ class progress_tracker():
         
         out_str = curr_str + '/' + tot_str + ': ' + s + ' ' + perc_str + '%' + ' ETA: ' + eta
         
-        if self.last_string_length > len(out_str):
-            back = '\b \b' * (self.last_string_length - len(out_str))
-        else:
-            back = ''
+        #if self.last_string_length > len(out_str):
+            #back = '\b \b' * (self.last_string_length - len(out_str))
+        #else:
+            #back = ''
         
-        #back = '\b \b' * self.last_string_length
+        back = '\b \b' * self.last_string_length
         
         self.last_string_length = len(out_str)
         
-        return(back + '\r' + out_str)
+        return(back + out_str)
     
     def print_progress_bar(self, update=True):
         if not self._printed_header:
