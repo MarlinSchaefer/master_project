@@ -14,7 +14,6 @@ from pycbc.detector import Detector
 import sys
 from progress_bar import progress_tracker
 from ini_handeling import make_template_bank_defaults
-import lal
 
 """
 TODO: Implement this function which should return a list of dictionaries

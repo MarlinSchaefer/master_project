@@ -2,7 +2,6 @@ from pycbc.noise import noise_from_string
 from pycbc.filter import resample_to_delta_t, matched_filter
 from pycbc.waveform import get_td_waveform
 from pycbc.psd import interpolate
-from detection_pipeline_mod import get_snr_timeseries, get_output_timeseries
 from make_template_bank_bns import detector_projection, set_temp_offset, rescale_to_snr
 import random as r
 from run_net import get_store_path
