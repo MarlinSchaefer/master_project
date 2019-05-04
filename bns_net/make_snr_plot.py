@@ -6,7 +6,7 @@ import keras
 import h5py
 import imp
 import os
-from run_net import get_store_path
+from aux_functions import get_store_path
 from progress_bar import progress_tracker
 from generator import DataGeneratorMultInput
 
