@@ -4,7 +4,8 @@ from aux_functions import filter_keys, date_to_file_string
 import os
 from make_snr_plot import plot_true_and_calc_from_file
 from evaluate_dual_output import evaluate_dual_output_form
-from store_test_results import store_test_results, store_full_results
+from store_test_results import store_test_results
+from store_test_results import store_full_results
 from metrics import plot_false_alarm, plot_sensitivity, plot_false_alarm_prob, plot_sensitivity_prob
 import imp
 from ini_handeling import evaluate_net_defaults
