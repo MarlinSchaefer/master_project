@@ -1,7 +1,7 @@
 import numpy as np
 import keras
 from load_data import load_testing_data, load_testing_labels, load_testing_calculated_snr
-from run_net import get_store_path
+from aux_functions import get_store_path
 import os
 import matplotlib.pyplot as plt
 from make_snr_plot import _do_plot
