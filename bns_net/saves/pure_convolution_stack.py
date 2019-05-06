@@ -76,8 +76,8 @@ def get_model():
     x = keras.layers.MaxPooling1D(4)(x)
     x = keras.layers.Flatten()
     
-    out_1 = keras.layers.Dense(1, name='SNR_out')
-    out_2 = keras.layers.Dense(2, name='Bool_out')
+    out_1 = keras.layers.Dense(1, name='SNR_out')(x)
+    out_2 = keras.layers.Dense(2, name='Bool_out')(x)
     
     model = keras.models.Model(inputs=[inp], outputs=[out_1, out_2])
     
