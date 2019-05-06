@@ -2,6 +2,8 @@ import numpy as np
 import os
 from run_net import get_store_path
 import h5py
+import gc
+import time
 
 #TODO: Add load functions without output
 
@@ -9,17 +11,15 @@ class DataSet():
     def __init__(self, file_path='', retType='formatted'):
         self.set_file_path(file_path)
         
-        if str(retType) == 'formatted':
-            self.retType = str(retType)
-        elif str(retType) == 'raw':
-            self.retType = str(retType)
-        else:
-            raise ValueError("The retType has to be either 'formatted' or 'raw'. Your input was {}.".format(str(retType)))
+        self.set_retType(retType)
+        self.t_values = ['training', 'testing']
+        self.s_values = ['train_data', 'train_labels', 'train_snr_calculated', 'test_data', 'test_labels', 'test_snr_calculated']
         
         self.__init_indices()
         self.__init_data()
     
     def set_file_path(self, file_path):
+        gc.collect()
         if type(file_path) == str:
             self.file_path = file_path
         else:
@@ -500,7 +500,7 @@ class DataSet():
         
         self.__init_indices()
         self.__init_data()
-    
+        
     def join_formatted(self, t, s, part1, part2):
         if part1 == None:
             part1 = []
@@ -522,4 +522,24 @@ class DataSet():
             for k in FILE['parameter_space'].keys():
                 ret[str(k)] = FILE['parameter_space'][k].value
         return(ret)
+    
+    def set_retType(self, retType):
+        if str(retType) == 'formatted':
+            self.retType = str(retType)
+        elif str(retType) == 'raw':
+            self.retType = str(retType)
+        else:
+            raise ValueError("The retType has to be either 'formatted' or 'raw'. Your input was {}.".format(str(retType)))
+    
+    def unload_type(self, t, s):
+        if t in self.t_values and s in self.s_values:
+            del self.loaded_data[t][s]
+            gc.collect()
+            self.loaded_data[t][s] = None
+            
+            del self.loaded_indices[t][s]
+            gc.collect()
+            self.loaded_indices[t][s] = None
+        else:
+            raise ValueError('Tried to unload a not existing part of the data.')
         
