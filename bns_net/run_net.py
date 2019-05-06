@@ -162,7 +162,7 @@ def get_data(data_path, **opt_arg):
     else:
         return(load_data(data_path))
 
-from evaluate_nets import evaluate_training
+from evaluate_nets import evaluate_training, evaluate_training_on_testing
 
 """
 Function to handle running a neural net.
@@ -392,6 +392,21 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['sensitivity_plot_path_best_epoch'] = wik[9]
     wiki_data['sensitivity_plot_prob_path_best_epoch'] = wik[10]
     wiki_data['plot_options'] = wik[11]
+    
+    if opt_arg['evaluate_on_large_testing_set']:
+        wik = evaluate_training_on_testing(net_name, dobj, opt_arg['store_results_path'], wiki_data['time_init'], batch_size=opt_arg['batch_size'], **kwargs)
+    
+        #Store data to wiki
+        wiki_data['SNR_plot_path_last_epoch_full_testing'] = wik[0]
+        wiki_data['false_alarm_plot_path_last_epoch_full_testing'] = wik[1]
+        wiki_data['false_alarm_plot_prob_path_last_epoch_full_testing'] = wik[2]
+        wiki_data['sensitivity_plot_path_last_epoch_full_testing'] = wik[3]
+        wiki_data['sensitivity_plot_prob_path_last_epoch_full_testing'] = wik[4]
+        wiki_data['SNR_plot_path_best_epoch_full_testing'] = wik[5]
+        wiki_data['false_alarm_plot_path_best_epoch_full_testing'] = wik[6]
+        wiki_data['false_alarm_plot_prob_path_best_epoch_full_testing'] = wik[7]
+        wiki_data['sensitivity_plot_path_best_epoch_full_testing'] = wik[8]
+        wiki_data['sensitivity_plot_prob_path_best_epoch_full_testing'] = wik[9]
     
     ##Plot the distribution of labels against predictions
     #if not opt_arg['use_data_object']:
