@@ -191,6 +191,9 @@ def get_model_memory_usage(batch_size, model):
     gbytes = np.round(total_memory / (1024.0 ** 3), 3)
     return gbytes
 
+def get_generator():
+    return(g.DataGenerator)
+
 def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=32):
     print("Epochs: {}\nEpoch_break={}".format(epochs, epoch_break))
     print("Net path: {}".format(net_path))
@@ -237,8 +240,11 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
         
         print("Expected memory_size: {}".format(get_model_memory_usage(batch_size, model)))
         
-        training_generator = g.DataGenerator(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
-        testing_generator = g.DataGenerator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
+        training_generator = get_generator()
+        testing_generator = get_generator()
+        
+        training_generator = training_generator(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
+        testing_generator = testing_generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
         
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
