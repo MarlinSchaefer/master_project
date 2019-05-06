@@ -237,8 +237,8 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
         
         print("Expected memory_size: {}".format(get_model_memory_usage(batch_size, model)))
         
-        training_generator = g.DataGeneratorMultInput(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
-        testing_generator = g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
+        training_generator = g.DataGenerator(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
+        testing_generator = g.DataGenerator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
         
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
