@@ -9,10 +9,11 @@ from metrics import plot_false_alarm, plot_sensitivity, plot_false_alarm_prob, p
 import imp
 from ini_handeling import evaluate_net_defaults
 from loss_plot import make_loss_plot
+import generator as g
 
 testing_file_names = ['testing_set_injections_100000_1.hf5', 'testing_set_injections_100000_2.hf5', 'testing_set_injections_100000_3.hf5', 'testing_set_injections_100000_4.hf5', 'testing_set_injections_100000_5.hf5']
 
-def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, **kwargs):
+def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generator=g.DataGeneratorMultInput, **kwargs):
     """Creates multiple important plots for the last and the best epoch.
     
     Arguments
@@ -68,14 +69,14 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, **kwargs
     #Run predict generator on the test data for each net.
     prediction_path_last = os.path.join(dir_path, net_name + '_predictions_last_epoch_' + t_string + '.hf5')
     
-    store_test_results(net_last, dobj, prediction_path_last, batch_size=batch_size)
+    store_test_results(net_last, dobj, prediction_path_last, batch_size=batch_size, generator=generator)
     
     prediction_path_best = ''
     
     if not net_best == None:
         prediction_path_best = os.path.join(dir_path, net_name + '_predictions_best_epoch_' + t_string + '.hf5')
         
-        store_test_results(net_best, dobj, prediction_path_best, batch_size=batch_size)
+        store_test_results(net_best, dobj, prediction_path_best, batch_size=batch_size, generator=generator)
     
     #Create loss plot
     loss_plot_path = os.path.join(dir_path, net_name + '_loss_plot_last_epoch_' + t_string + '.png')
@@ -145,7 +146,7 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, **kwargs
     
     return((loss_plot_path, SNR_plot_path_last, false_alarm_plot_path_last, false_alarm_plot_prob_path_last, sensitivity_plot_path_last, sensitivity_plot_prob_path_last, SNR_plot_path_best, false_alarm_plot_path_best, false_alarm_plot_prob_path_best, sensitivity_plot_path_best, sensitivity_plot_prob_path_best, wiki_data))
 
-def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=32, testing_files=None, **kwargs):
+def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=32, generator=g.DataGeneratorMultInput ,testing_files=None, **kwargs):
     """Creates multiple important plots for the last and the best epoch.
     
     Arguments
@@ -226,9 +227,9 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
         dobj.unload_all()
         dobj.get_set()
         
-        store_test_results(net_last, dobj, tmp_prediction_paths_last[-1], batch_size=batch_size)
+        store_test_results(net_last, dobj, tmp_prediction_paths_last[-1], batch_size=batch_size, generator=generator)
         if not net_best == None:
-            store_test_results(net_best, dobj, tmp_prediction_paths_best, batch_size=batch_size)
+            store_test_results(net_best, dobj, tmp_prediction_paths_best, batch_size=batch_size, generator=generator)
     
     prediction_path_last = os.path.join(dir_path, net_name + '_predictions_last_epoch_full_testing_' + t_string + '.hf5')
     join_test_results(tmp_prediction_paths_last, prediction_path_last, delete_copied_files=True)

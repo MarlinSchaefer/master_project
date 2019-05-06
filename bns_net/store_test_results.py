@@ -5,8 +5,8 @@ import generator as g
 import gc
 import os
 
-def store_test_results(net, dobj, store_path, batch_size=32):
-    res = net.predict_generator(g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size, shuffle=False), verbose=1)
+def store_test_results(net, dobj, store_path, batch_size=32, generator=g.DataGeneratorMultInput):
+    res = net.predict_generator(generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size, shuffle=False), verbose=1)
     
     print(res)
     

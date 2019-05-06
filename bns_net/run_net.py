@@ -336,6 +336,7 @@ def run_net(net_name, temp_name, **kwargs):
         opt_arg['dobj'] = net_mod.get_data_obj(full_template_path)
         dobj = opt_arg['dobj']
         dobj.get_set()
+        generator = net_mod.get_generator()
     
     #Training takes place here
     if not opt_arg['only_print_image']:
@@ -377,7 +378,7 @@ def run_net(net_name, temp_name, **kwargs):
     kwargs['best_epoch'] = wiki_data['loss']['min_testing'][0]
     
     #Create all plots
-    wik = evaluate_training(net_name, dobj, opt_arg['store_results_path'], wiki_data['time_init'], batch_size=opt_arg['batch_size'], **kwargs)
+    wik = evaluate_training(net_name, dobj, opt_arg['store_results_path'], wiki_data['time_init'], batch_size=opt_arg['batch_size'], generator=generator, **kwargs)
     
     #Store data to wiki
     wiki_data['loss_plot_path'] = wik[0]
@@ -394,7 +395,7 @@ def run_net(net_name, temp_name, **kwargs):
     wiki_data['plot_options'] = wik[11]
     
     if opt_arg['evaluate_on_large_testing_set']:
-        wik = evaluate_training_on_testing(net_name, dobj, opt_arg['store_results_path'], wiki_data['time_init'], batch_size=opt_arg['batch_size'], **kwargs)
+        wik = evaluate_training_on_testing(net_name, dobj, opt_arg['store_results_path'], wiki_data['time_init'], batch_size=opt_arg['batch_size'], generator=generator, **kwargs)
     
         #Store data to wiki
         wiki_data['SNR_plot_path_last_epoch_full_testing'] = wik[0]
