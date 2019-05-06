@@ -33,7 +33,7 @@ def store_test_results(net, dobj, store_path, batch_size=32):
     
     return(store_path)
 
-def join_test_result(files, return_path, delete_copied_files=False):
+def join_test_results(files, return_path, delete_copied_files=False):
     if not type(files) == list or type(files) == str:
         raise ValueError("The argument of 'join_test_result' has to be either a string or a list of strings.")
     
