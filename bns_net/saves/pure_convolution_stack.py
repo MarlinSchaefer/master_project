@@ -53,7 +53,7 @@ def get_model():
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.Activation('relu')(x)
     
-    x = add(keras.layers.MaxPooling1D(4)(x)
+    x = keras.layers.MaxPooling1D(4)(x)
     
     x = keras.layers.Conv1D(128, 16)(x)
     x = keras.layers.BatchNormalization()(x)
@@ -63,7 +63,7 @@ def get_model():
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.Activation('relu')(x)
     
-    model.add(keras.layers.MaxPooling1D(4))
+    x = keras.layers.MaxPooling1D(4)(x)
     
     x = keras.layers.Conv1D(256, 16)(x)
     x = keras.layers.BatchNormalization()(x)
