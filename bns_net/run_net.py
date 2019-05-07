@@ -354,7 +354,7 @@ def run_net(net_name, temp_name, **kwargs):
     
     #Store wiki data about the loss
     try:
-        wiki_data['loss'] = read_json(os.path.join(get_store_path(), net_name + "_results.json"))
+        wiki_data['loss'] = read_json(os.path.join(opt_arg['store_results_path'], net_name + "_results.json"))
         pass
     except (IOError, IndexError):
         if not hist == None:
