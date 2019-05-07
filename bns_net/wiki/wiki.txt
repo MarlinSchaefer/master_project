@@ -20626,3 +20626,183 @@ SNR_plot_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/low
 
 sensitivity_plot_prob_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/lower_snr_3_net_3042019144234/lower_snr_3_net_sensitivity_plot_prob_best_epoch_3042019144234.png
 
+###############################################################################
+
+
+training:
+	time_start: 6.5.2019: 14:14.28
+	time_end: 6.5.2019: 21:52.45
+
+loss:
+	last_training: (1, None)
+	min_training: (0, None)
+	min_testing: (0, inf)
+	last_testing: (0, inf)
+
+network: 
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+Input (InputLayer)              (None, 4096, 14)     0                                            
+__________________________________________________________________________________________________
+batch_normalization_1 (BatchNor (None, 4096, 14)     56          Input[0][0]                      
+__________________________________________________________________________________________________
+dropout_1 (Dropout)             (None, 4096, 14)     0           batch_normalization_1[0][0]      
+__________________________________________________________________________________________________
+conv1d_1 (Conv1D)               (None, 4081, 64)     14400       dropout_1[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_2 (BatchNor (None, 4081, 64)     256         conv1d_1[0][0]                   
+__________________________________________________________________________________________________
+activation_1 (Activation)       (None, 4081, 64)     0           batch_normalization_2[0][0]      
+__________________________________________________________________________________________________
+conv1d_2 (Conv1D)               (None, 4066, 64)     65600       activation_1[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_3 (BatchNor (None, 4066, 64)     256         conv1d_2[0][0]                   
+__________________________________________________________________________________________________
+activation_2 (Activation)       (None, 4066, 64)     0           batch_normalization_3[0][0]      
+__________________________________________________________________________________________________
+max_pooling1d_1 (MaxPooling1D)  (None, 1016, 64)     0           activation_2[0][0]               
+__________________________________________________________________________________________________
+conv1d_3 (Conv1D)               (None, 1001, 128)    131200      max_pooling1d_1[0][0]            
+__________________________________________________________________________________________________
+batch_normalization_4 (BatchNor (None, 1001, 128)    512         conv1d_3[0][0]                   
+__________________________________________________________________________________________________
+activation_3 (Activation)       (None, 1001, 128)    0           batch_normalization_4[0][0]      
+__________________________________________________________________________________________________
+conv1d_4 (Conv1D)               (None, 986, 128)     262272      activation_3[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_5 (BatchNor (None, 986, 128)     512         conv1d_4[0][0]                   
+__________________________________________________________________________________________________
+activation_4 (Activation)       (None, 986, 128)     0           batch_normalization_5[0][0]      
+__________________________________________________________________________________________________
+max_pooling1d_2 (MaxPooling1D)  (None, 246, 128)     0           activation_4[0][0]               
+__________________________________________________________________________________________________
+conv1d_5 (Conv1D)               (None, 231, 256)     524544      max_pooling1d_2[0][0]            
+__________________________________________________________________________________________________
+batch_normalization_6 (BatchNor (None, 231, 256)     1024        conv1d_5[0][0]                   
+__________________________________________________________________________________________________
+activation_5 (Activation)       (None, 231, 256)     0           batch_normalization_6[0][0]      
+__________________________________________________________________________________________________
+conv1d_6 (Conv1D)               (None, 216, 256)     1048832     activation_5[0][0]               
+__________________________________________________________________________________________________
+batch_normalization_7 (BatchNor (None, 216, 256)     1024        conv1d_6[0][0]                   
+__________________________________________________________________________________________________
+activation_6 (Activation)       (None, 216, 256)     0           batch_normalization_7[0][0]      
+__________________________________________________________________________________________________
+max_pooling1d_3 (MaxPooling1D)  (None, 54, 256)      0           activation_6[0][0]               
+__________________________________________________________________________________________________
+flatten_1 (Flatten)             (None, 13824)        0           max_pooling1d_3[0][0]            
+__________________________________________________________________________________________________
+SNR_out (Dense)                 (None, 1)            13825       flatten_1[0][0]                  
+__________________________________________________________________________________________________
+Bool_out (Dense)                (None, 2)            27650       flatten_1[0][0]                  
+==================================================================================================
+Total params: 2,091,963
+Trainable params: 2,090,143
+Non-trainable params: 1,820
+__________________________________________________________________________________________________
+
+
+loss:
+	last_training: (1, None)
+	min_training: (0, None)
+	min_testing: (0, inf)
+	last_testing: (0, inf)
+
+template_properties:
+	data_shape: [4096    2]
+	seed: 12345
+	gw_prob: 0.5
+	whiten_len: 4.0
+	no_gw_snr: 4.0
+	coa_phase: 0.0
+	resample_delta_t: [0.00024414 0.00048828 0.00097656 0.00195312 0.00390625 0.0078125
+ 0.015625  ]
+	random_starting_time: True
+	polarization: 0.0
+	t_len: 96.0
+	whiten_cutoff: 4.0
+	f_lower: 20.0
+	delta_t: 0.000244140625
+	train_to_test: 0.7
+	label_shape: [2]
+	num_of_templates: 100000
+	snr: [ 8. 15.]
+	path: /home/marlin.schaefer/master_project/bns_net/saves
+	distance: 1.0
+	resample_t_len: [ 1.  2.  4.  8. 16. 32. 64.]
+	mass1: 1.4
+	mass2: 1.4
+	detectors: ['H1' 'L1']
+	right_ascension: 0.0
+	approximant: TaylorF2
+	declination: 0.0
+	end_time: 7693098
+	t_from_right: 0.5
+	time_offset: [-0.25  0.25]
+
+programm_internals:
+	evaluate_on_large_testing_set: False
+	epochs: 500
+	epoch_break: 2
+	store_results_path: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111
+	overwrite_template_file: False
+	net_path: /home/marlin.schaefer/master_project/bns_net/saves
+	ignore_fixable_errors: False
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin.schaefer/master_project/bns_net/saves
+	batch_size: 32
+	metrics: ['mape']
+	temp_name: small_snr_7_50000
+	use_data_object: True
+	format_data: False
+	loss: mean_squared_error
+	use_custom_train_function: True
+	generate_templates_only: False
+	use_custom_compilation: False
+	dobj: None
+	create_wiki_entry: True
+	net_name: pure_convolution_stack
+	overwrite_net_file: True
+	custom_message: Trying to reach comparable sensitivities at SNR in [8.0, 15.0]. Trying an old and simple version using just 6 convolution layers.
+
+template_generation:
+	time_start: 6.5.2019: 14:11.2
+	time_end: 6.5.2019: 14:11.2
+
+time_init: 6.5.2019: 14:11.1
+
+false_alarm_plot_path_best_epoch: 
+
+sensitivity_plot_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111/pure_convolution_stack_sensitivity_plot_last_epoch_65201914111.png
+
+SNR_plot_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111/pure_convolution_stack_snr_plot_last_epoch_65201914111.png
+
+sensitivity_plot_path_best_epoch: 
+
+ignored_errors: False
+
+sensitivity_plot_prob_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111/pure_convolution_stack_sensitivity_plot_prob_last_epoch_65201914111.png
+
+false_alarm_plot_prob_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111/pure_convolution_stack_false_alarm_plot_prob_last_epoch_65201914111.png
+
+plot_options:
+	show_snr_plot: False
+	show_sensitivity_plot: False
+	show_false_alarm: False
+	evaluate_dual_output: True
+	best_epoch: 0
+
+false_alarm_plot_prob_path_best_epoch: 
+
+loss_plot_path: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111/pure_convolution_stack_loss_plot_last_epoch_65201914111.png
+
+custom_message: Trying to reach comparable sensitivities at SNR in [8.0, 15.0]. Trying an old and simple version using just 6 convolution layers.
+
+false_alarm_plot_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/pure_convolution_stack_65201914111/pure_convolution_stack_false_alarm_plot_last_epoch_65201914111.png
+
+SNR_plot_path_best_epoch: 
+
+sensitivity_plot_prob_path_best_epoch: 
+
