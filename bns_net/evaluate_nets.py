@@ -79,8 +79,11 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         store_test_results(net_best, dobj, prediction_path_best, batch_size=batch_size, generator=generator)
     
     #Create loss plot
-    loss_plot_path = os.path.join(dir_path, net_name + '_loss_plot_last_epoch_' + t_string + '.png')
-    make_loss_plot(os.path.join(dir_path, net_name + "_results.json"), loss_plot_path)
+    if kwargs['make_loss_plot']:
+        loss_plot_path = os.path.join(dir_path, net_name + '_loss_plot_last_epoch_' + t_string + '.png')
+        make_loss_plot(os.path.join(dir_path, net_name + "_results.json"), loss_plot_path)
+    else:
+        loss_plot_path = 'N/A'
     
     #Make SNR plots
     SNR_plot_path_last = os.path.join(dir_path, net_name + '_snr_plot_last_epoch_' + t_string + '.png')
