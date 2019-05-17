@@ -1,3 +1,7 @@
+from tensorflow import ConfigProto, Session
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = Session(config=config)
 import keras
 import numpy as np
 import multiprocessing as mp
@@ -11,10 +15,10 @@ from pycbc.psd import aLIGOZeroDetHighPower
 from pycbc.filter import resample_to_delta_t
 from pycbc.noise import noise_from_psd
 from data_object import DataSet
-from generator import DataGenerator
 from pycbc.psd import inverse_spectrum_truncation
 from evaluate_nets import evaluate_training
 import json
+import time
 
 def get_waveform_default():
     dic = {}
@@ -299,140 +303,233 @@ def get_model(num_detectors):
     
     return(model)
 
-def get_generator():
-    class DataGenerator(keras.utils.Sequence):
-        #Here we need to hack a bit. The function 'store_test_results' expects
-        #to get a dobj with templates and labels. So we will load all stuff into
-        #the template part of the custom dobj defined below and feed it this.
-        #Together with this modified generator it should swallow the data.
-        def __init__(self, dobj_loaded_test_data, dobj_loaded_test_labels, batch_size=32, shuffle=True):
+class DataGenerator(keras.utils.Sequence):
+    #Here we need to hack a bit. The function 'store_test_results' expects
+    #to get a dobj with templates and labels. So we will load all stuff into
+    #the template part of the custom dobj defined below and feed it this.
+    #Together with this modified generator it should swallow the data.
+    def __init__(self, dobj_loaded_test_data, dobj_loaded_test_labels, batch_size=32, shuffle=True):
+    
+        (signals, noise, signal_labels, signal_in_noise_list, noise_snr) = dobj_loaded_test_data
             
-            (signals, noise, signal_labels, signal_in_noise_list, noise_snr) = dobj_loaded_test_data
-            
-            self.signals = signals
-            self.signal_labels = signal_labels
-            self.noise = noise
-            self.indices = []
-            self.signal_in_noise_list = signal_in_noise_list
-            self.batch_size = batch_size
-            self.shuffle = True
-            self.combinations = []
-            self.snrs = []
-            self.noise_snr = noise_snr
-            
-            self.on_epoch_end()
+        self.signals = signals
+        self.signal_labels = signal_labels
+        self.noise = noise
+        self.indices = []
+        self.signal_in_noise_list = signal_in_noise_list
+        self.batch_size = batch_size
+        self.shuffle = True
+        self.combinations = []
+        self.snrs = []
+        self.noise_snr = noise_snr
         
-        def __len__(self):
-            return(int(np.ceil(float(len(self.signal_in_noise_list)) / self.batch_size)))
+        self.on_epoch_end()
+    
+    def __len__(self):
+        return(int(np.ceil(float(len(self.signal_in_noise_list)) / self.batch_size)))
+    
+    def __getitem__(self, index):
+        if (index+1) * self.batch_size > len(self.signal_in_noise_list):
+            fetch = self.signal_in_noise_list[index*self.batch_size:]
+        else:
+            fetch = self.signal_in_noise_list[index*self.batch_size:(index+1)*self.batch_size]
         
-        def __getitem__(self, index):
-            if (index+1) * self.batch_size > len(self.signal_in_noise_list):
-                fetch = self.signal_in_noise_list[index*self.batch_size:]
-            else:
-                fetch = self.signal_in_noise_list[index*self.batch_size:(index+1)*self.batch_size]
-            
-            min_ind = self.curr_signal_index
-            max_ind = self.curr_signal_index+fetch.count(True)
-            if not max_ind < len(self.signal_indices):
-                signal_indices = list(self.signal_indices[min_ind:])
-                self.reset_signal_index()
-                max_ind = max_ind - len(self.signal_indices) + 1
-                signal_indices += list(self.signal_indices[0:max_ind])
-                signal_indices = np.array(signal_indices)
-                self.curr_signal_index += max_ind
-            else:
-                signal_indices = self.signal_indices[min_ind:max_ind]
-                self.curr_signal_index += fetch.count(True)
-            
-            min_ind = self.curr_noise_index
-            max_ind = self.curr_noise_index+len(fetch)
-            if not max_ind < len(self.noise_indices):
-                noise_indices = list(self.noise_indices[min_ind:])
-                self.reset_noise_index()
-                max_ind = max_ind - len(self.noise_indices) + 1
-                noise_indices += list(self.noise_indices[0:max_ind])
-                noise_indices = np.array(noise_indices)
-                self.curr_noise_index += max_ind
-            else:
-                noise_indices = self.noise_indices[min_ind:max_ind]
-                self.curr_noise_index += len(fetch)
-            
-            X, y = self.__data_generation(fetch, signal_indices, noise_indices)
-            
-            return(X, y)
+        min_ind = self.curr_signal_index
+        max_ind = self.curr_signal_index+fetch.count(True)
+        if not max_ind < len(self.signal_indices):
+            signal_indices = list(self.signal_indices[min_ind:])
+            self.reset_signal_index()
+            max_ind = max_ind - len(self.signal_indices) + 1
+            signal_indices += list(self.signal_indices[0:max_ind])
+            signal_indices = np.array(signal_indices)
+            self.curr_signal_index += max_ind
+        else:
+            signal_indices = self.signal_indices[min_ind:max_ind]
+            self.curr_signal_index += fetch.count(True)
         
-        def __data_generation(self, fetch, signal_indices, noise_indices):
-            num_of_channels = self.signals[0].shape[-1]
+        min_ind = self.curr_noise_index
+        max_ind = self.curr_noise_index+len(fetch)
+        if not max_ind < len(self.noise_indices):
+            noise_indices = list(self.noise_indices[min_ind:])
+            self.reset_noise_index()
+            max_ind = max_ind - len(self.noise_indices) + 1
+            noise_indices += list(self.noise_indices[0:max_ind])
+            noise_indices = np.array(noise_indices)
+            self.curr_noise_index += max_ind
+        else:
+            noise_indices = self.noise_indices[min_ind:max_ind]
+            self.curr_noise_index += len(fetch)
+        
+        X, y = self.__data_generation(fetch, signal_indices, noise_indices)
             
-            X = [np.empty([len(fetch), 2] + [self.signals[0].shape[0]])] * num_of_channels
+        return(X, y)
+        
+    def __data_generation(self, fetch, signal_indices, noise_indices):
+        num_of_channels = self.signals[0].shape[-1]
+        
+        X = [np.empty([len(fetch), 2] + [self.signals[0].shape[0]]) for i in range(num_of_channels)]
+        
+        y_1 = np.empty((len(fetch), 1))
+        
+        y_2 = np.empty((len(fetch), 2))
             
-            y_1 = np.empty((len(fetch), 1))
+        sig_counter = 0
             
-            y_2 = np.empty((len(fetch), 2))
+        for i, do_fetch in enumerate(fetch):
             
-            sig_counter = 0
-            
-            for i, do_fetch in enumerate(fetch):
+            noi_idx = noise_indices[i]
+            tmp_noise = self.noise[noi_idx].transpose()
                 
-                noi_idx = noise_indices[i]
-                tmp_noise = self.noise[noi_idx].transpose()
-                
-                if do_fetch:
-                    sig_idx = signal_indices[sig_counter]
-                    tmp_sig = self.signals[sig_idx].transpose()
-                    y_1[i] = self.signal_labels[i]
-                    y_2[i] = np.array([1., 0.])
-                    self.combinations.append((sig_idx, noi_idx))
-                    sig_counter += 1
+            if do_fetch:
+                sig_idx = signal_indices[sig_counter]
+                tmp_sig = self.signals[sig_idx].transpose()
+                y_1[i] = self.signal_labels[i]
+                y_2[i] = np.array([1., 0.])
+                self.combinations.append((sig_idx, noi_idx))
+                sig_counter += 1
+            else:
+                tmp_sig = np.zeros(self.signals[0].transpose().shape)
+                y_1[i] = self.noise_snr
+                y_2[i] = np.array([0., 1.])
+                self.combinations.append((-1, noi_idx))
+            
+            self.snrs.append(y_1[i])
+            for k in range(num_of_channels): #Which input channel to use
+                if k % 2 == 0:#Process signal
+                    X[k][i][0] = tmp_sig[k/2]
+                    X[k][i][1] = tmp_sig[k/2+num_of_channels/2]
                 else:
-                    tmp_sig = np.zeros(self.signals[0].transpose().shape)
+                    X[k][i][0] = tmp_noise[int(np.floor(float(k)/2))]
+                    X[k][i][1] = tmp_sig[int(np.floor(float(k)/2))+num_of_channels/2]
+        
+        X = [dat.transpose(0, 2, 1) for dat in X]
+        
+        print("Current length of snrs: {}".format(len(self.snrs)))
+            
+        return(X, [y_1, y_2])
+    
+    def reset_signal_index(self):
+        self.signal_indices = np.arange(len(self.signals))
+        if self.shuffle:
+            np.random.shuffle(self.signal_indices)
+        self.curr_signal_index = 0
+    
+    def reset_noise_index(self):
+        self.noise_indices = np.arange(len(self.noise))
+        if self.shuffle:
+            np.random.shuffle(self.noise_indices)
+        self.curr_noise_index = 0
+    
+    def on_epoch_end(self):
+        self.reset_signal_index()
+        self.reset_noise_index()
+        self.last_combinations = self.combinations
+        self.last_snrs = self.snrs
+        self.combinations = []
+        self.snrs = []
+    
+    def get_indices(self):
+        return((self.last_combinations, self.combinations))
+        
+    def get_snr_list(self):
+        if not self.snrs == []:
+            return(self.snrs)
+        return(self.last_snrs)
+    
+    def get_bool_list(self):
+        return(self.signal_in_noise_list)
+
+def get_generator():
+    return DataGenerator
+
+class PredictGenerator():
+    def __init__(self, dobj_data, dobj_labels, batch_size=32, shuffle=True):
+        (signals, noise, signal_labels, index_list, noise_snr) = dobj_data
+        self.signals = signals
+        self.noise = noise
+        self.signal_labels
+        self.index_list = index_list
+        self.noise_snr = noise_snr
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.data_channels = self.signals[0].shape[-1] / 2
+        self.snrs = []
+        self.last_snrs = []
+        self.last_indices = []
+        
+        self.on_epoch_end()
+    
+    def __len__(self):
+        return(int(np.ceil(float(len(self.index_list)) / self.batch_size)))
+    
+    def on_epoch_end(self):
+        try:
+            self.last_indices = self.indices
+        except:
+            pass
+        self.indices = np.arange(len(self.index_list))
+        if self.shuffle:
+            np.random.shuffle(self.indices)
+            self.indices = list(self.indices)
+        else:
+            self.indices = list(self.indices)
+        
+        self.last_snrs = self.snrs
+        self.snrs = []
+    
+    def __getitem__(self, index):
+        if (index + 1) * self.batch_size >= len(self.indices):
+            indices = self.indices[index*self.batch_size:]
+        else:
+            indices = self.indices[index*self.batch_size:(index+1)*self.batch_size]
+        
+        X, y = self.__data_generation(indices)
+        
+        return((X,y))
+    
+    def __data_generation(self, indices):
+        X = [np.zeros([len(indices), 2, self.signals[0].shape[0]]) for i in range(self.data_channels * 2)]
+        
+        y_1 = np.zeros((len(indices), 1))
+        
+        y_2 = np.zeros((len(indices), 2))
+        
+        for (i, (sig_ind, noi_ind)) in enumerate(indices):
+            for j in range(self.data_channels):
+                if not sig_ind == -1:
+                    X[2 * j][i][0] = self.signals[sig_ind].transpose()[j]
+                    X[2 * j][i][1] = self.signals[sig_ind].transpose()[j+self.data_channels]
+                    
+                    y_1[i] = self.signal_labels[sig_ind]
+                    
+                    y_2[i][0] = 1.0
+                    y_2[i][1] = 0.0
+                else:
                     y_1[i] = self.noise_snr
-                    y_2[i] = np.array([0., 1.])
-                    self.combinations.append((-1, noi_idx))
+                    
+                    y_2[i][0] = 0.0
+                    y_2[i][1] = 1.0
                 
                 self.snrs.append(y_1[i])
-                for k in range(num_of_channels): #Which input channel to use
-                    if k % 2 == 0:#Process signal
-                        X[k][i][0] = tmp_sig[k/2]
-                        X[k][i][1] = tmp_sig[k/2+num_of_channels/2]
-                    else:
-                        X[k][i][0] = tmp_noise[int(np.floor(float(k)/2))]
-                        X[k][i][1] = tmp_sig[int(np.floor(float(k)/2))+num_of_channels/2]
-            
-            X = [dat.transpose(0, 2, 1) for dat in X]
-            
-            return(X, [y_1, y_2])
-                        
+                
+                X[2 * j + 1][i][0] = self.noise[noi_ind].transpose()[j]
+                X[2 * j + 1][i][1] = self.noise[noi_ind].transpose()[j+self.data_channels]
         
-        def reset_signal_index(self):
-            self.signal_indices = np.arange(len(self.signals))
-            if self.shuffle:
-                np.random.shuffle(self.signal_indices)
-            self.curr_signal_index = 0
+        X = [dat.transpose(0, 2, 1) for dat in X]
         
-        def reset_noise_index(self):
-            self.noise_indices = np.arange(len(self.noise))
-            if self.shuffle:
-                np.random.shuffle(self.noise_indices)
-            self.curr_noise_index = 0
-        
-        def on_epoch_end(self):
-            self.reset_signal_index()
-            self.reset_noise_index()
-            self.last_combinations = self.combinations
-            self.combinations = []
-        
-        def get_indices(self):
-            return((self.last_combinations, self.combinations))
-        
-        def get_snr_list(self):
-            return(self.snrs)
-        
-        def get_bool_list(self):
-            return(self.signal_in_noise_list)
-    ###
+        return((X, [y_1, y_2]))
     
-    return(DataGenerator)
+    def get_snr_list(self):
+        if len(self.snrs) == 0:
+            return(self.last_snrs)
+        else:
+            return(self.snrs)
+    
+    def get_index_list(self):
+        if len(self.snrs) == 0:
+            return([self.index_list[idx] for idx in self.last_indices])
+        else:
+            return([self.index_list[idx] for idx in self.indices[:len(self.snrs)]])
 
 def get_dobj(file_path, signal_in_noise_list):
     #This is a real dirty hack to the data_object.DataSet. It has only the
@@ -462,6 +559,10 @@ def get_dobj(file_path, signal_in_noise_list):
                 return([])
             else:
                 ret = [np.array(self.snrs), np.array([[1.0, 0.0] if self.signal_in_noise_list[i] else [0.0, 1.0] for i in range(len(self.snrs))])]
+                return(ret)
+        
+        def get_file_properties(self):
+            return({'snr': [8.0, 15.0]})
         
         def set_snrs(self, labels):
             self.snrs = labels
@@ -471,21 +572,58 @@ def get_dobj(file_path, signal_in_noise_list):
 
 #generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=[4096, 2048, 1024, 512, 256, 128, 64], **kwargs):
 
+def generate_unique_index_pairs(len_sig, len_noi, num_pairs):
+    max_len = len_sig * len_noi
+    if max_len < num_pairs:
+        raise ValueError('Tried to generate {} unique pairs from {} possible combinations.'.format(num_pairs, max_len))
+    
+    #Check if it is more efficient to pick pairs to not include
+    inv = False
+    if num_pairs > (len_sig * len_noi) / 2:
+        inv = True
+    
+    curr_pairs = 0
+    max_pair = max_len - num_pairs if inv else num_pairs
+    poss = np.zeros(max_len, dtype=int)
+    while curr_pairs < max_pair:
+        r_int = np.random.randint(0, max_len)
+        if poss[r_int] == 0:
+            poss[r_int] = 1
+            curr_pairs += 1
+    
+    true_val = 0 if inv else 1
+    
+    ret = []
+    
+    for i, val in enumerate(poss):
+        if val == true_val:
+            sig_idx = i / len_noi
+            noi_idx = i % len_noi
+            ret.append((sig_idx, noi_idx))
+        else:
+            noi_idx = i % len_noi
+            ret.append((-1, noi_idx))
+    
+    return(ret)
+            
+
 def main():
     #Create data
     dir_name = 'addititve_net_results'
     template_path = os.path.join(get_store_path(), dir_name, 'templates.hf5')
-    #generate_template(template_path, 200, 1000, snr=[8.0, 15.0])
+    num_sig = 200
+    num_noi = 1000
+    #generate_template(template_path, num_sig, num_noi, snr=[8.0, 15.0])
     
     #Load data
     num_total_samples = 100000
-    signal_in_noise_list = [np.random.random() < 0.5 for i in range(num_total_samples)]
+    signal_in_noise_list = generate_unique_index_pairs(num_sig, num_noi, num_total_samples)
+    #signal_in_noise_list = [np.random.random() < 0.5 for i in range(num_total_samples)]
     #signal_in_noise_list = [False for i in range(num_total_samples)]
     #signal_in_noise_list = [True, False]
     dobj = get_dobj(template_path, signal_in_noise_list)
     
-    generator = get_generator()
-    generator = generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=32)
+    generator = PredictGenerator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=32)
     print("Max of Signal indices: {}".format(max(generator.signal_indices)))
     
     #Load network (correctly! Need the weights from a previous try and initiate it with that.)
@@ -500,24 +638,48 @@ def main():
     epochs_per_test = 1
     results = []
     labels = []
-    for i in np.arange(0, 200, epochs_per_test):
+    for i in np.arange(0, num_of_epochs, epochs_per_test):
+        print("Total: {}/{}".format(i+1, num_of_epochs))
         net.fit_generator(generator, epochs=epochs_per_test, max_queue_size=10)
         net.save(os.path.join(get_store_path(), dir_name, 'additive_net_epoch_' + str(i) + '.hf5'))
-	results.append([i+epochs_per_test, net.evaluate_generator(generator)])
+	results.append([i+epochs_per_test, net.evaluate_generator(generator, verbose=1), [0]])
         labels.append([i+epochs_per_test, generator.get_indices()[0]])
     
     net.save(os.path.join(get_store_path(), dir_name, 'additive_net.hf5'))
     
-    with open(os.path.join(get_store_path(), dir_name, 'results.json')) as jsonFILE:
+    with open(os.path.join(get_store_path(), dir_name, 'additive_net_results.json'), 'w') as jsonFILE:
         json.dump(results, jsonFILE, indent=4)
-    with open(os.path.join(get_store_path(), dir_name, 'indices.json')) as indexFILE:
+    with open(os.path.join(get_store_path(), dir_name, 'indices.json'), 'w') as indexFILE:
         json.dump(labels, indexFILE, indent=4)
 
     dobj.set_snrs(generator.get_snr_list())
     
+    #print("Loaded test labels: {}".format(dobj.loaded_test_labels))
+    
     #net_name, dobj, dir_path, t_start, batch_size=32, generator=g.DataGeneratorMultInput, **kwargs
-    evaluate_training(additive_net, dobj, os.path.join(get_store_path(), dir_name), generator=generator, show_snr_plot=False, show_false_alarm=False, show_sensitivity_plot=False, make_loss_plot=False)
+    evaluate_training('additive_net', dobj, os.path.join(get_store_path(), dir_name), time.gmtime(time.time()), generator=get_generator(), show_snr_plot=False, show_false_alarm=False, show_sensitivity_plot=False, make_loss_plot=False)
     
     return
+
+def main2():
+    batch_size = 32
+    dir_name = 'addititve_net_results'
+    template_path = os.path.join(get_store_path(), dir_name, 'templates.hf5')
+    
+    num_total_samples = 100000
+    signal_in_noise_list = [np.random.random() < 0.5 for i in range(num_total_samples)]
+    #signal_in_noise_list = [False for i in range(num_total_samples)]
+    #signal_in_noise_list = [True, False]
+    dobj = get_dobj(template_path, signal_in_noise_list)
+    
+    generator = get_generator()
+    generator = generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
+    print("Max of Signal indices: {}".format(max(generator.signal_indices)))
+    from keras.engine.training_utils import iter_sequence_infinite
+    
+    for i in range(len(generator)):
+        next(iter_sequence_infinite(generator))
+    
+    print("Length of snrs: {}".format(len(generator.get_snr_list())))
 
 main()
