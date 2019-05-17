@@ -440,15 +440,16 @@ class DataGenerator(keras.utils.Sequence):
         return(self.signal_in_noise_list)
 
 def get_generator():
-    return DataGenerator
+    return PredictGenerator
 
-class PredictGenerator():
+class PredictGenerator(keras.utils.Sequence):
     def __init__(self, dobj_data, dobj_labels, batch_size=32, shuffle=True):
         (signals, noise, signal_labels, index_list, noise_snr) = dobj_data
         self.signals = signals
         self.noise = noise
-        self.signal_labels
+        self.signal_labels = signal_labels
         self.index_list = index_list
+        #print("type(index_list[0]): {}".format(type(index_list[0])))
         self.noise_snr = noise_snr
         self.batch_size = batch_size
         self.shuffle = shuffle
@@ -478,23 +479,32 @@ class PredictGenerator():
         self.snrs = []
     
     def __getitem__(self, index):
+        #print("Trying get item, self.indices[:10]: {}".format(self.indices[:10]))
         if (index + 1) * self.batch_size >= len(self.indices):
             indices = self.indices[index*self.batch_size:]
         else:
             indices = self.indices[index*self.batch_size:(index+1)*self.batch_size]
         
-        X, y = self.__data_generation(indices)
+        #print("Got indices, type(indices[0]): {}".format(type(indices[0])))
         
-        return((X,y))
+        X, y = self.__data_generation(indices)
+            
+        return(X, y)
     
     def __data_generation(self, indices):
+        #print("Trying data generation with data_channels type: {}".format(type(self.data_channels)))
         X = [np.zeros([len(indices), 2, self.signals[0].shape[0]]) for i in range(self.data_channels * 2)]
         
         y_1 = np.zeros((len(indices), 1))
         
         y_2 = np.zeros((len(indices), 2))
         
-        for (i, (sig_ind, noi_ind)) in enumerate(indices):
+        #print("After allocating. Indices type: {}".format(type(indices)))
+        
+        for i, idx in enumerate(indices):
+            #print("Before doing stuff to indices, type = {}".format(type(idx_data)))
+            sig_ind, noi_ind = self.index_list[idx]
+            #print("In first for loop. i = {}".format(i))
             for j in range(self.data_channels):
                 if not sig_ind == -1:
                     X[2 * j][i][0] = self.signals[sig_ind].transpose()[j]
@@ -538,7 +548,7 @@ def get_dobj(file_path, signal_in_noise_list):
     class CustomDataSet():
         def __init__(self, file_path, signal_in_noise_list):
             self.file_path = file_path
-            self.signal_in_noise_list = signal_in_noise_list
+            self.set_signal_in_noise_list(signal_in_noise_list)
             self.snrs = []
             self.load_data()
         
@@ -567,13 +577,16 @@ def get_dobj(file_path, signal_in_noise_list):
         def set_snrs(self, labels):
             self.snrs = labels
             self.loaded_test_snr = np.zeros(len(self.snrs))
+        
+        def set_signal_in_noise_list(self, signal_in_noise_list):
+            self.signal_in_noise_list = signal_in_noise_list
     
     return(CustomDataSet(file_path, signal_in_noise_list))
 
 #generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=[4096, 2048, 1024, 512, 256, 128, 64], **kwargs):
 
 def generate_unique_index_pairs(len_sig, len_noi, num_pairs):
-    max_len = len_sig * len_noi
+    max_len = (len_sig+1) * len_noi
     if max_len < num_pairs:
         raise ValueError('Tried to generate {} unique pairs from {} possible combinations.'.format(num_pairs, max_len))
     
@@ -599,10 +612,16 @@ def generate_unique_index_pairs(len_sig, len_noi, num_pairs):
         if val == true_val:
             sig_idx = i / len_noi
             noi_idx = i % len_noi
-            ret.append((sig_idx, noi_idx))
-        else:
-            noi_idx = i % len_noi
-            ret.append((-1, noi_idx))
+        
+            if sig_idx == len_sig:
+                ret.append((-1, noi_idx))
+            else:
+                ret.append((sig_idx, noi_idx))
+    
+    ret = np.array(ret, dtype=int)
+    np.random.shuffle(ret)
+    
+    ret = [(pt[0], pt[1]) for pt in ret]
     
     return(ret)
             
@@ -618,13 +637,16 @@ def main():
     #Load data
     num_total_samples = 100000
     signal_in_noise_list = generate_unique_index_pairs(num_sig, num_noi, num_total_samples)
+    #print("signal_in_noise_list[:10]: {}".format(signal_in_noise_list[:10]))
+    print("Number of pure noise instances: {}".format([1 if pt[0] == -1 else 0 for pt in signal_in_noise_list].count(1)))
+    #print("type(signal_in_noise_list[0]): {}".format(type(signal_in_noise_list[0])))
     #signal_in_noise_list = [np.random.random() < 0.5 for i in range(num_total_samples)]
     #signal_in_noise_list = [False for i in range(num_total_samples)]
     #signal_in_noise_list = [True, False]
     dobj = get_dobj(template_path, signal_in_noise_list)
     
     generator = PredictGenerator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=32)
-    print("Max of Signal indices: {}".format(max(generator.signal_indices)))
+    #print("Max of Signal indices: {}".format(max(generator.signal_indices)))
     
     #Load network (correctly! Need the weights from a previous try and initiate it with that.)
     net = get_model(2)
@@ -653,6 +675,7 @@ def main():
         json.dump(labels, indexFILE, indent=4)
 
     dobj.set_snrs(generator.get_snr_list())
+    dobj.set_signal_in_noise_list(generator.get_index_list())
     
     #print("Loaded test labels: {}".format(dobj.loaded_test_labels))
     
