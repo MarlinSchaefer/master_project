@@ -465,7 +465,8 @@ class PredictGenerator(keras.utils.Sequence):
     
     def on_epoch_end(self):
         try:
-            self.last_indices = self.indices
+            if not len(self.indices) == 0:
+                self.last_indices = self.indices
         except:
             pass
         self.indices = np.arange(len(self.index_list))
@@ -475,10 +476,14 @@ class PredictGenerator(keras.utils.Sequence):
         else:
             self.indices = list(self.indices)
         
-        self.last_snrs = self.snrs
-        self.snrs = []
+        if not self.snrs == []:
+            self.last_snrs = self.snrs
+            self.snrs = []
     
     def __getitem__(self, index):
+        if index == 0:
+            print("Calling on_epoch_end from getitem.")
+            self.on_epoch_end()
         #print("Trying get item, self.indices[:10]: {}".format(self.indices[:10]))
         if (index + 1) * self.batch_size >= len(self.indices):
             indices = self.indices[index*self.batch_size:]
@@ -488,7 +493,9 @@ class PredictGenerator(keras.utils.Sequence):
         #print("Got indices, type(indices[0]): {}".format(type(indices[0])))
         
         X, y = self.__data_generation(indices)
-            
+        
+        #print("Current length of snrs: {}".format(len(self.snrs)))
+        
         return(X, y)
     
     def __data_generation(self, indices):
@@ -509,21 +516,22 @@ class PredictGenerator(keras.utils.Sequence):
                 if not sig_ind == -1:
                     X[2 * j][i][0] = self.signals[sig_ind].transpose()[j]
                     X[2 * j][i][1] = self.signals[sig_ind].transpose()[j+self.data_channels]
-                    
-                    y_1[i] = self.signal_labels[sig_ind]
-                    
-                    y_2[i][0] = 1.0
-                    y_2[i][1] = 0.0
-                else:
-                    y_1[i] = self.noise_snr
-                    
-                    y_2[i][0] = 0.0
-                    y_2[i][1] = 1.0
-                
-                self.snrs.append(y_1[i])
                 
                 X[2 * j + 1][i][0] = self.noise[noi_ind].transpose()[j]
                 X[2 * j + 1][i][1] = self.noise[noi_ind].transpose()[j+self.data_channels]
+            
+            if not sig_ind == -1:
+                y_1[i] = self.signal_labels[sig_ind]
+                
+                y_2[i][0] = 1.0
+                y_2[i][1] = 0.0
+            else:
+                y_1[i] = self.noise_snr
+                
+                y_2[i][0] = 0.0
+                y_2[i][1] = 1.0
+            
+            self.snrs.append(y_1[i])
         
         X = [dat.transpose(0, 2, 1) for dat in X]
         
@@ -568,7 +576,9 @@ def get_dobj(file_path, signal_in_noise_list):
             if self.snrs == []:
                 return([])
             else:
-                ret = [np.array(self.snrs), np.array([[1.0, 0.0] if self.signal_in_noise_list[i] else [0.0, 1.0] for i in range(len(self.snrs))])]
+                print("Length of SNRs: {}".format(len(self.snrs)))
+                print("Length of signals in noise: {}".format(len(self.signal_in_noise_list)))
+                ret = [np.array(self.snrs), np.array([[1.0, 0.0] if self.signal_in_noise_list[i][0] == -1 else [0.0, 1.0] for i in range(len(self.snrs))])]
                 return(ret)
         
         def get_file_properties(self):
@@ -630,12 +640,13 @@ def main():
     #Create data
     dir_name = 'addititve_net_results'
     template_path = os.path.join(get_store_path(), dir_name, 'templates.hf5')
-    num_sig = 200
-    num_noi = 1000
-    #generate_template(template_path, num_sig, num_noi, snr=[8.0, 15.0])
+    num_sig = 2000
+    num_noi = 50000
+    batch_size = 32
+    generate_template(template_path, num_sig, num_noi, snr=[8.0, 15.0])
     
     #Load data
-    num_total_samples = 100000
+    num_total_samples = 500000
     signal_in_noise_list = generate_unique_index_pairs(num_sig, num_noi, num_total_samples)
     #print("signal_in_noise_list[:10]: {}".format(signal_in_noise_list[:10]))
     print("Number of pure noise instances: {}".format([1 if pt[0] == -1 else 0 for pt in signal_in_noise_list].count(1)))
@@ -645,7 +656,7 @@ def main():
     #signal_in_noise_list = [True, False]
     dobj = get_dobj(template_path, signal_in_noise_list)
     
-    generator = PredictGenerator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=32)
+    generator = PredictGenerator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
     #print("Max of Signal indices: {}".format(max(generator.signal_indices)))
     
     #Load network (correctly! Need the weights from a previous try and initiate it with that.)
@@ -656,7 +667,7 @@ def main():
     #print(net.predict_generator(generator))
     
     print(net.summary())
-    num_of_epochs = 1
+    num_of_epochs = 10
     epochs_per_test = 1
     results = []
     labels = []
@@ -665,7 +676,7 @@ def main():
         net.fit_generator(generator, epochs=epochs_per_test, max_queue_size=10)
         net.save(os.path.join(get_store_path(), dir_name, 'additive_net_epoch_' + str(i) + '.hf5'))
 	results.append([i+epochs_per_test, net.evaluate_generator(generator, verbose=1), [0]])
-        labels.append([i+epochs_per_test, generator.get_indices()[0]])
+        labels.append([i+epochs_per_test, generator.get_index_list()[0]])
     
     net.save(os.path.join(get_store_path(), dir_name, 'additive_net.hf5'))
     
@@ -680,9 +691,13 @@ def main():
     #print("Loaded test labels: {}".format(dobj.loaded_test_labels))
     
     #net_name, dobj, dir_path, t_start, batch_size=32, generator=g.DataGeneratorMultInput, **kwargs
-    evaluate_training('additive_net', dobj, os.path.join(get_store_path(), dir_name), time.gmtime(time.time()), generator=get_generator(), show_snr_plot=False, show_false_alarm=False, show_sensitivity_plot=False, make_loss_plot=False)
-    
-    return
+    kwargs = {}
+    kwargs['show_snr_plot'] = False
+    kwargs['show_false_alarm'] = False
+    kwargs['show_sensitivity_plot'] = False
+    kwargs['make_loss_plot'] = False
+    evaluate_training('additive_net', dobj, os.path.join(get_store_path(), dir_name), time.gmtime(time.time()), batch_size=batch_size, generator=get_generator(), **kwargs)
+
 
 def main2():
     batch_size = 32
