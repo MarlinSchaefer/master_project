@@ -405,15 +405,15 @@ class DataSet():
         return(self.loaded_data['training']['train_snr_calculated'])
     
     @property
-    def loaded_test_data(self, slice=None):
+    def loaded_test_data(self):
         return(self.loaded_data['testing']['test_data'])
     
     @property
-    def loaded_test_labels(self, slice=None):
+    def loaded_test_labels(self):
         return(self.loaded_data['testing']['test_labels'])
     
     @property
-    def loaded_test_snr(self, slice=None):
+    def loaded_test_snr(self):
         return(self.loaded_data['testing']['test_snr_calculated'])
     
     #def get_set(self, slice=None):
