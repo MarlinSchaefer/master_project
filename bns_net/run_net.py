@@ -355,7 +355,7 @@ def run_net(net_name, temp_name, **kwargs):
                 num_slices= int(np.ceil(float(max(dobj.training_data_shape[0], dobj.testing_data_shape[0])) / opt_arg['slice_size']))
             
             for i in range(num_slices):
-                dobj.get_set(slice=(i*opt_arg['slice_size'], (i+1)*i*opt_arg['slice_size']))
+                dobj.get_set(slice=(i*opt_arg['slice_size'], (i+1)*opt_arg['slice_size']))
         generator = net_mod.get_generator()
     
     #Training takes place here
