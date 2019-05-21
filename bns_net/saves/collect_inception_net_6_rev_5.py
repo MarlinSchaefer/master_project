@@ -204,6 +204,9 @@ def get_data_obj(file_path):
     
     return(CustomDataSet(file_path))
 
+def get_generator():
+    return(g.DataGeneratorMultInput)
+
 def get_model_memory_usage(batch_size, model):
     from keras import backend as K
 
@@ -275,8 +278,11 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
         
         print("Expected memory_size: {}".format(get_model_memory_usage(batch_size, model)))
         
-        training_generator = g.DataGeneratorMultInput(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
-        testing_generator = g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
+        training_generator = get_generator()
+        testing_generator = get_generator()
+        
+        training_generator = training_generator(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
+        testing_generator = testing_generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
         
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
