@@ -265,8 +265,16 @@ def run_net(net_name, temp_name, **kwargs):
     opt_arg['store_results_path'] = dir_path
     
     opt_arg.update(run_net_defaults())
+    
+    #Replace some default values by None
     if opt_arg['dobj'] == False:
         opt_arg['dobj'] = None
+    
+    if opt_arg['slice_size'] == False:
+        opt_arg['slice_size'] = None
+    
+    if opt_arg['data_slice'] == False:
+        opt_arg['data_slice'] = None
     
     wiki_data['programm_internals'] = {}
     
@@ -335,7 +343,19 @@ def run_net(net_name, temp_name, **kwargs):
         net_mod = imp.load_source("net_mod", str(os.path.join(net_path, net_name + '.py')))
         opt_arg['dobj'] = net_mod.get_data_obj(full_template_path)
         dobj = opt_arg['dobj']
-        dobj.get_set()
+        if opt_arg['slice_size'] == None:
+            if opt_arg['data_slice'] == None:
+                dobj.get_set()
+            else:
+                dobj.get_set(slice=opt_arg['data_slice'])
+        else:
+            if not opt_arg['data_slice'] == None:
+                num_slices = int(np.ceil(float(opt_arg['data_slice']) / opt_arg['slice_size']))
+            else:
+                num_slices= int(np.ceil(float(max(dobj.training_data_shape[0], dobj.testing_data_shape[0])) / opt_arg['slice_size']))
+            
+            for i in range(num_slices):
+                dobj.get_set(slice=(i*opt_arg['slice_size'], (i+1)*i*opt_arg['slice_size']))
         generator = net_mod.get_generator()
     
     #Training takes place here
