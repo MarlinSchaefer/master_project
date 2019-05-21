@@ -85,16 +85,6 @@ def get_model():
 def compile_model(model):
     model.compile(loss={'Out_SNR': 'mean_squared_error', 'Out_Bool': 'categorical_crossentropy'}, loss_weights={'Out_SNR': 1.0, 'Out_Bool': 0.5}, optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
 
-def get_formatted_data(file_path):
-    tr_d = format_data_segment(load_data.load_training_data(file_path))
-    tr_l = format_label_segment(load_data.load_training_labels(file_path))
-    
-    te_d = format_data_segment(load_data.load_testing_data(file_path))
-    te_l = format_label_segment(load_data.load_testing_labels(file_path))
-    
-    return(((tr_d, tr_l), (te_d, te_l)))
-    
-
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
     percentage_loss_difference = [abs(train_loss[i] - test_loss[i]) / train_loss[i] for i in range(len(train_loss))]
@@ -117,40 +107,101 @@ def evaluate_overfitting(train_loss, test_loss):
     
     return(True)
 
-def format_data_segment(data):
-    tmp = data.transpose((2, 1, 0))
-    ret = [np.zeros((2, len(data[0]), len(data))) for i in range(7)]
-    ret[0][0] = tmp[0]
-    ret[0][1] = tmp[7]
+def get_data_obj(file_path):
+    class CustomDataSet(DataSet):
+        def format_data_segment(self, data):
+            if data == []:
+                return(data)
+            tmp = np.array(data).transpose((2, 1, 0))
+            ret = [np.zeros((2, len(data[0]), len(data))) for i in range(7)]
+            ret[0][0] = tmp[0]
+            ret[0][1] = tmp[7]
+            
+            ret[1][0] = tmp[1]
+            ret[1][1] = tmp[8]
+            
+            ret[2][0] = tmp[2]
+            ret[2][1] = tmp[9]
+            
+            ret[3][0] = tmp[3]
+            ret[3][1] = tmp[10]
+            
+            ret[4][0] = tmp[4]
+            ret[4][1] = tmp[11]
+            
+            ret[5][0] = tmp[5]
+            ret[5][1] = tmp[12]
+            
+            ret[6][0] = tmp[6]
+            ret[6][1] = tmp[13]
+            
+            ret = [dat.transpose((2, 1, 0)) for dat in ret]
+            return(ret)
+        
+        def format_label_segment(self, data):
+            ret = [[], []]
+            for l in data:
+                ret[0].append([l[0]])
+                ret[1].append([1, 0] if bool(l[1]) else [0, 1])
+            ret = [np.array(dat) for dat in ret]
+            return(ret)
+        
+        def join_formatted(self, t, s, part1, part2):
+            if part1 == None:
+                part1 = []
+            if part2 == None:
+                part2 = []
+            if self.loaded_data[t][s] == None:
+                self.loaded_data[t][s] = []
+            
+            if s in ['train_data', 'test_data']:
+                max_ind = max([len(part1), len(self.loaded_data[t][s]), len(part2)])
+                if max_ind == 0:
+                    self.loaded_data[t][s] = None
+                    return
+                
+                if part1 == []:
+                    part1 = [[] for i in range(max_ind)]
+                if part2 == []:
+                    part2 = [[] for i in range(max_ind)]
+                if self.loaded_data[t][s] == []:
+                    self.loaded_data[t][s] = [[] for i in range(max_ind)]
+                
+                self.loaded_data[t][s] = [np.array(list(part1[i]) + list(self.loaded_data[t][s][i]) + list(part2[i])) for i in range(max_ind)]
+                
+                if self.loaded_data[t][s] == [[] for i in range(max_ind)]:
+                    self.loaded_data[t][s] = None
+                return
+            elif s in ['train_labels', 'test_labels']:
+                if part1 == None or part1 == []:
+                    part1 = [[], []]
+                if part2 == None or part2 == []:
+                    part2 = [[], []]
+                if self.loaded_data[t][s] == None or self.loaded_data[t][s] == []:
+                    self.loaded_data[t][s] = [[], []]
+                
+                self.loaded_data[t][s] = [np.array(list(part1[0]) + list(self.loaded_data[t][s][0]) + list(part2[0])), np.array(list(part1[1]) + list(self.loaded_data[t][s][1]) + list(part2[1]))]
+                
+                if self.loaded_data[t][s] == [[], []]:
+                    self.loaded_data[t][s] = None
+                
+                return
+            elif s in ['train_snr_calculated', 'test_snr_calculated']:
+                if part1 == None:
+                    part1 = []
+                if part2 == None:
+                    part2 = []
+                if self.loaded_data[t][s] == None:
+                    self.loaded_data[t][s] = part1 + part2
+                else:
+                    self.loaded_data[t][s] = part1 + self.loaded_data[t][s] + part2
+                
+                if self.loaded_data[t][s] == []:
+                    self.loaded_data[t][s] = None
+                
+                return
     
-    ret[1][0] = tmp[1]
-    ret[1][1] = tmp[8]
-    
-    ret[2][0] = tmp[2]
-    ret[2][1] = tmp[9]
-    
-    ret[3][0] = tmp[3]
-    ret[3][1] = tmp[10]
-    
-    ret[4][0] = tmp[4]
-    ret[4][1] = tmp[11]
-    
-    ret[5][0] = tmp[5]
-    ret[5][1] = tmp[12]
-    
-    ret[6][0] = tmp[6]
-    ret[6][1] = tmp[13]
-    
-    ret = [dat.transpose((2, 1, 0)) for dat in ret]
-    return(ret)
-
-def format_label_segment(data):
-    ret = [[], []]
-    for l in data:
-        ret[0].append([l[0]])
-        ret[1].append([1, 0] if bool(l[1]) else [0, 1])
-    ret = [np.array(dat) for dat in ret]
-    return(ret)
+    return(CustomDataSet(file_path))
 
 def get_model_memory_usage(batch_size, model):
     from keras import backend as K
@@ -177,9 +228,10 @@ def get_model_memory_usage(batch_size, model):
     gbytes = np.round(total_memory / (1024.0 ** 3), 3)
     return gbytes
 
-def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_size=32):
+def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=32):
     print("Epochs: {}\nEpoch_break={}".format(epochs, epoch_break))
-    name = __file__[:-4]
+    print("Net path: {}".format(net_path))
+    name = os.path.basename(__file__)[:-4]
     
     #Store the results of training (i.e. the loss)
     results = []
@@ -222,10 +274,8 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
         
         print("Expected memory_size: {}".format(get_model_memory_usage(batch_size, model)))
         
-        (train_data, train_labels), (test_data, test_labels) = get_formatted_data(data_path)
-        
-        training_generator = g.DataGeneratorMultInput(train_data, train_labels, batch_size=batch_size)
-        testing_generator = g.DataGeneratorMultInput(test_data, test_labels, batch_size=batch_size)
+        training_generator = g.DataGeneratorMultInput(dobj.loaded_train_data, dobj.loaded_train_labels, batch_size=batch_size)
+        testing_generator = g.DataGeneratorMultInput(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size)
         
         for i in range(ran):
             print("ran: {}\ni: {}".format(ran, i))
@@ -246,8 +296,12 @@ def train_model(model, data_path, net_path, epochs=None, epoch_break=10, batch_s
             print(curr_counter)
             
             #Store model after each training-cycle
-            model.save(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5"))
-            print("Stored net at: {}".format(os.path.join(net_path, name + "_epoch_" + str(curr_counter) + ".hf5")))
+            print("Net path before saving: {}".format(net_path))
+            tmp_name = str(name + "_epoch_" + str(curr_counter) + ".hf5")
+            tmp_path = os.path.join(net_path, tmp_name)
+            print("Trying to save at: {}".format(tmp_path))
+            model.save(os.path.join(net_path, tmp_name))
+            print("Stored net at: {}".format(os.path.join(net_path, tmp_name)))
             
             #Evaluate the performance of the net after every cycle and store it.
             results.append([curr_counter, model.evaluate_generator(generator=training_generator, max_q_size=q_size), model.evaluate_generator(generator=testing_generator, max_q_size=q_size)])
