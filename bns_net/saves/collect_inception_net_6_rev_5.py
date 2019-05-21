@@ -4,6 +4,7 @@ import json
 import os
 import load_data
 import generator as g
+from data_object import DataSet
 
 def incp_lay(x, filter_num):
     active_filter_sizes = (4, 8, 16)
