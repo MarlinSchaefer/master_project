@@ -376,13 +376,12 @@ class DataSet():
                 d = [self.format_snr_segment(d[0]), self.format_snr_segment(d[1])]
             else:
                 raise RuntimeError('Got an unsupported kind of data handle: {}'.format(s))
-                
+            
             self.join_formatted(t, s, d[0], d[1])
             
             self.loaded_indices[t][s] = [low_ind, high_ind]
             
             return(self.loaded_data[t][s][low_ind - self.loaded_indices[t][s][0]:high_ind - self.loaded_indices[t][s][0]])
-            
         else:
             if s in ['train_data', 'test_data']:
                 return(self.format_data_segment(self.get_raw_data(t, s, slice=slice, point=point)))
