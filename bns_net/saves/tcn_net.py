@@ -196,7 +196,8 @@ def get_data_obj(file_path):
         
         def get_set(self, slice=None):
             if slice == None:
-                num_pairs = len(self.signals) * len(self.noise) / 2
+                #num_pairs = len(self.signals) * len(self.noise) / 2
+                num_pairs = 100000
             elif type(slice) in [tuple, list] and len(slice) == 2:
                 num_pairs = slice[0]
             else:
