@@ -13,7 +13,8 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
         #Here I take the true negatives and only record their SNR.
         for i, sample in enumerate(true_vals[1]):
             if sample[0] < sample[1]:
-                SNR.append((i, FILE['data'][i][0]))
+                #SNR.append((i, FILE['data'][i][0]))
+                SNR.append((i, FILE['0'][i][0]))
         
         x_pt = sorted([pt[1] for pt in SNR])
         y_pt = []
@@ -61,7 +62,8 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
         #Assumes probability value is stored at the second position
         for i, sample in enumerate(true_vals[1]):
             if sample[0] < sample[1]:
-                probability.append((i, FILE['data'][i][1]))
+                #probability.append((i, FILE['data'][i][1]))
+                probability.append((i, FILE['1'][i][0]))
         
         x_pt = sorted([pt[1] for pt in probability])
         y_pt = []
@@ -108,11 +110,16 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                 max_false_snr = -np.inf
                 snr_vals = []
                 for i in range(len(true_vals[1])):
+                    #if true_vals[1][i][0] <= true_vals[1][i][1]:
+                        #if predFile['data'][i][1] > predFile['data'][i][2]:
+                            #max_false_snr = max(max_false_snr, predFile['data'][i][0])
+                    #else:
+                        #snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
                     if true_vals[1][i][0] <= true_vals[1][i][1]:
-                        if predFile['data'][i][1] > predFile['data'][i][2]:
-                            max_false_snr = max(max_false_snr, predFile['data'][i][0])
+                        if predFile['1'][i][0] > predFile['1'][i][1]:
+                            max_false_snr = max(max_false_snr, predFile['0'][i][0])
                     else:
-                        snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
+                        snr_vals.append([true_vals[0][i][0], predFile['0'][i][0]])
                 
                 print("True vals: {}".format(true_vals))
                 print("snr_vals: {}".format(snr_vals))
@@ -160,11 +167,16 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
                 max_false_prob = -np.inf
                 prob_vals = []
                 for i in range(len(true_vals[1])):
+                    #if true_vals[1][i][0] <= true_vals[1][i][1]:
+                        #if predFile['data'][i][1] > predFile['data'][i][2]:
+                            #max_false_prob = max(max_false_prob, predFile['data'][i][1])
+                    #else:
+                        #prob_vals.append([true_vals[1][i][0], predFile['data'][i][1]])
                     if true_vals[1][i][0] <= true_vals[1][i][1]:
-                        if predFile['data'][i][1] > predFile['data'][i][2]:
-                            max_false_prob = max(max_false_prob, predFile['data'][i][1])
+                        if predFile['1'][i][0] > predFile['1'][i][1]:
+                            max_false_prob = max(max_false_prob, predFile['1'][i][0])
                     else:
-                        prob_vals.append([true_vals[1][i][0], predFile['data'][i][1]])
+                        prob_vals.append([true_vals[1][i][0], predFile['1'][i][0]])
                 
                 print("True vals: {}".format(true_vals))
                 print("prob_vals: {}".format(prob_vals))

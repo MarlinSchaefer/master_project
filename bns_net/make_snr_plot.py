@@ -41,6 +41,10 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
     var_arr_2 = y_pt - x_pt_2
     var_2 = np.var(var_arr_2)
     
+    print("x_pt_1: {}".format(x_pt_1))
+    print("x_pt_2: {}".format(x_pt_2))
+    print("y_pt: {}".format(y_pt))
+    
     line = np.linspace(0.9*min([min(x_pt_1), min(x_pt_2), min(y_pt)]),1.1*max([max(x_pt_1), max(x_pt_2), max(y_pt)]),100)
     
     plt.subplot(211)
@@ -127,7 +131,8 @@ def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, sh
 
 def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_name='N/A'):
     with h5py.File(file_path, 'r') as ResFile:
-        y_pt = ResFile['data'][:].transpose()[0]
+        #y_pt = ResFile['data'][:].transpose()[0]
+        y_pt = ResFile['0'][:].transpose()[0]
     
     x_pt_1 = dobj.loaded_test_labels
     
