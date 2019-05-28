@@ -159,6 +159,7 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
     if not 'seed' in kwargs:
         kwargs['seed'] = 0
     parameters = generate_parameters(num_pure_signals, rand_seed=kwargs['seed'], **kwargs)
+    noise_seeds = np.randint(0, 10**8, num_pure_noise)
 
     if not 't_len' in kwargs:
         kwargs['t_len'] = 96.0
@@ -204,7 +205,7 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
 
         bar = progress_tracker(num_pure_noise, name='Generating noise')
 
-        for i, dat in enumerate(pool.imap_unordered(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), np.random.randint(0, 10**8), sample_rates) for i in range(num_pure_noise)])):
+        for i, dat in enumerate(pool.imap_unordered(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), noise_seeds[i], sample_rates) for i in range(num_pure_noise)])):
         #for i, dat in enumerate(list(map(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), np.random.randint(0, 10**8), sample_rates) for i in range(num_pure_noise)]))):
             noise_data[i] = dat
             noise_snr[i] = kwargs['no_gw_snr']
