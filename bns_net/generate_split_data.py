@@ -147,7 +147,7 @@ def noise_worker(parameters):
     T_LEN = int(t_len / dt)
 
     #Generate noise
-    strain_list = [noise_from_psd(length=T_LEN, delta_t=dt, psd=psd, seed=seed) for i in range(num_detectors)]
+    strain_list = [noise_from_psd(length=T_LEN, delta_t=dt, psd=psd, seed=seed[i]) for i in range(num_detectors)]
 
     #Whiten noise
     strain_list = whiten_data(strain_list, psd, low_freq_cutoff=f_lower)
@@ -175,7 +175,10 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
 
     for dic in parameters:
         dic['sample_rates'] = sample_rates
-
+    
+    noise_seeds = np.randint(0, 10**8, num_pure_noise * len(kwargs['detectors']))
+    noise_seeds.reshape((num_pure_noise, len(kwargs['detectors'])))
+    
     pool = mp.Pool()
 
     with h5py.File(file_path, 'w') as FILE:
