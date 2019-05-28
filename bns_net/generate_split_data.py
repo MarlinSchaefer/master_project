@@ -176,8 +176,8 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
     for dic in parameters:
         dic['sample_rates'] = sample_rates
     
-    noise_seeds = np.randint(0, 10**8, num_pure_noise * len(kwargs['detectors']))
-    noise_seeds.reshape((num_pure_noise, len(kwargs['detectors'])))
+    noise_seeds = np.random.randint(0, 10**8, num_pure_noise * len(kwargs['detectors']))
+    noise_seeds = noise_seeds.reshape((num_pure_noise, len(kwargs['detectors'])))
     
     pool = mp.Pool()
 
