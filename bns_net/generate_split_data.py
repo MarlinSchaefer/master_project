@@ -159,7 +159,6 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
     if not 'seed' in kwargs:
         kwargs['seed'] = 0
     parameters = generate_parameters(num_pure_signals, rand_seed=kwargs['seed'], **kwargs)
-    noise_seeds = np.randint(0, 10**8, num_pure_noise)
 
     if not 't_len' in kwargs:
         kwargs['t_len'] = 96.0
