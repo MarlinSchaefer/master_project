@@ -235,6 +235,7 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
         dobj.set_file_path(f)
         dobj.unload_all()
         #dobj.get_set()
+        print("dobj.shape: {}".format(dobj.shape))
         dobj.get_formatted_data('testing', 'test_data')
         dobj.get_formatted_data('testing', 'test_labels')
         dobj.get_formatted_data('testing', 'test_snr_calculated')
