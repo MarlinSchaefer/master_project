@@ -210,13 +210,19 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
     
     ###
     
+    print("Now loading the last model")
+    
     net_last = keras.models.load_model(os.path.join(dir_path, net_name + '.hf5'))
+    
+    print("Now loading the best model")
     
     #Load networks
     if not opt_arg['best_epoch'] == 0:
         net_best = keras.models.load_model(os.path.join(dir_path, net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'))
     else:
         net_best = None
+    
+    print("Now getting the data")
     
     #Run predict generator on the test data for each net.
     tmp_prediction_paths_last = []
@@ -226,7 +232,7 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
         if not net_best == None:
             tmp_prediction_paths_best.append(os.path.join(dir_path, os.path.splitext(f)[0] + '_predictions_best.hf5'))
         
-        dobj.set_file_name(f)
+        dobj.set_file_path(f)
         dobj.unload_all()
         dobj.get_set()
         
