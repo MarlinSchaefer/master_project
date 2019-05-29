@@ -222,9 +222,9 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
     tmp_prediction_paths_last = []
     tmp_prediction_paths_best = []
     for f in testing_files:
-        tmp_prediction_paths_last.append(os.path.join(dir_path, os.path.splittext(f)[0] + '_predictions_last.hf5'))
+        tmp_prediction_paths_last.append(os.path.join(dir_path, os.path.splitext(f)[0] + '_predictions_last.hf5'))
         if not net_best == None:
-            tmp_prediction_paths_best.append(os.path.join(dir_path, os.path.splittext(f)[0] + '_predictions_best.hf5'))
+            tmp_prediction_paths_best.append(os.path.join(dir_path, os.path.splitext(f)[0] + '_predictions_best.hf5'))
         
         dobj.set_file_name(f)
         dobj.unload_all()
