@@ -28,7 +28,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
         #Total number of samples is used to determine the observation time.
         #Is this correct or should the negative samples be used?
         #0.5 = time (in seconds) that the signal is shifted around in the data
-        obs_time = (len(dobj.loaded_test_labels)) * 0.5
+        obs_time = (len(dobj.loaded_test_labels[0])) * 0.5
         seconds_per_month = 60 * 60 * 24 * 30
         
         y_pt = [pt / obs_time * seconds_per_month for pt in y_pt]
@@ -77,7 +77,7 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
         #Total number of samples is used to determine the observation time.
         #Is this correct or should the negative samples be used?
         #0.5 = time (in seconds) that the signal is shifted around in the data
-        obs_time = (len(dobj.loaded_test_labels)) * 0.5
+        obs_time = (len(dobj.loaded_test_labels[0])) * 0.5
         seconds_per_month = 60 * 60 * 24 * 30
         
         y_pt = [pt / obs_time * seconds_per_month for pt in y_pt]
