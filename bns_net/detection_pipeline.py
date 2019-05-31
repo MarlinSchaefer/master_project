@@ -37,6 +37,8 @@ def resample(ts):
     res_slices = []
     for i, t in enumerate(time_slices):
         res_slices.append(list(resample_to_delta_t(t, 1.0 / 2 ** (12 - i))))
+        #The following line was added to make it suite my current setup
+        res_slices.append(list(np.zeros(len(res_slices[-1]))))
     del time_slices
     return(res_slices)
 
@@ -155,7 +157,14 @@ def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_le
     
     inp = np.array(inp)
 
-    inp = inp.transpose((0,2,1))
+    inp = inp.transpose((1,0,2))
+    
+    real_inp = [np.zeros((2, inp.shape[1], inp.shape[2])) for i in range(14)]
+    
+    for i in range(14):
+        real_inp[i][0] = inp[i]
+        real_inp[i][1] = inp[i+14]
+        real_inp[i] = real_inp[i].transpose(1,2,0)
 
     true_pred = net.predict(inp, verbose=1)
     
