@@ -166,7 +166,7 @@ def evaluate_ts(ts, net_path, time_step=0.25, preemptive_whiten=False, whiten_le
         real_inp[i][1] = inp[i+14]
         real_inp[i] = real_inp[i].transpose(1,2,0)
 
-    true_pred = net.predict(inp, verbose=1)
+    true_pred = net.predict(real_inp, verbose=1)
     
     snrs = list(true_pred[0].flatten())
     bools = [pt[0] for pt in true_pred[1]]
