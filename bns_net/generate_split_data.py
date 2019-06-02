@@ -15,7 +15,7 @@ from pycbc.psd import aLIGOZeroDetHighPower
 from pycbc.filter import resample_to_delta_t
 from pycbc.noise import noise_from_psd
 from data_object import DataSet
-from pycbc.psd import inverse_spectrum_truncation
+from pycbc.psd import inverse_spectrum_truncation, interpolate
 from evaluate_nets import evaluate_training
 import json
 import time
@@ -88,13 +88,22 @@ def whiten_data(strain_list, psd, low_freq_cutoff=20.0):
     if not org_type == list:
         strain_list = [strain_list]
 
-    DF = strain_list[0].delta_f
-    F_LEN = len(strain_list[0].to_frequencyseries())
+    #DF = strain_list[0].delta_f
+    DF = 1.0 / strain_list[0].delta_t / 4 #This is the definition of delta_f from the TimeSeries.whiten in the welchs method.
+    #F_LEN = len(strain_list[0].to_frequencyseries())
+    F_LEN = len(strain_list[0]) #This is the definition of F_LEN from TimeSeries.whiten in the welchs method.
     #tmp_psd = inverse_spectrum_truncation(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff), max_filter_len=len(strain_list[0]), low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
-    tmp_psd = inverse_spectrum_truncation(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff), max_filter_len=4 * strain_list[0].sample_rate, low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
+    
+    tmp_psd = aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff)
+    
+    tmp_psd = interpolate(tmp_psd, strain_list[0].delta_f) #To replicate TimeSeries.whiten
+    
+    tmp_psd = inverse_spectrum_truncation(tmp_psd, max_filter_len=4 * strain_list[0].sample_rate, low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
 
     for i in range(len(strain_list)):
         strain_list[i] = (strain_list[i].to_frequencyseries() / tmp_psd ** 0.5).to_timeseries()
+        max_filter_len = 4 * strain_list[i].sample_rate #To replicate TimeSeries.whiten
+        strain_list[i] = strain_list[i][int(float(max_filter_len)/2):int(len(strain_list[i])-float(max_filter_len)/2)] #To replicate TimeSeries.whiten
 
     if not org_type == list:
         return(strain_list[0])
