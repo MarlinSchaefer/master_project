@@ -89,20 +89,27 @@ def whiten_data(strain_list, psd, low_freq_cutoff=20.0):
         strain_list = [strain_list]
 
     #DF = strain_list[0].delta_f
-    DF = 1.0 / strain_list[0].delta_t / 4 #This is the definition of delta_f from the TimeSeries.whiten in the welchs method.
+    DF = 1.0 / strain_list[0].delta_t / (4 * strain_list[0].sample_rate) #This is the definition of delta_f from the TimeSeries.whiten in the welchs method.
     #F_LEN = len(strain_list[0].to_frequencyseries())
-    F_LEN = len(strain_list[0]) #This is the definition of F_LEN from TimeSeries.whiten in the welchs method.
+    #F_LEN = len(strain_list[0]) #This is the definition of F_LEN from TimeSeries.whiten in the welchs method.
+    F_LEN = int(4 * strain_list[0].sample_rate / 2 + 1)
     #tmp_psd = inverse_spectrum_truncation(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff), max_filter_len=len(strain_list[0]), low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
     
     tmp_psd = aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff)
     
+    #print("length: {}".format(len(tmp_psd)))
+    #print("old df: {}".format(tmp_psd.delta_f))
+    #print("new df: {}".format(strain_list[0].delta_f))
+    #print("Trying to interpolate {} samples.".format((len(tmp_psd)-1) * float(tmp_psd.delta_f) / strain_list[0].delta_f + 1))
+    
     tmp_psd = interpolate(tmp_psd, strain_list[0].delta_f) #To replicate TimeSeries.whiten
     
-    tmp_psd = inverse_spectrum_truncation(tmp_psd, max_filter_len=4 * strain_list[0].sample_rate, low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
+    #tmp_psd = inverse_spectrum_truncation(tmp_psd, max_filter_len=4 * strain_list[0].sample_rate, low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
 
     for i in range(len(strain_list)):
-        strain_list[i] = (strain_list[i].to_frequencyseries() / tmp_psd ** 0.5).to_timeseries()
-        max_filter_len = 4 * strain_list[i].sample_rate #To replicate TimeSeries.whiten
+        max_filter_len = int(4 * strain_list[i].sample_rate) #To replicate TimeSeries.whiten
+        tmp_psd_2 = inverse_spectrum_truncation(tmp_psd, max_filter_len=max_filter_len, low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
+        strain_list[i] = (strain_list[i].to_frequencyseries() / tmp_psd_2 ** 0.5).to_timeseries()
         strain_list[i] = strain_list[i][int(float(max_filter_len)/2):int(len(strain_list[i])-float(max_filter_len)/2)] #To replicate TimeSeries.whiten
 
     if not org_type == list:
