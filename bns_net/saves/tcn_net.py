@@ -205,7 +205,7 @@ def get_data_obj(file_path):
             else:
                 raise ValueError('slice needs to be a tuple or list of exactly 2 items.')
             
-            signal_indices = generate_unique_index_pairs(2*num_signals)
+            signal_indices = self.generate_unique_index_pairs(2*num_signals)
             noise_indices = np.arange(0, len(self.noise), dtype=int)
             np.random.shuffle(noise_indices)
             self.training_indices = np.array(signal_indices[:num_signals] + noise_indices[:num_noise])
