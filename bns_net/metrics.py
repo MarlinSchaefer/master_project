@@ -41,6 +41,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('SNR')
     plt.ylabel('#False alarms louder per 30 days')
+    plt.title('Total number of noise samples: {}'.format(len(x_pt)))
     #plt.yscale('log')
     plt.savefig(image_path)
     if show:
@@ -90,6 +91,7 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('p-value')
     plt.ylabel('#False alarms louder per 30 days')
+    plt.title('Total number of noise samples: {}'.format(len(x_pt)))
     #plt.yscale('log')
     plt.savefig(image_path)
     if show:
@@ -149,6 +151,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
     plt.xlabel('SNR')
     plt.ylabel('Fraction of signals louder than highest false positive')
+    plt.title('Loudest false positive SNR-value: {}'.format(max_false_snr))
     plt.savefig(image_path)
     if show:
         plt.show()
@@ -206,6 +209,7 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
     plt.xlabel('probability')
     plt.ylabel('Fraction of signals louder than highest false positive')
+    plt.title('Loudest false positive p-value: {}'.format(max_false_prob))
     plt.savefig(image_path)
     if show:
         plt.show()
