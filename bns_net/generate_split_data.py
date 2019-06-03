@@ -95,7 +95,7 @@ def whiten_data(strain_list, psd, low_freq_cutoff=20.0):
     F_LEN = int(4 * strain_list[0].sample_rate / 2 + 1)
     #tmp_psd = inverse_spectrum_truncation(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff), max_filter_len=len(strain_list[0]), low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
     
-    low_freq_diff = 1
+    low_freq_diff = 20
     if low_freq_cutoff > low_freq_diff:
         tmp_psd = aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff-low_freq_diff)
     else:
