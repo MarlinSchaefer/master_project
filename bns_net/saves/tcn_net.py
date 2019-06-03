@@ -197,14 +197,23 @@ def get_data_obj(file_path):
         def get_set(self, slice=None):
             if slice == None:
                 #num_pairs = len(self.signals) * len(self.noise) / 2
-                num_pairs = 100000
+                num_noise = int(float(len(self.noise)) * 3 / 4)
+                num_signal = num_noise
             elif type(slice) in [tuple, list] and len(slice) == 2:
-                num_pairs = slice[0]
+                num_signal = slice[0]
+                num_noise = slice[1]
             else:
                 raise ValueError('slice needs to be a tuple or list of exactly 2 items.')
             
-            self.training_indices = self.generate_unique_index_pairs(num_pairs)
-            self.testing_indices = self.generate_unique_index_pairs(int(float(num_pairs) * 3 / 7))
+            signal_indices = generate_unique_index_pairs(2*num_signals)
+            noise_indices = np.arange(0, len(self.noise), dtype=int)
+            np.random.shuffle(noise_indices)
+            self.training_indices = np.array(signal_indices[:num_signals] + noise_indices[:num_noise])
+            np.random.shuffle(self.training_indices)
+            self.training_indices = [(pt[0], pt[1]) for pt in self.training_indices]
+            self.testing_indices = np.array(signal_indices[num_signals:] + noise_indices[:num_noise])
+            np.random.shuffle(self.testing_indices)
+            self.testing_indices = [(pt[0], pt[1]) for pt in self.testing_indices]
             
             training_snrs = np.array([[self.signal_labels[i[0]]] if not i[0] == -1 else [self.noise_label] for i in self.training_indices])
             training_bool = np.array([[1.0, 0.0] if not i[0] == -1 else [0.0, 1.0] for i in self.training_indices])
@@ -218,10 +227,47 @@ def get_data_obj(file_path):
         def get_file_properties(self):
             return({'snr': [8.0, 15.0]})
         
-        def generate_unique_index_pairs(self, num_pairs):
+        def generate_unique_index_pairs_noise(self, num_pairs):
+            if len(self.noise) < num_pairs:
+                raise ValueError("Can't generate more indices for pure noise than there are noise instances.")
+            
+            if num_pairs < len(self.noise) / 2:
+                invert = False
+            else:
+                invert = True
+                num_pairs = len(self.noise) - num_pairs
+            
+            curr_pairs = 0
+            poss = np.zeros(len(self.noise))
+            while curr_pairs < num_pairs:
+                r_int = np.random.randint(0, len(self.noise))
+                if poss[r_int] == 0:
+                    poss[r_int] = 1
+                    curr_pairs += 1
+            
+            true_val = 0 if invert else 1
+            
+            ret = []
+            
+            for i, val in enumerate(poss):
+                if val == true_val:
+                    ret.append((-1, i))
+            
+            ret = np.array(ret, dtype=int)
+            np.random.shuffle(ret)
+            
+            ret = [(pt[0], pt[1]) for pt in ret]
+            
+            return(ret)
+        
+        def generate_unique_index_pairs(self, num_pairs, generate_signals_only=True):
             len_sig = len(self.signals)
             len_noi = len(self.noise)
-            max_len = (len_sig+1) * len_noi
+            if generate_signals_only:
+                max_len = len_sig * len_noi
+            else:
+                max_len = (len_sig+1) * len_noi
+                
             if max_len < num_pairs:
                 raise ValueError('Tried to generate {} unique pairs from {} possible combinations.'.format(num_pairs, max_len))
             
