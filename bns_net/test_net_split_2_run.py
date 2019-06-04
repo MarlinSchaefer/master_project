@@ -1,3 +1,7 @@
+from tensorflow import ConfigProto, Session
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = Session(config=config)
 from run_net import run_net
 import numpy as np
 
@@ -5,7 +9,7 @@ ep = 150
 wiki_e = True
 
 if __name__ == "__main__":
-    run_net('tcn_net', 'templates', ini_file='testing_net.ini', create_wiki_entry=False, overwrite_template_file=False, epochs=14, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24)
+    run_net('tcn_net_rev_1', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=False, overwrite_template_file=False, epochs=24, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24)
     #try:
         #run_net('collect_inception_net_6_rev_6', 'small_snr_7_100000', ini_file='testing_net.ini', snr=[8.0, 15.0], create_wiki_entry=wiki_e, overwrite_template_file=True, epochs=0, num_of_templates=100000, gw_prob=0.5, custom_message='Generated large template file at more realistic SNRs.')
     #except:
