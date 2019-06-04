@@ -209,7 +209,7 @@ def get_data_obj(file_path):
             self.training_indices = np.array(signal_indices[:num_signals] + noise_indices[:num_noise])
             np.random.shuffle(self.training_indices)
             self.training_indices = [(pt[0], pt[1]) for pt in self.training_indices]
-            self.testing_indices = np.array(signal_indices[num_signals:] + noise_indices[:num_noise])
+            self.testing_indices = np.array(signal_indices[num_signals:] + noise_indices[num_noise:])
             np.random.shuffle(self.testing_indices)
             self.testing_indices = [(pt[0], pt[1]) for pt in self.testing_indices]
             
