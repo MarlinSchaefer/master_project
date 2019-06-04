@@ -89,7 +89,7 @@ def inception_stack(x):
     bn_conv_2 = keras.layers.BatchNormalization()(conv_2)
     act_conv_2 = keras.layers.Activation('relu')(bn_conv_2)
     inc_1 = incp_lay(act_conv_2, 32)
-    pool_1 = keras.layers.MaxPooling1D(2)(inc_2)
+    pool_1 = keras.layers.MaxPooling1D(2)(inc_1)
     return(pool_1)
 
 def get_model():
