@@ -3,6 +3,7 @@ matplotlib.use('Agg')
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
+import matplotlib.patches as pat
 
 def plot_false_alarm(dobj, file_path, image_path, show=True):
     with h5py.File(file_path, 'r') as FILE:
@@ -144,8 +145,9 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     
     store_file_path = image_path[:-4] + '.hf5'
     with h5py.File(store_file_path, 'w') as FILE:
-        FILE.create_dataset('bins', data=act_bins)
+        FILE.create_dataset('bins', data=np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]))
         FILE.create_dataset('data', data=np.array(y_pt))
+        FILE.create_dataset('loudest_false_positive', data=np.array([max_false_prob]))
     
     plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
@@ -202,8 +204,9 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
     
     store_file_path = image_path[:-4] + '.hf5'
     with h5py.File(store_file_path, 'w') as FILE:
-        FILE.create_dataset('bins', data=act_bins)
+        FILE.create_dataset('bins', data=np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]))
         FILE.create_dataset('data', data=np.array(y_pt))
+        FILE.create_dataset('loudest_false_positive', data=np.array([max_false_prob]))
     
     plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
@@ -219,3 +222,105 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
         plt.close()
     
     return(store_file_path)
+
+def joint_snr_bar_plot(file_last, file_best, image_save_path, color_last='blue', color_best='red', show=False):
+    with h5py.File(file_last) as last:
+        last_bins = last['bins'][:]
+        last_data = last['data'][:]
+        last_loud = last['loudest_false_positive'][0]
+    
+    with h5py.File(file_best) as best:
+        best_bins = best['bins'][:]
+        best_data = best['data'][:]
+        best_loud = best['loudest_false_positive'][0]
+    
+    if not all(np.array([last_bins == best_bins]).flatten()):
+        raise ValueError('The databins of the plots you are trying to join do not match up.')
+    
+    bar_width = last_bins[1] - last_bins[0]
+    
+    top = []
+    bot = []
+    color_top = []
+    color_bot = []
+    for i in range(len(last_data)):
+        if last_data[i] <= best_data[i]:
+            top.append(best_data[i])
+            bot.append(last_data[i])
+            color_top.append(color_best)
+            color_bot.append(color_last)
+        else:
+            top.append(last_data[i])
+            bot.append(best_data[i])
+            color_top.append(color_last)
+            color_bot.append(color_best)
+    
+    top = np.array(top)
+    bot = np.array(bot)
+    top = top - bot
+    
+    last_patch = pat.Patch(color=color_last, label='Data last epoch')
+    best_patch = pat.Patch(color=color_best, label='Data best epoch')
+    
+    plt.bar(last_bins, bot, width=bar_width, color=color_bot)
+    plt.bar(last_bins, top, width=bar_width, color=color_top, bottom=bot)
+    plt.xlabel('SNR')
+    plt.ylabel('Fraction of signals louder than highest false positive')
+    plt.title('Loudest false pos: last: {} | best: {}'.format(last_loud, best_loud))
+    plt.legend(handles=[last_patch, best_patch])
+    plt.savefig(image_save_path)
+    
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(image_save_path)
+
+def joint_snr_false_alarm_plot(file_last, file_best, image_save_path, color_last='blue', color_best='red', show=False):
+    with h5py.File(file_last) as last:
+        last_data = last['data'][:]
+    
+    with h5py.File(file_best) as best:
+        best_data = best['data'][:]
+    
+    plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
+    plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
+    plt.xlabel('SNR')
+    plt.ylabel('#False alarms louder per 30 days')
+    plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
+    plt.savefig(image_save_path)
+    
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(image_save_path)
+
+def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_last='blue', color_best='red', show=False):
+    with h5py.File(file_last) as last:
+        last_data = last['data'][:]
+    
+    with h5py.File(file_best) as best:
+        best_data = best['data'][:]
+    
+    plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
+    plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
+    plt.xlabel('p-value')
+    plt.ylabel('#False alarms louder per 30 days')
+    plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
+    plt.savefig(image_save_path)
+    
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(image_save_path)
