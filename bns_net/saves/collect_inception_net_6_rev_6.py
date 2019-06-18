@@ -5,6 +5,10 @@ import os
 import load_data
 import generator as g
 from data_object import DataSet
+from aux_functions import get_store_path
+import h5py
+from evaluate_nets import evaluate_training
+import time
 
 def incp_lay(x, filter_num):
     active_filter_sizes = (4, 8, 16)
@@ -84,14 +88,14 @@ def get_model():
     dense_3 = keras.layers.Dense(3)(flatten)
     dense_4 = keras.layers.Dense(2, activation='softmax', name='Out_Bool')(dense_3)
     
-    model = keras.models.Model(inputs=[inp1, inp2, inp4, inp8, inp16, inp32, inp64], outputs=[dense_2, dense_4])
+    model = keras.models.Model(inputs=[is1, in1, is2, in2, is4, in4, is8, in8, is16, in16, is32, in32, is64, in64], outputs=[dense_2, dense_4])
     #model = keras.models.Model(inputs=[inp_2s, inp_8s, inp_32s], outputs=[dense_2, dense_4])
     
     return(model)
 
 def compile_model(model):
     optimizer = keras.optimizers.Adam(decay=0.1)
-    model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer=optimizer, metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
+    model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer=optimizer, metrics=['mape', 'accuracy'])
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
