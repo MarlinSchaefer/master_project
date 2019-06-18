@@ -84,7 +84,7 @@ def get_model():
     dense_3 = keras.layers.Dense(3)(flatten)
     dense_4 = keras.layers.Dense(2, activation='softmax', name='Out_Bool')(dense_3)
     
-    model = keras.models.Model(inputs=[inp_1s, inp_2s, inp_4s, inp_8s, inp_16s, inp_32s, inp_64s], outputs=[dense_2, dense_4])
+    model = keras.models.Model(inputs=[inp1, inp2, inp4, inp8, inp16, inp32, inp64], outputs=[dense_2, dense_4])
     #model = keras.models.Model(inputs=[inp_2s, inp_8s, inp_32s], outputs=[dense_2, dense_4])
     
     return(model)
