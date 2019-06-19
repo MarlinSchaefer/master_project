@@ -94,7 +94,7 @@ def get_model():
     return(model)
 
 def compile_model(model):
-    optimizer = keras.optimizers.Adam(lr=0.001/2)
+    optimizer = keras.optimizers.Adam(decay=0.1)
     model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer=optimizer, metrics=['mape', 'accuracy'])
 
 def evaluate_overfitting(train_loss, test_loss):
