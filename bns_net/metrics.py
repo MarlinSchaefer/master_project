@@ -147,7 +147,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     with h5py.File(store_file_path, 'w') as FILE:
         FILE.create_dataset('bins', data=np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]))
         FILE.create_dataset('data', data=np.array(y_pt))
-        FILE.create_dataset('loudest_false_positive', data=np.array([max_false_prob]))
+        FILE.create_dataset('loudest_false_positive', data=np.array([max_false_snr]))
     
     plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
