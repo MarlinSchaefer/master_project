@@ -8,7 +8,7 @@ import os
 def store_test_results_old(net, dobj, store_path, batch_size=32, generator=g.DataGeneratorMultInput):
     res = net.predict_generator(generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size, shuffle=False), verbose=1)
     
-    print(res)
+    #print(res)
     
     if type(res) == list:
         shape = [0, 0]
