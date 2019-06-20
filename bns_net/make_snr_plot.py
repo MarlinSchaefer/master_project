@@ -41,10 +41,6 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
     var_arr_2 = y_pt - x_pt_2
     var_2 = np.var(var_arr_2)
     
-    print("x_pt_1: {}".format(x_pt_1))
-    print("x_pt_2: {}".format(x_pt_2))
-    print("y_pt: {}".format(y_pt))
-    
     line = np.linspace(0.9*min([min(x_pt_1), min(x_pt_2), min(y_pt)]),1.1*max([max(x_pt_1), max(x_pt_2), max(y_pt)]),100)
     
     plt.subplot(211)
@@ -65,6 +61,13 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
     plt.legend()
     
     plt.savefig(path)
+    
+    #Save data to file
+    file_path = os.path.splitext(path)[0] + '.hf5'
+    with h5py.File(file_path, 'w') as save_data:
+        save_data.create_dataset('x1', data=np.array(x_pt_1))
+        save_data.create_dataset('x2', data=np.array(x_pt_2))
+        save_data.create_dataset('y', data=np.array(y_pt))
     
     if show:
         plt.show()
