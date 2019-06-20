@@ -34,7 +34,7 @@ def plot(net, data, labels, path, show=False, net_name='N/A'):
     if show:
         plt.show()
     
-def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
+def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False, save_file=True):
     var_arr_1 = y_pt - x_pt_1
     var_1 = np.var(var_arr_1)
     
@@ -63,11 +63,12 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
     plt.savefig(path)
     
     #Save data to file
-    file_path = os.path.splitext(path)[0] + '.hf5'
-    with h5py.File(file_path, 'w') as save_data:
-        save_data.create_dataset('x1', data=np.array(x_pt_1))
-        save_data.create_dataset('x2', data=np.array(x_pt_2))
-        save_data.create_dataset('y', data=np.array(y_pt))
+    if save_file:
+        file_path = os.path.splitext(path)[0] + '.hf5'
+        with h5py.File(file_path, 'w') as save_data:
+            save_data.create_dataset('x1', data=np.array(x_pt_1))
+            save_data.create_dataset('x2', data=np.array(x_pt_2))
+            save_data.create_dataset('y', data=np.array(y_pt))
     
     if show:
         plt.show()
@@ -76,7 +77,7 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False):
         plt.clf()
         plt.close()
 
-def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'):
+def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A', save_file=True):
     #x_pt_1 = labels.reshape(len(labels))
     x_pt_1 = np.array([pt[0] for pt in labels])
     x_pt_2 = calc
@@ -94,9 +95,9 @@ def plot_true_and_calc(net, data, labels, calc, path, show=False, net_name='N/A'
     print("x_pt_2: {}".format(x_pt_2))
     print("y_pt: {}".format(y_pt))
     
-    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show, save_file=save_file)
 
-def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, show=False, net_name='N/A'):
+def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, show=False, net_name='N/A', save_file=True):
     d_form = imp.load_source('d_form', net_path)
     with h5py.File(data_path, 'r') as data:
         te_d = data['testing']['test_data']
@@ -130,9 +131,9 @@ def plot_true_and_calc_partial(net, data_path, path, net_path, batch_size=32, sh
             
             bar.iterate()
     
-    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show)
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=show, save_file=save_file)
 
-def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_name='N/A'):
+def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_name='N/A', save_file=True):
     with h5py.File(file_path, 'r') as ResFile:
         #y_pt = ResFile['data'][:].transpose()[0]
         y_pt = ResFile['0'][:].transpose()[0]
@@ -151,4 +152,4 @@ def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_na
     
     x_pt_2 = x_pt_2.flatten()
     
-    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, image_path, show=show)
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, image_path, show=show, save_file=save_file)
