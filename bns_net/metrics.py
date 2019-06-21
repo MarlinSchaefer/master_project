@@ -291,6 +291,7 @@ def joint_snr_false_alarm_plot(file_last, file_best, image_save_path, color_last
     plt.xlabel('SNR')
     plt.ylabel('#False alarms louder per 30 days')
     plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
+    plt.legend()
     plt.savefig(image_save_path)
     
     if show:
@@ -314,6 +315,7 @@ def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_las
     plt.xlabel('p-value')
     plt.ylabel('#False alarms louder per 30 days')
     plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
+    plt.legend()
     plt.savefig(image_save_path)
     
     if show:
