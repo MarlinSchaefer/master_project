@@ -8,8 +8,6 @@ import os
 def store_test_results_old(net, dobj, store_path, batch_size=32, generator=g.DataGeneratorMultInput):
     res = net.predict_generator(generator(dobj.loaded_test_data, dobj.loaded_test_labels, batch_size=batch_size, shuffle=False), verbose=1)
     
-    #print(res)
-    
     if type(res) == list:
         shape = [0, 0]
         shape[0] = len(res[0])
@@ -42,6 +40,16 @@ def store_test_results(net, dobj, store_path, batch_size=32, generator=g.DataGen
     with h5py.File(store_path, 'w') as FILE:
         for i, con in enumerate(res):
             FILE.create_dataset(str(i), data=con)
+        labels = FILE.create_group('labels')
+        try:
+            if isinstance(dobj.loaded_test_labels, list):
+                for i, l in enumerate(dobj.loaded_test_labels):
+                    labels.create_dataset(str(i), data=np.array(l))
+            else:
+                labels.create_dataset('0', data=np.array(l))
+        except:
+            print("Couldn't store labels")
+            pass
     
     print("Stored data at: {}\n".format(store_path))
     
