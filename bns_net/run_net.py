@@ -9,6 +9,7 @@ from wiki import make_wiki_entry, read_json, model_to_string
 from ini_handeling import run_net_defaults, load_options
 from store_test_results import store_test_results
 from metrics import plot_false_alarm, plot_sensitivity, joint_snr_bar_plot, joint_snr_false_alarm_plot, joint_prob_false_alarm_plot
+import traceback
 
 """
 TODO:
@@ -433,6 +434,7 @@ def run_net(net_name, temp_name, **kwargs):
             joint_snr_false_alarm_plot(fa_snr_last_path, fa_snr_best_path, joint_false_alarm_plot_snr)
             joint_prob_false_alarm_plot(fa_prob_last_path, fa_prob_best_path, joint_false_alarm_plot_prob)
         except:
+            traceback.print_exc()
             pass
         
         if opt_arg['evaluate_on_large_testing_set']:
@@ -496,3 +498,4 @@ def run_net(net_name, temp_name, **kwargs):
         if opt_arg['create_wiki_entry']:
             make_wiki_entry(wiki_data)
             make_wiki_entry(wiki_data, path=opt_arg['store_results_path'])
+        traceback.print_exc()
