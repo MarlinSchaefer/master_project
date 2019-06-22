@@ -158,13 +158,12 @@ def get_data_obj(file_path):
             else:
                 raise ValueError('slice needs to be a tuple or list of exactly 2 items.')
             
-            signal_indices = self.generate_unique_index_pairs(2*num_signals)
-            noise_indices = list(np.arange(0, len(self.noise), dtype=int))
+            noise_indices = np.arange(0, len(self.noise), dtype=int)
+            noise_indices = [(-1, pt) for pt in noise_indices]
             signal_split = int(float(len(self.signals)) * 3 / 4)
             self.training_indices = np.array(self.generate_unique_index_pairs(num_signals, signal_index_range=[0, signal_split], noise_index_range=[0, num_noise]) + noise_indices[:num_noise])
             np.random.shuffle(self.training_indices)
             self.training_indices = [(pt[0], pt[1]) for pt in self.training_indices]
-            self.testing_indices = np.array(signal_indices[num_signals:] + noise_indices[num_noise:])
             self.testing_indices = np.array(self.generate_unique_index_pairs(num_signals, signal_index_range=[signal_split, len(self.signals)], noise_index_range=[num_noise, len(self.noise)]) + noise_indices[num_noise:])
             np.random.shuffle(self.testing_indices)
             self.testing_indices = [(pt[0], pt[1]) for pt in self.testing_indices]
