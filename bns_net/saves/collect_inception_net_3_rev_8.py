@@ -160,7 +160,7 @@ def get_data_obj(file_path):
             
             signal_indices = self.generate_unique_index_pairs(2*num_signals)
             noise_indices = list(np.arange(0, len(self.noise), dtype=int))
-            sig_split = int(float(len(self.signals)) * 3 / 4)
+            signal_split = int(float(len(self.signals)) * 3 / 4)
             self.training_indices = np.array(self.generate_unique_index_pairs(num_signals, signal_index_range=[0, signal_split], noise_index_range=[0, num_noise]) + noise_indices[:num_noise])
             np.random.shuffle(self.training_indices)
             self.training_indices = [(pt[0], pt[1]) for pt in self.training_indices]
