@@ -220,12 +220,12 @@ def get_data_obj(file_path):
         def generate_unique_index_pairs(self, num_pairs, generate_signals_only=True, noise_index_range=None, signal_index_range=None):
             if noise_index_range == None:
                 noise_index_range = [0, len(self.noise)]
-            elif (not isinstance(noise_index_range) or not isinstance(noise_index_range)) and len(noise_index_range) == 2:
+            elif (not isinstance(noise_index_range, list) or not isinstance(noise_index_range, tuple)) and len(noise_index_range) == 2:
                 raise ValueError('noise_index_range needs to be a list or tuple of length 2.')
             
             if signal_index_range == None:
                 signal_index_range = [0, len(self.signals)]
-            elif (not isinstance(signal_index_range) or not isinstance(signal_index_range)) and len(signal_index_range) == 2:
+            elif (not isinstance(signal_index_range, list) or not isinstance(signal_index_range, tuple)) and len(signal_index_range) == 2:
                 raise ValueError('signal_index_range needs to be a list or tuple of length 2.')
             
             len_noi = noise_index_range[1] - noise_index_range[0]
