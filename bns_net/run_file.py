@@ -11,8 +11,8 @@ wiki_e = True
 
 if __name__ == "__main__":
     try:
-        msg = 'This network is basically the same as collect_inception_net_6_rev_8, but with less channels, to consume less GPU-memory. It is also basically the same as collect_inception_net_3_rev_6, just without the dropout layers.'
-        run_net('collect_inception_net_3_rev_7', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=100, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        msg = 'This network is  the same as collect_inception_net_3_rev_7. The difference comes from the generator, that has different signals and noise instanciations for training and testing.'
+        run_net('collect_inception_net_3_rev_8', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=100, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
