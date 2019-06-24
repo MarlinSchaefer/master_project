@@ -430,9 +430,9 @@ def run_net(net_name, temp_name, **kwargs):
             joint_sens_path = os.path.join(opt_arg['store_results_path'], 'joint_sensitivity_plot.png')
             joint_false_alarm_plot_snr = os.path.join(opt_arg['store_results_path'], 'joint_false_alarm_plot_snr.png')
             joint_false_alarm_plot_prob = os.path.join(opt_arg['store_results_path'], 'joint_false_alarm_plot_prob.png')
-            joint_snr_bar_plot(sens_last_path, sens_best_path, joint_sens_path)
-            joint_snr_false_alarm_plot(fa_snr_last_path, fa_snr_best_path, joint_false_alarm_plot_snr)
-            joint_prob_false_alarm_plot(fa_prob_last_path, fa_prob_best_path, joint_false_alarm_plot_prob)
+            joint_snr_bar_plot(sens_last_path+'.hf5', sens_best_path+'.hf5', joint_sens_path)
+            joint_snr_false_alarm_plot(fa_snr_last_path+'.hf5', fa_snr_best_path+'.hf5', joint_false_alarm_plot_snr)
+            joint_prob_false_alarm_plot(fa_prob_last_path+'.hf5', fa_prob_best_path+'.hf5', joint_false_alarm_plot_prob)
         except:
             traceback.print_exc()
             pass
