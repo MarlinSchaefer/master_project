@@ -168,14 +168,13 @@ def get_data_obj(file_path):
             else:
                 raise ValueError('slice needs to be a tuple or list of exactly 2 items.')
             
-            signal_indices = self.generate_unique_index_pairs(2*num_signals)
             noise_indices = np.arange(0, len(self.noise), dtype=int)
-            np.random.shuffle(noise_indices)
             noise_indices = [(-1, pt) for pt in noise_indices]
-            self.training_indices = np.array(signal_indices[:num_signals] + noise_indices[:num_noise])
+            signal_split = int(float(len(self.signals)) * 3 / 4)
+            self.training_indices = np.array(self.generate_unique_index_pairs(num_signals, signal_index_range=[0, signal_split], noise_index_range=[0, num_noise]) + noise_indices[:num_noise])
             np.random.shuffle(self.training_indices)
             self.training_indices = [(pt[0], pt[1]) for pt in self.training_indices]
-            self.testing_indices = np.array(signal_indices[num_signals:] + noise_indices[num_noise:])
+            self.testing_indices = np.array(self.generate_unique_index_pairs(num_signals, signal_index_range=[signal_split, len(self.signals)], noise_index_range=[num_noise, len(self.noise)]) + noise_indices[num_noise:])
             np.random.shuffle(self.testing_indices)
             self.testing_indices = [(pt[0], pt[1]) for pt in self.testing_indices]
             
@@ -191,20 +190,23 @@ def get_data_obj(file_path):
         def get_file_properties(self):
             return({'snr': [8.0, 15.0]})
         
-        def generate_unique_index_pairs_noise(self, num_pairs):
-            if len(self.noise) < num_pairs:
+        def generate_unique_index_pairs_noise(self, num_pairs, noise=None):
+            if noise == None:
+                noise = self.noise
+            
+            if len(noise) < num_pairs:
                 raise ValueError("Can't generate more indices for pure noise than there are noise instances.")
             
-            if num_pairs < len(self.noise) / 2:
+            if num_pairs < len(noise) / 2:
                 invert = False
             else:
                 invert = True
-                num_pairs = len(self.noise) - num_pairs
+                num_pairs = len(noise) - num_pairs
             
             curr_pairs = 0
-            poss = np.zeros(len(self.noise))
+            poss = np.zeros(len(noise))
             while curr_pairs < num_pairs:
-                r_int = np.random.randint(0, len(self.noise))
+                r_int = np.random.randint(0, len(noise))
                 if poss[r_int] == 0:
                     poss[r_int] = 1
                     curr_pairs += 1
@@ -224,9 +226,21 @@ def get_data_obj(file_path):
             
             return(ret)
         
-        def generate_unique_index_pairs(self, num_pairs, generate_signals_only=True):
-            len_sig = len(self.signals)
-            len_noi = len(self.noise)
+        def generate_unique_index_pairs(self, num_pairs, generate_signals_only=True, noise_index_range=None, signal_index_range=None):
+            if noise_index_range == None:
+                noise_index_range = [0, len(self.noise)]
+            elif not isinstance(noise_index_range, list) and not isinstance(noise_index_range, tuple) and len(noise_index_range) == 2:
+                raise ValueError('noise_index_range needs to be a list or tuple of length 2.')
+            
+            if signal_index_range == None:
+                signal_index_range = [0, len(self.signals)]
+            elif not isinstance(signal_index_range, list) and not isinstance(signal_index_range, tuple) and len(signal_index_range) == 2:
+                raise ValueError('signal_index_range needs to be a list or tuple of length 2.')
+            
+            len_noi = noise_index_range[1] - noise_index_range[0]
+            len_sig = signal_index_range[1] - signal_index_range[0]
+            if len_sig < 0 or len_noi < 0 or noise_index_range[0] < 0 or signal_index_range[0] < 0 or noise_index_range[1] > len(self.noise) or signal_index_range[1] > len(self.signals):
+                raise ValueError('start indices for signals and noise must be within the range of signals and noise.')
             if generate_signals_only:
                 max_len = len_sig * len_noi
             else:
@@ -266,7 +280,7 @@ def get_data_obj(file_path):
             ret = np.array(ret, dtype=int)
             np.random.shuffle(ret)
             
-            ret = [(pt[0], pt[1]) for pt in ret]
+            ret = [(pt[0]+signal_index_range[0], pt[1]+noise_index_range[0]) for pt in ret]
             
             return(ret)
         

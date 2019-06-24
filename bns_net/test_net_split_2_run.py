@@ -16,6 +16,3 @@ if __name__ == "__main__":
     except:
         traceback.print_exc()
         pass
-    
-    msg = 'This network is the small version of the TCN-inception network, but without dropout layers. It is mainly a try to see if 12GB of GPU-memory are enough to get this model working in a small fashion.'
-    run_net('tcn_net_small', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=100, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
