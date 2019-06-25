@@ -33756,3 +33756,36 @@ SNR_plot_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/col
 
 sensitivity_plot_prob_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/collect_inception_net_3_rev_8_246201913268/collect_inception_net_3_rev_8_sensitivity_plot_prob_best_epoch_246201913268.png
 
+###############################################################################
+
+
+programm_internals:
+	slice_size: None
+	evaluate_on_large_testing_set: False
+	epochs: 100
+	data_slice: None
+	epoch_break: 2
+	store_results_path: /home/marlin.schaefer/master_project/bns_net/saves/collect_inception_net_6_rev_8_2562019123346
+	overwrite_template_file: False
+	net_path: /home/marlin.schaefer/master_project/bns_net/saves
+	ignore_fixable_errors: False
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin.schaefer/master_project/bns_net/saves
+	batch_size: 24
+	metrics: ['mape']
+	temp_name: templates_new
+	use_data_object: True
+	format_data: False
+	loss: mean_squared_error
+	use_custom_train_function: True
+	generate_templates_only: False
+	use_custom_compilation: True
+	dobj: None
+	create_wiki_entry: True
+	net_name: collect_inception_net_6_rev_8
+	overwrite_net_file: True
+	custom_message: This network is basically the same as collect_inception_net_6_rev_6, but has no dropout layers anymore and leaves the Adam optimizer at stock learning rate.
+
+time_init: 25.6.2019: 12:33.46
+
