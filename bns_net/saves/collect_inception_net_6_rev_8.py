@@ -27,7 +27,7 @@ def incp_lay(x, filter_num):
 def stack(x, NUM_DETECTORS, DROPOUT_RATE):
     batch_1 = keras.layers.BatchNormalization()(x)
     #dropout_1 = keras.layers.Dropout(DROPOUT_RATE)(batch_1)
-    conv_1 = keras.layers.Conv1D(64, 32)(dropout_1)
+    conv_1 = keras.layers.Conv1D(64, 32)(batch_1)
     bn_conv_1 = keras.layers.BatchNormalization()(conv_1)
     act_conv_1 = keras.layers.Activation('relu')(bn_conv_1)
     pool_conv_1 = keras.layers.MaxPooling1D(4)(act_conv_1)
