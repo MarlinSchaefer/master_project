@@ -16,7 +16,7 @@ if __name__ == "__main__":
     
     try:
         msg = 'This network is the same as inception_res_net_2, but uses mean average percentage error to train the SNR-part. It seems, that this statistic is correlated to the sensitivity more strongly than mean squared error.'
-        run_net('inception_res_net_rev_3', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        run_net('inception_res_net_rev_4', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
