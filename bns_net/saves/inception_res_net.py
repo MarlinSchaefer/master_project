@@ -64,8 +64,8 @@ def get_model():
     NUM_CHANNELS = 3
     DROPOUT_RATE = 0.25
     FILTER_NUM = 32
-    in_sig = keras.layers.Input(shape=(4096, NUM_CHANNELS * NUM_DETECTORS), name='Input signal')
-    in_noi = keras.layers.Input(shape=(4096, NUM_CHANNELS * NUM_DETECTORS), name='Input noise')
+    in_sig = keras.layers.Input(shape=(4096, NUM_CHANNELS * NUM_DETECTORS), name='Input_signal')
+    in_noi = keras.layers.Input(shape=(4096, NUM_CHANNELS * NUM_DETECTORS), name='Input_noise')
     inp = keras.layers.Add()([in_sig, in_noi])
     
     #Preprocessing
