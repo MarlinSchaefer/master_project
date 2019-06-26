@@ -109,7 +109,7 @@ def get_model():
     inc_7 = incp_lay(pool_1, FILTER_NUM)
     inc_bn_7 = keras.layers.BatchNormalization()(inc_7)
     
-    inc_8 = incp_lay(inc_8, FILTER_NUM)
+    inc_8 = incp_lay(inc_7, FILTER_NUM)
     inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
     res_8 = keras.layers.Add()([inc_bn_7, inc_bn_8])
     
