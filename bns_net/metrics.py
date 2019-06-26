@@ -93,6 +93,7 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
     plt.xlabel('p-value')
     plt.ylabel('#False alarms louder per 30 days')
     plt.title('Total number of noise samples: {}'.format(len(x_pt)))
+    plt.grid()
     #plt.yscale('log')
     plt.savefig(image_path)
     if show:
@@ -154,6 +155,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     plt.xlabel('SNR')
     plt.ylabel('Fraction of signals louder than highest false positive')
     plt.title('Loudest false positive SNR-value: {}'.format(max_false_snr))
+    plt.grid()
     plt.savefig(image_path)
     if show:
         plt.show()
@@ -213,6 +215,7 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
     plt.xlabel('probability')
     plt.ylabel('Fraction of signals louder than highest false positive')
     plt.title('Loudest false positive p-value: {}'.format(max_false_prob))
+    plt.grid()
     plt.savefig(image_path)
     if show:
         plt.show()
@@ -268,6 +271,7 @@ def joint_snr_bar_plot(file_last, file_best, image_save_path, color_last='blue',
     plt.ylabel('Fraction of signals louder than highest false positive')
     plt.title('Loudest false pos: last: {} | best: {}'.format(last_loud, best_loud))
     plt.legend(handles=[last_patch, best_patch])
+    plt.grid()
     plt.savefig(image_save_path)
     
     if show:
@@ -292,6 +296,7 @@ def joint_snr_false_alarm_plot(file_last, file_best, image_save_path, color_last
     plt.ylabel('#False alarms louder per 30 days')
     plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
     plt.legend()
+    plt.grid()
     plt.savefig(image_save_path)
     
     if show:
@@ -316,6 +321,7 @@ def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_las
     plt.ylabel('#False alarms louder per 30 days')
     plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
     plt.legend()
+    plt.grid()
     plt.savefig(image_save_path)
     
     if show:

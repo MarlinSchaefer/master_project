@@ -16,6 +16,7 @@ def make_loss_plot(data_path, image_path):
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
+    plt.grid()
     plt.savefig(image_path)
     plt.close()
     

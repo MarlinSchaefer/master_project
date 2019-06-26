@@ -59,6 +59,7 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False, save_file=True):
     plt.ylabel('Recovered SNR')
     plt.title('%s: Variance against calculated SNR: %.2f' % (net_name, var_2))
     plt.legend()
+    plt.grid()
     
     plt.savefig(path)
     
