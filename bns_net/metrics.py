@@ -120,8 +120,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                     #else:
                         #snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
                     if true_vals[1][i][0] <= true_vals[1][i][1]:
-                        if predFile['1'][i][0] > predFile['1'][i][1]:
-                            max_false_snr = max(max_false_snr, predFile['0'][i][0])
+                        max_false_snr = max(max_false_snr, predFile['0'][i][0])
                     else:
                         snr_vals.append([true_vals[0][i][0], predFile['0'][i][0]])
                 
@@ -180,8 +179,7 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
                     #else:
                         #prob_vals.append([true_vals[1][i][0], predFile['data'][i][1]])
                     if true_vals[1][i][0] <= true_vals[1][i][1]:
-                        if predFile['1'][i][0] > predFile['1'][i][1]:
-                            max_false_prob = max(max_false_prob, predFile['1'][i][0])
+                        max_false_prob = max(max_false_prob, predFile['1'][i][0])
                     else:
                         prob_vals.append([true_vals[1][i][0], predFile['1'][i][0]])
                 
