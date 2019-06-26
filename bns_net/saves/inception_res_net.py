@@ -81,35 +81,35 @@ def get_model():
     act_conv_2 = keras.layers.Activation('relu')(bn_conv_2)
     
     #Inception layers
-    inc_1 = inp_lay(act_conv_2, FILTER_NUM)
+    inc_1 = incp_lay(act_conv_2, FILTER_NUM)
     inc_bn_1 = keras.layers.BatchNormalization()(inc_1)
     
-    inc_2 = inp_lay(inc_1, FILTER_NUM)
+    inc_2 = incp_lay(inc_1, FILTER_NUM)
     inc_bn_2 = keras.layers.BatchNormalization()(inc_2)
     res_2 = keras.layer.Add()([inc_bn_1, inc_bn_2])
     
-    inc_3 = inp_lay(res_2, FILTER_NUM)
+    inc_3 = incp_lay(res_2, FILTER_NUM)
     inc_bn_3 = keras.layers.BatchNormalization()(inc_3)
     res_3 = keras.layer.Add()([inc_bn_2, inc_bn_3])
     
-    inc_4 = inp_lay(res_3, FILTER_NUM)
+    inc_4 = incp_lay(res_3, FILTER_NUM)
     inc_bn_4 = keras.layers.BatchNormalization()(inc_4)
     res_4 = keras.layer.Add()([inc_bn_3, inc_bn_4])
     
-    inc_5 = inp_lay(res_4, FILTER_NUM)
+    inc_5 = incp_lay(res_4, FILTER_NUM)
     inc_bn_5 = keras.layers.BatchNormalization()(inc_5)
     res_5 = keras.layer.Add()([inc_bn_4, inc_bn_5])
     
-    inc_6 = inp_lay(res_5, FILTER_NUM)
+    inc_6 = incp_lay(res_5, FILTER_NUM)
     inc_bn_6 = keras.layers.BatchNormalization()(inc_6)
     res_6 = keras.layer.Add()([inc_bn_5, inc_bn_6])
     
     pool_1 = keras.layers.MaxPooling1D(4)(res_6)
     
-    inc_7 = inp_lay(pool_1, FILTER_NUM)
+    inc_7 = incp_lay(pool_1, FILTER_NUM)
     inc_bn_7 = keras.layers.BatchNormalization()(inc_7)
     
-    inc_8 = inp_lay(inc_8, FILTER_NUM)
+    inc_8 = incp_lay(inc_8, FILTER_NUM)
     inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
     res_8 = keras.layer.Add()([inc_bn_7, inc_bn_8])
     
