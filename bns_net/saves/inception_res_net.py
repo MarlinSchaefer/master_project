@@ -86,23 +86,23 @@ def get_model():
     
     inc_2 = incp_lay(inc_1, FILTER_NUM)
     inc_bn_2 = keras.layers.BatchNormalization()(inc_2)
-    res_2 = keras.layer.Add()([inc_bn_1, inc_bn_2])
+    res_2 = keras.layers.Add()([inc_bn_1, inc_bn_2])
     
     inc_3 = incp_lay(res_2, FILTER_NUM)
     inc_bn_3 = keras.layers.BatchNormalization()(inc_3)
-    res_3 = keras.layer.Add()([inc_bn_2, inc_bn_3])
+    res_3 = keras.layers.Add()([inc_bn_2, inc_bn_3])
     
     inc_4 = incp_lay(res_3, FILTER_NUM)
     inc_bn_4 = keras.layers.BatchNormalization()(inc_4)
-    res_4 = keras.layer.Add()([inc_bn_3, inc_bn_4])
+    res_4 = keras.layers.Add()([inc_bn_3, inc_bn_4])
     
     inc_5 = incp_lay(res_4, FILTER_NUM)
     inc_bn_5 = keras.layers.BatchNormalization()(inc_5)
-    res_5 = keras.layer.Add()([inc_bn_4, inc_bn_5])
+    res_5 = keras.layers.Add()([inc_bn_4, inc_bn_5])
     
     inc_6 = incp_lay(res_5, FILTER_NUM)
     inc_bn_6 = keras.layers.BatchNormalization()(inc_6)
-    res_6 = keras.layer.Add()([inc_bn_5, inc_bn_6])
+    res_6 = keras.layers.Add()([inc_bn_5, inc_bn_6])
     
     pool_1 = keras.layers.MaxPooling1D(4)(res_6)
     
@@ -111,7 +111,7 @@ def get_model():
     
     inc_8 = incp_lay(inc_8, FILTER_NUM)
     inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
-    res_8 = keras.layer.Add()([inc_bn_7, inc_bn_8])
+    res_8 = keras.layers.Add()([inc_bn_7, inc_bn_8])
     
     pool_2 = keras.layers.MaxPooling1D(4)(res_8)
     dim_red = keras.layers.Conv1D(32, 1)(pool_2)
