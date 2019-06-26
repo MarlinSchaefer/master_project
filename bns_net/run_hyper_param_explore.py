@@ -19,7 +19,7 @@ if __name__ == "__main__":
         try:
             hyper_explore.set_filter_size(poss)
             msg = 'Trying the filter sizes: {}'.format(poss)
-            run_net('hyper_param_explore', 'templates_new', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=20, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+            run_net('hyper_param_explore', 'templates_new_large', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=20, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
         except:
             traceback.print_exc()
             pass
