@@ -86,27 +86,27 @@ def get_model():
     
     inc_2 = incp_lay(inc_bn_1, 2*FILTER_NUM)
     inc_bn_2 = keras.layers.BatchNormalization()(inc_2)
-    dim_red_2 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_2)
+    dim_red_2 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_2)
     res_2 = keras.layers.Add()([inc_bn_1, dim_red_2])
     
     inc_3 = incp_lay(res_2, 3*FILTER_NUM)
     inc_bn_3 = keras.layers.BatchNormalization()(inc_3)
-    dim_red_3 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_3)
+    dim_red_3 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_3)
     res_3 = keras.layers.Add()([res_2, dim_red_3])
     
     inc_4 = incp_lay(res_3, 4*FILTER_NUM)
     inc_bn_4 = keras.layers.BatchNormalization()(inc_4)
-    dim_red_4 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_4)
+    dim_red_4 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_4)
     res_4 = keras.layers.Add()([res_3, dim_red_4])
     
     inc_5 = incp_lay(res_4, 5*FILTER_NUM)
     inc_bn_5 = keras.layers.BatchNormalization()(inc_5)
-    dim_red_5 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_5)
+    dim_red_5 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_5)
     res_5 = keras.layers.Add()([res_4, dim_red_5])
     
     inc_6 = incp_lay(res_5, 6*FILTER_NUM)
     inc_bn_6 = keras.layers.BatchNormalization()(inc_6)
-    dim_red_6 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_6)
+    dim_red_6 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_6)
     res_6 = keras.layers.Add()([res_5, dim_red_6])
     
     pool_1 = keras.layers.MaxPooling1D(4)(res_6)
@@ -116,15 +116,15 @@ def get_model():
     
     inc_8 = incp_lay(inc_bn_7, 7*FILTER_NUM)
     inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
-    dim_red_8 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_8)
+    dim_red_8 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_8)
     res_8 = keras.layers.Add()([inc_bn_7, dim_red_8])
     
     inc_9 = incp_lay(res_8, 8*FILTER_NUM)
     inc_bn_9 = keras.layers.BatchNormalization()(inc_9)
-    dim_red_9 = keras.layers.Conv1D(FILTER_NUM, 1)(inc_bn_9)
-    res_8 = keras.layers.Add()([res_8, dim_red_9])
+    dim_red_9 = keras.layers.Conv1D(7*FILTER_NUM, 1)(inc_bn_9)
+    res_9 = keras.layers.Add()([res_8, dim_red_9])
     
-    pool_2 = keras.layers.MaxPooling1D(4)(res_8)
+    pool_2 = keras.layers.MaxPooling1D(4)(res_9)
     dim_red = keras.layers.Conv1D(32, 1)(pool_2)
     flatten = keras.layers.Flatten()(dim_red)
     
