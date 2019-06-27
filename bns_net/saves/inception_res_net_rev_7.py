@@ -34,8 +34,8 @@ def incp_lay(x, filter_num):
 
 def stack(x, NUM_DETECTORS, DROPOUT_RATE):
     batch_1 = keras.layers.BatchNormalization()(x)
-    drop_1 = keras.layers.Dropout(DROPOUT_RATE)(batch_1)
-    conv_1 = keras.layers.Conv1D(64, 32)(drop_1)
+    #drop_1 = keras.layers.Dropout(DROPOUT_RATE)(batch_1)
+    conv_1 = keras.layers.Conv1D(64, 32)(batch_1)
     bn_conv_1 = keras.layers.BatchNormalization()(conv_1)
     act_conv_1 = keras.layers.Activation('relu')(bn_conv_1)
     pool_conv_1 = keras.layers.MaxPooling1D(4)(act_conv_1)
@@ -61,11 +61,11 @@ def get_input(input_names, NUM_OF_DETECTORS=2):
 
 def get_model():
     NUM_DETECTORS = 2
-    NUM_CHANNELS = 3
+    NUM_CHANNELS = 8
     DROPOUT_RATE = 0.25
     FILTER_NUM = 32
-    in_sig = keras.layers.Input(shape=(4096, NUM_CHANNELS * NUM_DETECTORS), name='Input_signal')
-    in_noi = keras.layers.Input(shape=(4096, NUM_CHANNELS * NUM_DETECTORS), name='Input_noise')
+    in_sig = keras.layers.Input(shape=(2048, NUM_CHANNELS * NUM_DETECTORS), name='Input_signal')
+    in_noi = keras.layers.Input(shape=(2048, NUM_CHANNELS * NUM_DETECTORS), name='Input_noise')
     inp = keras.layers.Add()([in_sig, in_noi])
     
     #Preprocessing
@@ -113,10 +113,6 @@ def get_model():
     inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
     res_8 = keras.layers.Add()([inc_bn_7, inc_bn_8])
     
-    inc_9 = incp_lay(res_8, FILTER_NUM)
-    inc_bn_9 = keras.layers.BatchNormalization()(inc_9)
-    res_8 = keras.layers.Add()([res_8, inc_bn_9])
-    
     pool_2 = keras.layers.MaxPooling1D(4)(res_8)
     dim_red = keras.layers.Conv1D(32, 1)(pool_2)
     flatten = keras.layers.Flatten()(dim_red)
@@ -132,7 +128,7 @@ def get_model():
     return(model)
 
 def compile_model(model):
-    model.compile(loss=['mape', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mse', 'Out_Bool': 'accuracy'})
+    model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
@@ -356,7 +352,7 @@ class DataGenerator(keras.utils.Sequence):
         self.batch_size = batch_size
         self.shuffle = shuffle
         #ATTENTION: Changed this to fit the three channels
-        self.data_channels = 3
+        self.data_channels = 8
         self.on_epoch_end()
     
     def __len__(self):
@@ -384,30 +380,48 @@ class DataGenerator(keras.utils.Sequence):
         num_detectors = 2
         num_channels = self.data_channels
         num_inputs = 2
-        X = [np.zeros([len(indices), num_detectors * num_channels, self.signals[0].shape[0]]) for i in range(num_inputs)]
+        X = [np.zeros([len(indices), num_detectors * num_channels, 2048]) for i in range(num_inputs)]
         
         y_1 = np.zeros((len(indices), 1))
         
         y_2 = np.zeros((len(indices), 2))
         
-        clear_list = [1, 3, 5]
-        
         for i, idx in enumerate(indices):
             sig_ind, noi_ind = self.index_list[idx]
             
-            X[0][i][0] = self.signals[sig_ind].transpose()[1]
-            X[0][i][1] = self.signals[sig_ind].transpose()[8]
-            X[0][i][2] = self.signals[sig_ind].transpose()[3]
-            X[0][i][3] = self.signals[sig_ind].transpose()[10]
-            X[0][i][4] = self.signals[sig_ind].transpose()[5]
-            X[0][i][5] = self.signals[sig_ind].transpose()[12]
+            X[0][i][0] = self.signals[sig_ind].transpose()[0][2048:]
+            X[0][i][1] = self.signals[sig_ind].transpose()[7][2048:]
+            X[0][i][2] = self.signals[sig_ind].transpose()[0][:2048]
+            X[0][i][3] = self.signals[sig_ind].transpose()[7][:2048]
+            X[0][i][4] = self.signals[sig_ind].transpose()[1][:2048]
+            X[0][i][5] = self.signals[sig_ind].transpose()[8][:2048]
+            X[0][i][6] = self.signals[sig_ind].transpose()[2][:2048]
+            X[0][i][7] = self.signals[sig_ind].transpose()[9][:2048]
+            X[0][i][8] = self.signals[sig_ind].transpose()[3][:2048]
+            X[0][i][9] = self.signals[sig_ind].transpose()[10][:2048]
+            X[0][i][10] = self.signals[sig_ind].transpose()[4][:2048]
+            X[0][i][11] = self.signals[sig_ind].transpose()[11][:2048]
+            X[0][i][12] = self.signals[sig_ind].transpose()[5][:2048]
+            X[0][i][13] = self.signals[sig_ind].transpose()[12][:2048]
+            X[0][i][14] = self.signals[sig_ind].transpose()[6][:2048]
+            X[0][i][15] = self.signals[sig_ind].transpose()[13][:2048]
             
-            X[1][i][0] = self.noise[noi_ind].transpose()[1]
-            X[1][i][1] = self.noise[noi_ind].transpose()[8]
-            X[1][i][2] = self.noise[noi_ind].transpose()[3]
-            X[1][i][3] = self.noise[noi_ind].transpose()[10]
-            X[1][i][4] = self.noise[noi_ind].transpose()[5]
-            X[1][i][5] = self.noise[noi_ind].transpose()[12]
+            X[1][i][0] = self.noise[noi_ind].transpose()[0][2048:]
+            X[1][i][1] = self.noise[noi_ind].transpose()[7][2048:]
+            X[1][i][2] = self.noise[noi_ind].transpose()[0][:2048]
+            X[1][i][3] = self.noise[noi_ind].transpose()[7][:2048]
+            X[1][i][4] = self.noise[noi_ind].transpose()[1][:2048]
+            X[1][i][5] = self.noise[noi_ind].transpose()[8][:2048]
+            X[1][i][6] = self.noise[noi_ind].transpose()[2][:2048]
+            X[1][i][7] = self.noise[noi_ind].transpose()[9][:2048]
+            X[1][i][8] = self.noise[noi_ind].transpose()[3][:2048]
+            X[1][i][9] = self.noise[noi_ind].transpose()[10][:2048]
+            X[1][i][10] = self.noise[noi_ind].transpose()[4][:2048]
+            X[1][i][11] = self.noise[noi_ind].transpose()[11][:2048]
+            X[1][i][12] = self.noise[noi_ind].transpose()[5][:2048]
+            X[1][i][13] = self.noise[noi_ind].transpose()[12][:2048]
+            X[1][i][14] = self.noise[noi_ind].transpose()[6][:2048]
+            X[1][i][15] = self.noise[noi_ind].transpose()[13][:2048]
             
             if not sig_ind == -1:
                 y_1[i] = self.signal_labels[sig_ind]
