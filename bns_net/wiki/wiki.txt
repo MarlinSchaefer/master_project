@@ -37828,3 +37828,406 @@ SNR_plot_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inc
 
 sensitivity_plot_prob_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_2_276201963227/inception_res_net_rev_2_sensitivity_plot_prob_best_epoch_276201963227.png
 
+###############################################################################
+
+
+training:
+	time_start: 27.6.2019: 9:22.22
+	time_end: 27.6.2019: 12:9.27
+
+loss:
+	last_training: (50, 32.854281528625485)
+	min_training: (34, 32.45623066436767)
+	min_testing: (4, 48.285747922973634)
+	last_testing: (50, 48.3327591821289)
+
+network: 
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+Input_signal (InputLayer)       (None, 2048, 16)     0                                            
+__________________________________________________________________________________________________
+Input_noise (InputLayer)        (None, 2048, 16)     0                                            
+__________________________________________________________________________________________________
+add_8 (Add)                     (None, 2048, 16)     0           Input_signal[0][0]               
+                                                                 Input_noise[0][0]                
+__________________________________________________________________________________________________
+batch_normalization_12 (BatchNo (None, 2048, 16)     64          add_8[0][0]                      
+__________________________________________________________________________________________________
+dropout_2 (Dropout)             (None, 2048, 16)     0           batch_normalization_12[0][0]     
+__________________________________________________________________________________________________
+conv1d_52 (Conv1D)              (None, 2017, 64)     32832       dropout_2[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_13 (BatchNo (None, 2017, 64)     256         conv1d_52[0][0]                  
+__________________________________________________________________________________________________
+activation_3 (Activation)       (None, 2017, 64)     0           batch_normalization_13[0][0]     
+__________________________________________________________________________________________________
+max_pooling1d_12 (MaxPooling1D) (None, 504, 64)      0           activation_3[0][0]               
+__________________________________________________________________________________________________
+conv1d_53 (Conv1D)              (None, 489, 128)     131200      max_pooling1d_12[0][0]           
+__________________________________________________________________________________________________
+batch_normalization_14 (BatchNo (None, 489, 128)     512         conv1d_53[0][0]                  
+__________________________________________________________________________________________________
+activation_4 (Activation)       (None, 489, 128)     0           batch_normalization_14[0][0]     
+__________________________________________________________________________________________________
+conv1d_55 (Conv1D)              (None, 489, 16)      2064        activation_4[0][0]               
+__________________________________________________________________________________________________
+conv1d_57 (Conv1D)              (None, 489, 16)      2064        activation_4[0][0]               
+__________________________________________________________________________________________________
+max_pooling1d_13 (MaxPooling1D) (None, 489, 128)     0           activation_4[0][0]               
+__________________________________________________________________________________________________
+conv1d_54 (Conv1D)              (None, 489, 96)      12384       activation_4[0][0]               
+__________________________________________________________________________________________________
+conv1d_56 (Conv1D)              (None, 489, 64)      2112        conv1d_55[0][0]                  
+__________________________________________________________________________________________________
+conv1d_58 (Conv1D)              (None, 489, 32)      1568        conv1d_57[0][0]                  
+__________________________________________________________________________________________________
+conv1d_59 (Conv1D)              (None, 489, 32)      4128        max_pooling1d_13[0][0]           
+__________________________________________________________________________________________________
+concatenate_9 (Concatenate)     (None, 489, 224)     0           conv1d_54[0][0]                  
+                                                                 conv1d_56[0][0]                  
+                                                                 conv1d_58[0][0]                  
+                                                                 conv1d_59[0][0]                  
+__________________________________________________________________________________________________
+conv1d_61 (Conv1D)              (None, 489, 16)      3600        concatenate_9[0][0]              
+__________________________________________________________________________________________________
+conv1d_63 (Conv1D)              (None, 489, 16)      3600        concatenate_9[0][0]              
+__________________________________________________________________________________________________
+max_pooling1d_14 (MaxPooling1D) (None, 489, 224)     0           concatenate_9[0][0]              
+__________________________________________________________________________________________________
+conv1d_60 (Conv1D)              (None, 489, 96)      21600       concatenate_9[0][0]              
+__________________________________________________________________________________________________
+conv1d_62 (Conv1D)              (None, 489, 64)      2112        conv1d_61[0][0]                  
+__________________________________________________________________________________________________
+conv1d_64 (Conv1D)              (None, 489, 32)      1568        conv1d_63[0][0]                  
+__________________________________________________________________________________________________
+conv1d_65 (Conv1D)              (None, 489, 32)      7200        max_pooling1d_14[0][0]           
+__________________________________________________________________________________________________
+concatenate_10 (Concatenate)    (None, 489, 224)     0           conv1d_60[0][0]                  
+                                                                 conv1d_62[0][0]                  
+                                                                 conv1d_64[0][0]                  
+                                                                 conv1d_65[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_15 (BatchNo (None, 489, 224)     896         concatenate_9[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_16 (BatchNo (None, 489, 224)     896         concatenate_10[0][0]             
+__________________________________________________________________________________________________
+add_9 (Add)                     (None, 489, 224)     0           batch_normalization_15[0][0]     
+                                                                 batch_normalization_16[0][0]     
+__________________________________________________________________________________________________
+conv1d_67 (Conv1D)              (None, 489, 16)      3600        add_9[0][0]                      
+__________________________________________________________________________________________________
+conv1d_69 (Conv1D)              (None, 489, 16)      3600        add_9[0][0]                      
+__________________________________________________________________________________________________
+max_pooling1d_15 (MaxPooling1D) (None, 489, 224)     0           add_9[0][0]                      
+__________________________________________________________________________________________________
+conv1d_66 (Conv1D)              (None, 489, 96)      21600       add_9[0][0]                      
+__________________________________________________________________________________________________
+conv1d_68 (Conv1D)              (None, 489, 64)      2112        conv1d_67[0][0]                  
+__________________________________________________________________________________________________
+conv1d_70 (Conv1D)              (None, 489, 32)      1568        conv1d_69[0][0]                  
+__________________________________________________________________________________________________
+conv1d_71 (Conv1D)              (None, 489, 32)      7200        max_pooling1d_15[0][0]           
+__________________________________________________________________________________________________
+concatenate_11 (Concatenate)    (None, 489, 224)     0           conv1d_66[0][0]                  
+                                                                 conv1d_68[0][0]                  
+                                                                 conv1d_70[0][0]                  
+                                                                 conv1d_71[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_17 (BatchNo (None, 489, 224)     896         concatenate_11[0][0]             
+__________________________________________________________________________________________________
+add_10 (Add)                    (None, 489, 224)     0           batch_normalization_16[0][0]     
+                                                                 batch_normalization_17[0][0]     
+__________________________________________________________________________________________________
+conv1d_73 (Conv1D)              (None, 489, 16)      3600        add_10[0][0]                     
+__________________________________________________________________________________________________
+conv1d_75 (Conv1D)              (None, 489, 16)      3600        add_10[0][0]                     
+__________________________________________________________________________________________________
+max_pooling1d_16 (MaxPooling1D) (None, 489, 224)     0           add_10[0][0]                     
+__________________________________________________________________________________________________
+conv1d_72 (Conv1D)              (None, 489, 96)      21600       add_10[0][0]                     
+__________________________________________________________________________________________________
+conv1d_74 (Conv1D)              (None, 489, 64)      2112        conv1d_73[0][0]                  
+__________________________________________________________________________________________________
+conv1d_76 (Conv1D)              (None, 489, 32)      1568        conv1d_75[0][0]                  
+__________________________________________________________________________________________________
+conv1d_77 (Conv1D)              (None, 489, 32)      7200        max_pooling1d_16[0][0]           
+__________________________________________________________________________________________________
+concatenate_12 (Concatenate)    (None, 489, 224)     0           conv1d_72[0][0]                  
+                                                                 conv1d_74[0][0]                  
+                                                                 conv1d_76[0][0]                  
+                                                                 conv1d_77[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_18 (BatchNo (None, 489, 224)     896         concatenate_12[0][0]             
+__________________________________________________________________________________________________
+add_11 (Add)                    (None, 489, 224)     0           batch_normalization_17[0][0]     
+                                                                 batch_normalization_18[0][0]     
+__________________________________________________________________________________________________
+conv1d_79 (Conv1D)              (None, 489, 16)      3600        add_11[0][0]                     
+__________________________________________________________________________________________________
+conv1d_81 (Conv1D)              (None, 489, 16)      3600        add_11[0][0]                     
+__________________________________________________________________________________________________
+max_pooling1d_17 (MaxPooling1D) (None, 489, 224)     0           add_11[0][0]                     
+__________________________________________________________________________________________________
+conv1d_78 (Conv1D)              (None, 489, 96)      21600       add_11[0][0]                     
+__________________________________________________________________________________________________
+conv1d_80 (Conv1D)              (None, 489, 64)      2112        conv1d_79[0][0]                  
+__________________________________________________________________________________________________
+conv1d_82 (Conv1D)              (None, 489, 32)      1568        conv1d_81[0][0]                  
+__________________________________________________________________________________________________
+conv1d_83 (Conv1D)              (None, 489, 32)      7200        max_pooling1d_17[0][0]           
+__________________________________________________________________________________________________
+concatenate_13 (Concatenate)    (None, 489, 224)     0           conv1d_78[0][0]                  
+                                                                 conv1d_80[0][0]                  
+                                                                 conv1d_82[0][0]                  
+                                                                 conv1d_83[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_19 (BatchNo (None, 489, 224)     896         concatenate_13[0][0]             
+__________________________________________________________________________________________________
+add_12 (Add)                    (None, 489, 224)     0           batch_normalization_18[0][0]     
+                                                                 batch_normalization_19[0][0]     
+__________________________________________________________________________________________________
+conv1d_85 (Conv1D)              (None, 489, 16)      3600        add_12[0][0]                     
+__________________________________________________________________________________________________
+conv1d_87 (Conv1D)              (None, 489, 16)      3600        add_12[0][0]                     
+__________________________________________________________________________________________________
+max_pooling1d_18 (MaxPooling1D) (None, 489, 224)     0           add_12[0][0]                     
+__________________________________________________________________________________________________
+conv1d_84 (Conv1D)              (None, 489, 96)      21600       add_12[0][0]                     
+__________________________________________________________________________________________________
+conv1d_86 (Conv1D)              (None, 489, 64)      2112        conv1d_85[0][0]                  
+__________________________________________________________________________________________________
+conv1d_88 (Conv1D)              (None, 489, 32)      1568        conv1d_87[0][0]                  
+__________________________________________________________________________________________________
+conv1d_89 (Conv1D)              (None, 489, 32)      7200        max_pooling1d_18[0][0]           
+__________________________________________________________________________________________________
+concatenate_14 (Concatenate)    (None, 489, 224)     0           conv1d_84[0][0]                  
+                                                                 conv1d_86[0][0]                  
+                                                                 conv1d_88[0][0]                  
+                                                                 conv1d_89[0][0]                  
+__________________________________________________________________________________________________
+batch_normalization_20 (BatchNo (None, 489, 224)     896         concatenate_14[0][0]             
+__________________________________________________________________________________________________
+add_13 (Add)                    (None, 489, 224)     0           batch_normalization_19[0][0]     
+                                                                 batch_normalization_20[0][0]     
+__________________________________________________________________________________________________
+max_pooling1d_19 (MaxPooling1D) (None, 122, 224)     0           add_13[0][0]                     
+__________________________________________________________________________________________________
+conv1d_91 (Conv1D)              (None, 122, 16)      3600        max_pooling1d_19[0][0]           
+__________________________________________________________________________________________________
+conv1d_93 (Conv1D)              (None, 122, 16)      3600        max_pooling1d_19[0][0]           
+__________________________________________________________________________________________________
+max_pooling1d_20 (MaxPooling1D) (None, 122, 224)     0           max_pooling1d_19[0][0]           
+__________________________________________________________________________________________________
+conv1d_90 (Conv1D)              (None, 122, 96)      21600       max_pooling1d_19[0][0]           
+__________________________________________________________________________________________________
+conv1d_92 (Conv1D)              (None, 122, 64)      2112        conv1d_91[0][0]                  
+__________________________________________________________________________________________________
+conv1d_94 (Conv1D)              (None, 122, 32)      1568        conv1d_93[0][0]                  
+__________________________________________________________________________________________________
+conv1d_95 (Conv1D)              (None, 122, 32)      7200        max_pooling1d_20[0][0]           
+__________________________________________________________________________________________________
+concatenate_15 (Concatenate)    (None, 122, 224)     0           conv1d_90[0][0]                  
+                                                                 conv1d_92[0][0]                  
+                                                                 conv1d_94[0][0]                  
+                                                                 conv1d_95[0][0]                  
+__________________________________________________________________________________________________
+conv1d_97 (Conv1D)              (None, 122, 16)      3600        concatenate_15[0][0]             
+__________________________________________________________________________________________________
+conv1d_99 (Conv1D)              (None, 122, 16)      3600        concatenate_15[0][0]             
+__________________________________________________________________________________________________
+max_pooling1d_21 (MaxPooling1D) (None, 122, 224)     0           concatenate_15[0][0]             
+__________________________________________________________________________________________________
+conv1d_96 (Conv1D)              (None, 122, 96)      21600       concatenate_15[0][0]             
+__________________________________________________________________________________________________
+conv1d_98 (Conv1D)              (None, 122, 64)      2112        conv1d_97[0][0]                  
+__________________________________________________________________________________________________
+conv1d_100 (Conv1D)             (None, 122, 32)      1568        conv1d_99[0][0]                  
+__________________________________________________________________________________________________
+conv1d_101 (Conv1D)             (None, 122, 32)      7200        max_pooling1d_21[0][0]           
+__________________________________________________________________________________________________
+concatenate_16 (Concatenate)    (None, 122, 224)     0           conv1d_96[0][0]                  
+                                                                 conv1d_98[0][0]                  
+                                                                 conv1d_100[0][0]                 
+                                                                 conv1d_101[0][0]                 
+__________________________________________________________________________________________________
+batch_normalization_21 (BatchNo (None, 122, 224)     896         concatenate_15[0][0]             
+__________________________________________________________________________________________________
+batch_normalization_22 (BatchNo (None, 122, 224)     896         concatenate_16[0][0]             
+__________________________________________________________________________________________________
+add_14 (Add)                    (None, 122, 224)     0           batch_normalization_21[0][0]     
+                                                                 batch_normalization_22[0][0]     
+__________________________________________________________________________________________________
+max_pooling1d_22 (MaxPooling1D) (None, 30, 224)      0           add_14[0][0]                     
+__________________________________________________________________________________________________
+conv1d_102 (Conv1D)             (None, 30, 32)       7200        max_pooling1d_22[0][0]           
+__________________________________________________________________________________________________
+flatten_2 (Flatten)             (None, 960)          0           conv1d_102[0][0]                 
+__________________________________________________________________________________________________
+dense_3 (Dense)                 (None, 2)            1922        flatten_2[0][0]                  
+__________________________________________________________________________________________________
+dense_4 (Dense)                 (None, 3)            2883        flatten_2[0][0]                  
+__________________________________________________________________________________________________
+Out_SNR (Dense)                 (None, 1)            3           dense_3[0][0]                    
+__________________________________________________________________________________________________
+Out_Bool (Dense)                (None, 2)            8           dense_4[0][0]                    
+==================================================================================================
+Total params: 486,128
+Trainable params: 482,128
+Non-trainable params: 4,000
+__________________________________________________________________________________________________
+
+
+loss:
+	last_training: (50, 32.854281528625485)
+	min_training: (34, 32.45623066436767)
+	min_testing: (4, 48.285747922973634)
+	last_testing: (50, 48.3327591821289)
+
+template_properties:
+	f_lower: 20.0
+	detectors: ['L1' 'H1']
+	seed: 0
+	snr: [ 8. 15.]
+	t_len: 96.0
+	no_gw_snr: 4.0
+	time_offset: [-0.25  0.25]
+
+programm_internals:
+	slice_size: None
+	evaluate_on_large_testing_set: False
+	epochs: 50
+	data_slice: None
+	epoch_break: 2
+	store_results_path: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187
+	overwrite_template_file: False
+	net_path: /home/marlin.schaefer/master_project/bns_net/saves
+	ignore_fixable_errors: False
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin.schaefer/master_project/bns_net/saves
+	batch_size: 24
+	metrics: ['mape']
+	temp_name: templates_new
+	use_data_object: True
+	format_data: False
+	loss: mean_squared_error
+	use_custom_train_function: True
+	generate_templates_only: False
+	use_custom_compilation: True
+	dobj: None
+	create_wiki_entry: True
+	net_name: inception_res_net_rev_4
+	overwrite_net_file: True
+	custom_message: The same run as on inception_res_net_rev_4_276201913631, but with the dropout layer removed to see if that helps it learn.
+
+template_generation:
+	time_start: 27.6.2019: 9:18.9
+	time_end: 27.6.2019: 9:18.9
+
+time_init: 27.6.2019: 9:18.7
+
+false_alarm_plot_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_false_alarm_plot_best_epoch_27620199187.png
+
+sensitivity_plot_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_sensitivity_plot_last_epoch_27620199187.png
+
+SNR_plot_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_snr_plot_last_epoch_27620199187.png
+
+sensitivity_plot_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_sensitivity_plot_best_epoch_27620199187.png
+
+ignored_errors: False
+
+sensitivity_plot_prob_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_sensitivity_plot_prob_last_epoch_27620199187.png
+
+false_alarm_plot_prob_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_false_alarm_plot_prob_last_epoch_27620199187.png
+
+plot_options:
+	show_false_alarm: False
+	evaluate_dual_output: True
+	make_loss_plot: True
+	show_sensitivity_plot: False
+	show_snr_plot: False
+	best_epoch: 4
+
+false_alarm_plot_prob_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_false_alarm_plot_prob_best_epoch_27620199187.png
+
+loss_plot_path: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_loss_plot_last_epoch_27620199187.png
+
+custom_message: The same run as on inception_res_net_rev_4_276201913631, but with the dropout layer removed to see if that helps it learn.
+
+false_alarm_plot_path_last_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_false_alarm_plot_last_epoch_27620199187.png
+
+SNR_plot_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_snr_plot_best_epoch_27620199187.png
+
+sensitivity_plot_prob_path_best_epoch: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_4_27620199187/inception_res_net_rev_4_sensitivity_plot_prob_best_epoch_27620199187.png
+
+###############################################################################
+
+
+programm_internals:
+	slice_size: None
+	evaluate_on_large_testing_set: False
+	epochs: 50
+	data_slice: None
+	epoch_break: 2
+	store_results_path: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_5_2762019122912
+	overwrite_template_file: False
+	net_path: /home/marlin.schaefer/master_project/bns_net/saves
+	ignore_fixable_errors: False
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin.schaefer/master_project/bns_net/saves
+	batch_size: 24
+	metrics: ['mape']
+	temp_name: templates_new_dev24
+	use_data_object: True
+	format_data: False
+	loss: mean_squared_error
+	use_custom_train_function: True
+	generate_templates_only: False
+	use_custom_compilation: True
+	dobj: None
+	create_wiki_entry: True
+	net_name: inception_res_net_rev_5
+	overwrite_net_file: True
+	custom_message: This network is the one inception_res_net should have been. It fixes some wrong connections in the network.
+
+template_generation:
+	time_start: 27.6.2019: 12:29.14
+	time_end: 27.6.2019: 12:29.14
+
+time_init: 27.6.2019: 12:29.12
+
+###############################################################################
+
+
+programm_internals:
+	slice_size: None
+	evaluate_on_large_testing_set: False
+	epochs: 50
+	data_slice: None
+	epoch_break: 2
+	store_results_path: /home/marlin.schaefer/master_project/bns_net/saves/inception_res_net_rev_6_2762019122933
+	overwrite_template_file: False
+	net_path: /home/marlin.schaefer/master_project/bns_net/saves
+	ignore_fixable_errors: False
+	optimizer: adam
+	only_print_image: False
+	temp_path: /home/marlin.schaefer/master_project/bns_net/saves
+	batch_size: 24
+	metrics: ['mape']
+	temp_name: templates_new_dev24
+	use_data_object: True
+	format_data: False
+	loss: mean_squared_error
+	use_custom_train_function: True
+	generate_templates_only: False
+	use_custom_compilation: True
+	dobj: None
+	create_wiki_entry: True
+	net_name: inception_res_net_rev_6
+	overwrite_net_file: True
+	custom_message: This network architecturally is the same as inception_res_net_rev_5, but increases the number of filters in each inception layer.
+
+time_init: 27.6.2019: 12:29.33
+
