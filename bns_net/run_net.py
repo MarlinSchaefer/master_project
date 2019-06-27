@@ -416,7 +416,9 @@ def run_net(net_name, temp_name, **kwargs):
             wiki_data['false_alarm_plot_prob_path_best_epoch'] = wik[8]
             wiki_data['sensitivity_plot_path_best_epoch'] = wik[9]
             wiki_data['sensitivity_plot_prob_path_best_epoch'] = wik[10]
-            wiki_data['plot_options'] = wik[11]
+            wiki_data['p_value_distribution_plot_path_best_epoch'] = wik[11]
+            wiki_data['p_value_distribution_plot_path_last_epoch'] = wik[12]
+            wiki_data['plot_options'] = wik[13]
         except:
             pass
         

@@ -4,6 +4,7 @@ import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 import matplotlib.patches as pat
+import os
 
 def plot_false_alarm(dobj, file_path, image_path, show=True):
     with h5py.File(file_path, 'r') as FILE:
@@ -330,3 +331,81 @@ def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_las
         plt.close()
     
     return(image_save_path)
+
+def plot_p_val_dist(pred_file, image_path, noise_color='red', signal_color='green', labels_p_val_label='1', pred_p_val_label='1', bin_width=0.05, title_prefix=None, show=False):
+    """
+    Arguments
+    ---------
+    pred_file : str
+        Path to the prediction file
+    image_path : str
+        Path to where the final image is stored. A hf5 file is produced
+        too
+    noise_color : {str, 'red'}
+        The color the noise should be shown as
+    signal_color : {str, 'green'}
+        The color the signals should be shown as
+    labels_p_val_label : {str, '1'}
+        Within the prediction file there needs to be a group called
+        'labels'. In this group the different labels for the data are
+        labeled by '0' through 'num_of_label_kinds'. This assumes the
+        values for the p-value to be stored at '1'.
+    pred_p_val_label : {str, '1'}
+        The p-value predictions are stored in the file under some name.
+        This name is by default assumed to be '1'.
+    bin_width : {float, 0.05}
+        The width of each p-value bin.
+    title_prefix : {str, None}
+        Used to give a specific prefix to the title, meant for best and
+        last epoch
+    show : {bool, False}
+        Whether or not to display the finished plot.
+    """
+    with h5py.File(pred_file, 'r') as FILE:
+        ground_trues = [pt[0] > pt[1] for pt in FILE['labels'][labels_p_val_label][:]]
+        p_vals = [pt[0] for pt in FILE[pred_p_val_label][:]]
+    
+    bins = np.arange(bin_width / 2, 1 + 10**-6, bin_width)
+    
+    num_noise = np.zeros(len(bins), dtype=int)
+    num_signals = np.zeros(len(bins), dtype=int)
+    
+    for i in range(len(ground_trues)):
+        idx = int(np.floor(p_vals[i] / bin_width))
+        if idx >= len(bins):
+            idx = len(bins) - 1
+        if ground_trues[i]:
+            num_signals[idx] += 1
+        else:
+            num_noise[idx] += 1
+    
+    file_path = os.path.splitext(image_path)[0] + '.png'
+    with h5py.File(file_path, 'w') as write_file:
+        write_file.create_dataset('bins', data=bins)
+        write_file.create_dataset('num_noise', data=num_noise)
+        write_file.create_dataset('num_signals', data=num_signals)
+    
+    noise_patch = pat.Patch(color=noise_color, label='Number noise instances')
+    signal_patch = pat.Patch(color=signal_color, label='Number signals')
+    
+    plt.bar(bins, num_noise, width=bin_width, color=noise_color)
+    plt.bar(bins, num_signals, width=bin_width, color=signal_color, bottom=num_noise)
+    plt.xlabel('p-value')
+    plt.ylabel('Number of samples classified in p-value bin')
+    title = ''
+    if not title_prefix == None:
+        title = title + title_prefix + ': '
+    title += 'Total number of samples: {}'.format(sum(num_noise) + sum(num_signals))
+    plt.title(title)
+    plt.legend(handles=[signal_patch, noise_patch])
+    plt.grid()
+    plt.savefig(image_path)
+    
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(image_path)
