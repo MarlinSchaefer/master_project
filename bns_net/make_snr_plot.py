@@ -43,17 +43,22 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False, save_file=True):
     
     line = np.linspace(0.9*min([min(x_pt_1), min(x_pt_2), min(y_pt)]),1.1*max([max(x_pt_1), max(x_pt_2), max(y_pt)]),100)
     
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    
     plt.subplot(211)
-    plt.scatter(x_pt_1, y_pt, label='Data points')
+    plt.scatter(x_pt_1, y_pt, label='Data points', marker=',', s=1)
     plt.plot(line,line,color='red', label='Ideal case')
     plt.xlabel('True SNR')
     plt.ylabel('Recovered SNR')
     plt.title('%s: Variance against true SNR: %.2f' % (net_name, var_1))
     plt.legend()
+    plt.grid()
     plt.subplots_adjust(hspace=0.7)
     
     plt.subplot(212)
-    plt.scatter(x_pt_2, y_pt, label='Data points')
+    plt.scatter(x_pt_2, y_pt, label='Data points', marker=',', s=1)
     plt.plot(line,line,color='red', label='Ideal case')
     plt.xlabel('Calculated SNR')
     plt.ylabel('Recovered SNR')

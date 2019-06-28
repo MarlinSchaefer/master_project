@@ -40,6 +40,10 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     with h5py.File(store_file_path, 'w') as FILE:
         FILE.create_dataset('data', data=np.array([x_pt, y_pt]))
     
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('SNR')
     plt.ylabel('#False alarms louder per 30 days')
@@ -89,6 +93,10 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
     store_file_path = image_path[:-4] + '.hf5'
     with h5py.File(store_file_path, 'w') as FILE:
         FILE.create_dataset('data', data=np.array([x_pt, y_pt]))
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
     
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('p-value')
@@ -150,6 +158,10 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
         FILE.create_dataset('data', data=np.array(y_pt))
         FILE.create_dataset('loudest_false_positive', data=np.array([max_false_snr]))
     
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    
     plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
     plt.xlabel('SNR')
@@ -209,6 +221,10 @@ def plot_sensitivity_prob(dobj, file_path, false_alarm_path, image_path, bins=(0
         FILE.create_dataset('data', data=np.array(y_pt))
         FILE.create_dataset('loudest_false_positive', data=np.array([max_false_prob]))
     
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    
     plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
     plt.xlabel('probability')
@@ -264,6 +280,10 @@ def joint_snr_bar_plot(file_last, file_best, image_save_path, color_last='blue',
     last_patch = pat.Patch(color=color_last, label='Data last epoch')
     best_patch = pat.Patch(color=color_best, label='Data best epoch')
     
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    
     plt.bar(last_bins, bot, width=bar_width, color=color_bot)
     plt.bar(last_bins, top, width=bar_width, color=color_top, bottom=bot)
     plt.xlabel('SNR')
@@ -313,6 +333,10 @@ def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_las
     
     with h5py.File(file_best) as best:
         best_data = best['data'][:]
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
     
     plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
     plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
@@ -387,6 +411,10 @@ def plot_p_val_dist(pred_file, image_path, noise_color='red', signal_color='gree
     
     noise_patch = pat.Patch(color=noise_color, label='Number noise instances')
     signal_patch = pat.Patch(color=signal_color, label='Number signals')
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
     
     plt.bar(bins, num_noise, width=bin_width, color=noise_color)
     plt.bar(bins, num_signals, width=bin_width, color=signal_color, bottom=num_noise)
