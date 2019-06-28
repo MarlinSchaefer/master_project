@@ -28,7 +28,7 @@ def plot(net, data, labels, path, show=False, net_name='N/A'):
     plt.plot(line,line,color='red',label='Ideal case')
     plt.xlabel('True SNR')
     plt.ylabel('Recovered SNR')
-    plt.title('%s: Variance: %.2f' % (net_name, var))
+    plt.title('%s: Variance: %.2f' % (net_name.replace('_', '\_'), var))
     plt.legend()
     plt.savefig(path)
     if show:
@@ -52,7 +52,7 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False, save_file=True):
     plt.plot(line,line,color='red', label='Ideal case')
     plt.xlabel('True SNR')
     plt.ylabel('Recovered SNR')
-    plt.title('%s: Variance against true SNR: %.2f' % (net_name, var_1))
+    plt.title('%s: Variance against true SNR: %.2f' % (net_name.replace('_', '\_'), var_1))
     plt.legend()
     plt.grid()
     plt.subplots_adjust(hspace=0.7)
@@ -62,7 +62,7 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False, save_file=True):
     plt.plot(line,line,color='red', label='Ideal case')
     plt.xlabel('Calculated SNR')
     plt.ylabel('Recovered SNR')
-    plt.title('%s: Variance against calculated SNR: %.2f' % (net_name, var_2))
+    plt.title('%s: Variance against calculated SNR: %.2f' % (net_name.replace('_', '\_'), var_2))
     plt.legend()
     plt.grid()
     
@@ -159,3 +159,13 @@ def plot_true_and_calc_from_file(file_path, dobj, image_path, show=False, net_na
     x_pt_2 = x_pt_2.flatten()
     
     _do_plot(net_name, x_pt_1, x_pt_2, y_pt, image_path, show=show, save_file=save_file)
+
+def plot_true_from_pred_file(file_path, img_path, show=False, net_name='N/A', save_file=True):
+    with h5py.File(file_path, 'r') as ResFile:
+        y_pt = ResFile['0'][:].transpose()[0]
+        x_pt_1 = ResFile['labels']['0'][:]
+    
+    x_pt_1 = x_pt_1.flatten()
+    x_pt_2 = np.zeros(len(y_pt))
+    
+    _do_plot(net_name, x_pt_1, x_pt_2, y_pt, img_path, show=show, save_file=save_file)
