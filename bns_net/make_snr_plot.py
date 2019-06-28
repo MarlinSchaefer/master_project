@@ -45,7 +45,7 @@ def _do_plot(net_name, x_pt_1, x_pt_2, y_pt, path, show=False, save_file=True):
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.subplot(211)
     plt.scatter(x_pt_1, y_pt, label='Data points', marker=',', s=1)

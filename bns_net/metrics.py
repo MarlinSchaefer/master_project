@@ -42,7 +42,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('SNR')
@@ -96,7 +96,7 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('p-value')
@@ -160,7 +160,7 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
     #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
@@ -282,7 +282,7 @@ def joint_snr_bar_plot(file_last, file_best, image_save_path, color_last='blue',
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.bar(last_bins, bot, width=bar_width, color=color_bot)
     plt.bar(last_bins, top, width=bar_width, color=color_top, bottom=bot)
@@ -336,7 +336,7 @@ def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_las
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
     plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
@@ -414,7 +414,7 @@ def plot_p_val_dist(pred_file, image_path, noise_color='red', signal_color='gree
     
     dpi = 96
     plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
-    plt.rcParams.update({'font.size': 22, 'text.usetex': 'true'})
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.bar(bins, num_noise, width=bin_width, color=noise_color)
     plt.bar(bins, num_signals, width=bin_width, color=signal_color, bottom=num_noise)
