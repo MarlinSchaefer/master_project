@@ -46,7 +46,60 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('SNR')
-    plt.ylabel('#False alarms louder per 30 days')
+    plt.ylabel('\#False alarms louder per 30 days')
+    plt.title('Total number of noise samples: {}'.format(len(x_pt)))
+    #plt.yscale('log')
+    plt.savefig(image_path)
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(store_file_path)
+
+def plot_false_alarm_from_pred_file(file_path, image_path, show=False):
+    with h5py.File(file_path, 'r') as FILE:
+        true_vals =  [FILE['labels']['0'][:], FILE['labels']['1'][:]]
+        
+        SNR = []
+        
+        #Here I take the true negatives and only record their SNR.
+        for i, sample in enumerate(true_vals[1]):
+            if sample[0] < sample[1]:
+                #SNR.append((i, FILE['data'][i][0]))
+                SNR.append((i, FILE['0'][i][0]))
+        
+        x_pt = sorted([pt[1] for pt in SNR])
+        y_pt = []
+        for pt in x_pt:
+            c = 0
+            for p in x_pt:
+                if p > pt:
+                    c += 1
+            y_pt.append(c)
+        
+        #Total number of samples is used to determine the observation time.
+        #Is this correct or should the negative samples be used?
+        #0.5 = time (in seconds) that the signal is shifted around in the data
+        obs_time = (len(true_vals[0])) * 0.5
+        seconds_per_month = 60 * 60 * 24 * 30
+        
+        y_pt = [pt / obs_time * seconds_per_month for pt in y_pt]
+    
+    #Store to file
+    store_file_path = image_path[:-4] + '.hf5'
+    with h5py.File(store_file_path, 'w') as FILE:
+        FILE.create_dataset('data', data=np.array([x_pt, y_pt]))
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
+    
+    plt.semilogy(x_pt, y_pt)
+    plt.xlabel('SNR')
+    plt.ylabel('\#False alarms louder per 30 days')
     plt.title('Total number of noise samples: {}'.format(len(x_pt)))
     #plt.yscale('log')
     plt.savefig(image_path)
@@ -100,7 +153,62 @@ def plot_false_alarm_prob(dobj, file_path, image_path, show=True):
     
     plt.semilogy(x_pt, y_pt)
     plt.xlabel('p-value')
-    plt.ylabel('#False alarms louder per 30 days')
+    plt.ylabel('\#False alarms louder per 30 days')
+    plt.title('Total number of noise samples: {}'.format(len(x_pt)))
+    plt.grid()
+    #plt.yscale('log')
+    plt.savefig(image_path)
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(store_file_path)
+
+def plot_false_alarm_prob_from_pred_file(file_path, image_path, show=False):
+    with h5py.File(file_path, 'r') as FILE:
+        true_vals = [FILE['labels']['0'][:], FILE['labels']['1'][:]]
+        
+        probability = []
+        
+        #Here I take the true negatives and only record their probability value.
+        #Assumes probability value is stored at the second position
+        for i, sample in enumerate(true_vals[1]):
+            if sample[0] < sample[1]:
+                #probability.append((i, FILE['data'][i][1]))
+                probability.append((i, FILE['1'][i][0]))
+        
+        x_pt = sorted([pt[1] for pt in probability])
+        y_pt = []
+        for pt in x_pt:
+            c = 0
+            for p in x_pt:
+                if p > pt:
+                    c += 1
+            y_pt.append(c)
+        
+        #Total number of samples is used to determine the observation time.
+        #Is this correct or should the negative samples be used?
+        #0.5 = time (in seconds) that the signal is shifted around in the data
+        obs_time = (len(true_vals[0])) * 0.5
+        seconds_per_month = 60 * 60 * 24 * 30
+        
+        y_pt = [pt / obs_time * seconds_per_month for pt in y_pt]
+    
+    #Store to file
+    store_file_path = image_path[:-4] + '.hf5'
+    with h5py.File(store_file_path, 'w') as FILE:
+        FILE.create_dataset('data', data=np.array([x_pt, y_pt]))
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
+    
+    plt.semilogy(x_pt, y_pt)
+    plt.xlabel('p-value')
+    plt.ylabel('\#False alarms louder per 30 days')
     plt.title('Total number of noise samples: {}'.format(len(x_pt)))
     plt.grid()
     #plt.yscale('log')
@@ -149,6 +257,69 @@ def plot_sensitivity(dobj, file_path, false_alarm_path, image_path, bins=(10, 50
                 print("norm_factor: {}".format(norm_factor))
                 
                 y_pt = [SNR_bins[i] / norm_factor[i] if not norm_factor[i] == 0 else 0 for i in range(len(SNR_bins))]
+        except IOError:
+            raise ValueError('You need to create a false alarm plot first. Please use the method "plot_false_alarm" of the metrics module to do this.')
+    
+    store_file_path = image_path[:-4] + '.hf5'
+    with h5py.File(store_file_path, 'w') as FILE:
+        FILE.create_dataset('bins', data=np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]))
+        FILE.create_dataset('data', data=np.array(y_pt))
+        FILE.create_dataset('loudest_false_positive', data=np.array([max_false_snr]))
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
+    
+    plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
+    #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
+    plt.xlabel('SNR')
+    plt.ylabel('Fraction of signals louder than highest false positive')
+    plt.title('Loudest false positive SNR-value: {}'.format(max_false_snr))
+    plt.grid()
+    plt.savefig(image_path)
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(store_file_path)
+
+#dobj
+def plot_sensitivity_from_pred_file(file_path, image_path, bins=(10, 50, 1), show=True):
+    with h5py.File(file_path, 'r') as predFile:
+        try:
+            true_vals = [predFile['labels']['0'][:], predFile['labels']['1'][:]]
+            max_false_snr = -np.inf
+            snr_vals = []
+            for i in range(len(true_vals[1])):
+                #if true_vals[1][i][0] <= true_vals[1][i][1]:
+                    #if predFile['data'][i][1] > predFile['data'][i][2]:
+                        #max_false_snr = max(max_false_snr, predFile['data'][i][0])
+                #else:
+                    #snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
+                if true_vals[1][i][0] <= true_vals[1][i][1]:
+                    max_false_snr = max(max_false_snr, predFile['0'][i][0])
+                else:
+                    snr_vals.append([true_vals[0][i][0], predFile['0'][i][0]])
+            
+            print("True vals: {}".format(true_vals))
+            print("snr_vals: {}".format(snr_vals))
+            print("Max_false: {}".format(max_false_snr))
+            act_bins = np.arange(bins[0], bins[1], bins[2])
+            SNR_bins = np.zeros(len(act_bins)+1)
+            norm_factor = np.zeros(len(act_bins)+1)
+            bin_order = np.digitize([pt[0] for pt in snr_vals], act_bins)
+            for i in range(len(snr_vals)):
+                norm_factor[bin_order[i]] += 1
+                if snr_vals[i][1] > max_false_snr:
+                    SNR_bins[bin_order[i]] += 1
+            
+            print("SNR_bins: {}".format(SNR_bins))
+            print("norm_factor: {}".format(norm_factor))
+            
+            y_pt = [SNR_bins[i] / norm_factor[i] if not norm_factor[i] == 0 else 0 for i in range(len(SNR_bins))]
         except IOError:
             raise ValueError('You need to create a false alarm plot first. Please use the method "plot_false_alarm" of the metrics module to do this.')
     
@@ -312,8 +483,8 @@ def joint_snr_false_alarm_plot(file_last, file_best, image_save_path, color_last
     plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
     plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
     plt.xlabel('SNR')
-    plt.ylabel('#False alarms louder per 30 days')
-    plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
+    plt.ylabel('\#False alarms louder per 30 days')
+    plt.title('\#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
     plt.legend()
     plt.grid()
     plt.savefig(image_save_path)
@@ -341,8 +512,8 @@ def joint_prob_false_alarm_plot(file_last, file_best, image_save_path, color_las
     plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
     plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
     plt.xlabel('p-value')
-    plt.ylabel('#False alarms louder per 30 days')
-    plt.title('#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
+    plt.ylabel('\#False alarms louder per 30 days')
+    plt.title('\#Noise samples: last: {} | best: {}'.format(last_data.shape[1], best_data.shape[1]))
     plt.legend()
     plt.grid()
     plt.savefig(image_save_path)
