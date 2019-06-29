@@ -166,6 +166,7 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         print("Continuing...")
         pass
     
+    #Make p-value plots
     try:
         p_val_dist_path_last = os.path.join(dir_path, 'p_value_distribution_plot_last.png')
         

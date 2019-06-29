@@ -48,6 +48,7 @@ def plot_false_alarm(dobj, file_path, image_path, show=True):
     plt.xlabel('SNR')
     plt.ylabel('\#False alarms louder per 30 days')
     plt.title('Total number of noise samples: {}'.format(len(x_pt)))
+    plt.grid()
     #plt.yscale('log')
     plt.savefig(image_path)
     if show:
@@ -479,6 +480,10 @@ def joint_snr_false_alarm_plot(file_last, file_best, image_save_path, color_last
     
     with h5py.File(file_best) as best:
         best_data = best['data'][:]
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
     
     plt.semilogy(last_data[0], last_data[1], color=color_last, label='Data last epoch')
     plt.semilogy(best_data[0], best_data[1], color=color_best, label='Data best epoch')
