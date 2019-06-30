@@ -2,10 +2,11 @@ import keras
 import numpy as np
 from aux_functions import filter_keys, date_to_file_string
 import os
-from make_snr_plot import plot_true_and_calc_from_file
+from make_snr_plot import plot_true_from_pred_file
 from evaluate_dual_output import evaluate_dual_output_form
 from store_test_results import store_test_results, join_test_results
-from metrics import plot_false_alarm, plot_sensitivity, plot_false_alarm_prob, plot_sensitivity_prob, plot_p_val_dist
+import metrics as m
+#from metrics import plot_false_alarm, plot_sensitivity, plot_false_alarm_prob, plot_sensitivity_prob, plot_p_val_dist
 import imp
 from ini_handeling import evaluate_net_defaults
 from loss_plot import make_loss_plot
@@ -79,25 +80,31 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         
         store_test_results(net_best, dobj, prediction_path_best, batch_size=batch_size, generator=generator)
     
-    #Create loss plot
-    if opt_arg['make_loss_plot']:
-        loss_plot_path = os.path.join(dir_path, net_name + '_loss_plot_last_epoch_' + t_string + '.png')
-        make_loss_plot(os.path.join(dir_path, net_name + "_results.json"), loss_plot_path)
-    else:
-        loss_plot_path = 'N/A'
+    try:
+        #Create loss plot
+        if opt_arg['make_loss_plot']:
+            loss_plot_path = os.path.join(dir_path, net_name + '_loss_plot.png')
+            make_loss_plot(os.path.join(dir_path, net_name + "_results.json"), loss_plot_path)
+        else:
+            loss_plot_path = 'N/A'
+    except:
+        print("Something went wrong while trying to make the loss plot.")
+        traceback.print_exc()
+        print("Continuing...")
+        pass
     
     try:
         #Make SNR plots
         SNR_plot_path_last = os.path.join(dir_path, net_name + '_snr_plot_last_epoch_' + t_string + '.png')
         
-        plot_true_and_calc_from_file(prediction_path_last, dobj, SNR_plot_path_last, show=opt_arg['show_snr_plot'], net_name=net_name + ' last epoch')
+        plot_true_from_pred_file(prediction_path_last, SNR_plot_path_last, show=opt_arg['show_snr_plot'], net_name=net_name + ' last epoch')
         
         SNR_plot_path_best = ''
         
         if not net_best == None:
             SNR_plot_path_best = os.path.join(dir_path, net_name + '_snr_plot_best_epoch_' + t_string + '.png')
             
-            plot_true_and_calc_from_file(prediction_path_best, dobj, SNR_plot_path_best, show=opt_arg['show_snr_plot'], net_name=net_name + ' best epoch')
+            plot_true_from_pred_file(prediction_path_best, SNR_plot_path_best, show=opt_arg['show_snr_plot'], net_name=net_name + ' best epoch')
     except:
         print("Something went wrong while trying to make the SNR plot.")
         traceback.print_exc()
@@ -108,11 +115,11 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         #Make false alarm plots
         false_alarm_plot_path_last = os.path.join(dir_path, net_name + '_false_alarm_plot_last_epoch_' + t_string + '.png')
         
-        tmp_false_alarm_path_last = plot_false_alarm(dobj, prediction_path_last, false_alarm_plot_path_last, show=opt_arg['show_false_alarm'])
+        tmp_false_alarm_path_last = m.plot_false_alarm_from_pred_file(prediction_path_last, false_alarm_plot_path_last, show=opt_arg['show_false_alarm'])
         
         false_alarm_plot_prob_path_last = os.path.join(dir_path, net_name + '_false_alarm_plot_prob_last_epoch_' + t_string + '.png')
         
-        tmp_false_alarm_prob_path_last = plot_false_alarm_prob(dobj, prediction_path_last, false_alarm_plot_prob_path_last, show=opt_arg['show_false_alarm'])
+        tmp_false_alarm_prob_path_last = m.plot_false_alarm_prob_from_pred_file(prediction_path_last, false_alarm_plot_prob_path_last, show=opt_arg['show_false_alarm'])
         
         false_alarm_plot_path_best = ''
         
@@ -127,9 +134,9 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
             
             false_alarm_plot_prob_path_best = os.path.join(dir_path, net_name + '_false_alarm_plot_prob_best_epoch_' + t_string + '.png')
             
-            tmp_false_alarm_path_best = plot_false_alarm(dobj, prediction_path_best, false_alarm_plot_path_best, show=opt_arg['show_false_alarm'])
+            tmp_false_alarm_path_best = m.plot_false_alarm_from_pred_file(prediction_path_best, false_alarm_plot_path_best, show=opt_arg['show_false_alarm'])
             
-            tmp_false_alarm_prob_path_best = plot_false_alarm_prob(dobj, prediction_path_best, false_alarm_plot_prob_path_best, show=opt_arg['show_false_alarm'])
+            tmp_false_alarm_prob_path_best = m.plot_false_alarm_prob_from_pred_file(prediction_path_best, false_alarm_plot_prob_path_best, show=opt_arg['show_false_alarm'])
     except:
         print("Something went wrong while trying to make the false alarm plots.")
         traceback.print_exc()
@@ -144,9 +151,9 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         
         sensitivity_plot_prob_path_last = os.path.join(dir_path, net_name + '_sensitivity_plot_prob_last_epoch_' + t_string + '.png')
         
-        plot_sensitivity(dobj, prediction_path_last, tmp_false_alarm_path_last, sensitivity_plot_path_last, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
+        m.plot_sensitivity_from_pred_file(prediction_path_last, sensitivity_plot_path_last, bins=(snr_range[0]+1, snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
         
-        plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
+        m.plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
         
         sensitivity_plot_path_best = ''
         
@@ -157,9 +164,9 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
             
             sensitivity_plot_prob_path_best = os.path.join(dir_path, net_name + '_sensitivity_plot_prob_best_epoch_' + t_string + '.png')
             
-            plot_sensitivity(dobj, prediction_path_best, tmp_false_alarm_path_best, sensitivity_plot_path_best, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
+            m.plot_sensitivity_from_pred_file(prediction_path_best, sensitivity_plot_path_best, bins=(snr_range[0]+1, snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
             
-            plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
+            m.plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
     except:
         print("Something went wrong while trying to make the sensitivity plots.")
         traceback.print_exc()
@@ -172,12 +179,12 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         
         p_val_dist_path_best = ''
         
-        plot_p_val_dist(prediction_path_last, p_val_dist_path_last, title_prefix='Last')
+        m.plot_p_val_dist(prediction_path_last, p_val_dist_path_last, title_prefix='Last')
         
         if not net_best == None:
             p_val_dist_path_best = os.path.join(dir_path, 'p_value_distribution_plot_best.png')
             
-            plot_p_val_dist(prediction_path_best, p_val_dist_path_best, title_prefix='Best')
+            m.plot_p_val_dist(prediction_path_best, p_val_dist_path_best, title_prefix='Best')
     except:
         print("Something went wrong while trying to make the probability distribution plot.")
         traceback.print_exc()
