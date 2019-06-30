@@ -77,6 +77,7 @@ def get_input(input_names, NUM_OF_DETECTORS=2):
     return((add, inp_sig, inp_noi))
 
 def preprocess(inp):
+    DROPOUT_RATE = 0.25
     #Preprocessing
     batch_1 = keras.layers.BatchNormalization()(inp)
     #ATTENTION: Drop this maybe
