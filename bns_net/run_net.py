@@ -420,6 +420,7 @@ def run_net(net_name, temp_name, **kwargs):
             wiki_data['p_value_distribution_plot_path_last_epoch'] = wik[12]
             wiki_data['plot_options'] = wik[13]
         except:
+            traceback.print_exc()
             pass
         
         try:
