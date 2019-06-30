@@ -89,7 +89,7 @@ def preprocess(inp):
     conv_2 = keras.layers.Conv1D(128, 16)(pool_conv_1)
     bn_conv_2 = keras.layers.BatchNormalization()(conv_2)
     act_conv_2 = keras.layers.Activation('relu')(bn_conv_2)
-    return(act_conv2)
+    return(act_conv_2)
 
 def get_model():
     NUM_DETECTORS = 2
