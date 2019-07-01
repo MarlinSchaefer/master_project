@@ -60,6 +60,7 @@ def get_input(input_names, NUM_OF_DETECTORS=2):
     return((add, inp_sig, inp_noi))
 
 def res_incp(inp):
+    FILTER_NUM = 32
     inc = incp_lay(inp, FILTER_NUM)
     inc_bn = keras.layers.BatchNormalization()(inc)
     res = keras.layers.Add()([inp, inc_bn])
