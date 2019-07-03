@@ -380,7 +380,7 @@ class DataGenerator(keras.utils.Sequence):
         num_detectors = 2
         num_channels = self.data_channels
         num_inputs = 2
-        X = [np.zeros([len(indices), num_detectors * num_channels, 2048]) for i in range(num_inputs)]
+        X = [np.zeros([len(indices), num_detectors * num_channels, 4096]) for i in range(num_inputs)]
         
         y_1 = np.zeros((len(indices), 1))
         
