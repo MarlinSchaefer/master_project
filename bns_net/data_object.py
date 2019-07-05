@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from run_net import get_store_path
+from aux_functions import get_store_path
 import h5py
 import gc
 import time

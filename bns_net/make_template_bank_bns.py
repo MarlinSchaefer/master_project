@@ -9,7 +9,7 @@ from pycbc.types.timeseries import TimeSeries
 from pycbc.filter import sigma, resample_to_delta_t, sigmasq, matched_filter
 import os
 import h5py
-from run_net import filter_keys
+from aux_functions import filter_keys
 from pycbc.detector import Detector
 import sys
 from progress_bar import progress_tracker
