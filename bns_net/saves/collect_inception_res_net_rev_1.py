@@ -49,27 +49,6 @@ def combine_stack(in1, in2):
     
     return(out)
 
-def stack(x, NUM_DETECTORS, DROPOUT_RATE):
-    batch_1 = keras.layers.BatchNormalization()(x)
-    #drop_1 = keras.layers.Dropout(DROPOUT_RATE)(batch_1)
-    conv_1 = keras.layers.Conv1D(64, 32)(batch_1)
-    bn_conv_1 = keras.layers.BatchNormalization()(conv_1)
-    act_conv_1 = keras.layers.Activation('relu')(bn_conv_1)
-    pool_conv_1 = keras.layers.MaxPooling1D(4)(act_conv_1)
-    conv_2 = keras.layers.Conv1D(128, 16)(pool_conv_1)
-    bn_conv_2 = keras.layers.BatchNormalization()(conv_2)
-    act_conv_2 = keras.layers.Activation('relu')(bn_conv_2)
-    inc_1 = incp_lay(act_conv_2, 32)
-    batch_2 = keras.layers.BatchNormalization()(inc_1)
-    inc_2 = incp_lay(batch_2, 32)
-    #It's possible to add a res-layer here
-    #i.e. add_1 = keras.layers.Add()([batch_2, inc_2])
-    pool_1 = keras.layers.MaxPooling1D(2)(inc_2)
-    batch_3 = keras.layers.BatchNormalization()(pool_1)
-    inc_3 = incp_lay(batch_3, 32)
-    batch_4 = keras.layers.BatchNormalization()(inc_3)
-    return(batch_4)
-
 def get_input(input_names, NUM_OF_DETECTORS=2):
     inp_sig = keras.layers.Input(shape=(2048, NUM_OF_DETECTORS), name=input_names[0])
     inp_noi = keras.layers.Input(shape=(2048, NUM_OF_DETECTORS), name=input_names[1])
@@ -403,22 +382,23 @@ class DataGenerator(keras.utils.Sequence):
         for i, idx in enumerate(indices):
             sig_ind, noi_ind = self.index_list[idx]
             
-            X[0][i][0] = self.signals[sig_ind].transpose()[0][2048:]
-            X[0][i][1] = self.signals[sig_ind].transpose()[7][2048:]
-            X[2][i][0] = self.signals[sig_ind].transpose()[0][:2048]
-            X[2][i][1] = self.signals[sig_ind].transpose()[7][:2048]
-            X[4][i][0] = self.signals[sig_ind].transpose()[1][:2048]
-            X[4][i][1] = self.signals[sig_ind].transpose()[8][:2048]
-            X[6][i][0] = self.signals[sig_ind].transpose()[2][:2048]
-            X[6][i][1] = self.signals[sig_ind].transpose()[9][:2048]
-            X[8][i][0] = self.signals[sig_ind].transpose()[3][:2048]
-            X[8][i][1] = self.signals[sig_ind].transpose()[10][:2048]
-            X[10][i][0] = self.signals[sig_ind].transpose()[4][:2048]
-            X[10][i][1] = self.signals[sig_ind].transpose()[11][:2048]
-            X[12][i][0] = self.signals[sig_ind].transpose()[5][:2048]
-            X[12][i][1] = self.signals[sig_ind].transpose()[12][:2048]
-            X[14][i][0] = self.signals[sig_ind].transpose()[6][:2048]
-            X[14][i][1] = self.signals[sig_ind].transpose()[13][:2048]
+            if not sig_ind == -1:
+                X[0][i][0] = self.signals[sig_ind].transpose()[0][2048:]
+                X[0][i][1] = self.signals[sig_ind].transpose()[7][2048:]
+                X[2][i][0] = self.signals[sig_ind].transpose()[0][:2048]
+                X[2][i][1] = self.signals[sig_ind].transpose()[7][:2048]
+                X[4][i][0] = self.signals[sig_ind].transpose()[1][:2048]
+                X[4][i][1] = self.signals[sig_ind].transpose()[8][:2048]
+                X[6][i][0] = self.signals[sig_ind].transpose()[2][:2048]
+                X[6][i][1] = self.signals[sig_ind].transpose()[9][:2048]
+                X[8][i][0] = self.signals[sig_ind].transpose()[3][:2048]
+                X[8][i][1] = self.signals[sig_ind].transpose()[10][:2048]
+                X[10][i][0] = self.signals[sig_ind].transpose()[4][:2048]
+                X[10][i][1] = self.signals[sig_ind].transpose()[11][:2048]
+                X[12][i][0] = self.signals[sig_ind].transpose()[5][:2048]
+                X[12][i][1] = self.signals[sig_ind].transpose()[12][:2048]
+                X[14][i][0] = self.signals[sig_ind].transpose()[6][:2048]
+                X[14][i][1] = self.signals[sig_ind].transpose()[13][:2048]
             
             X[1][i][0] = self.noise[noi_ind].transpose()[0][2048:]
             X[1][i][1] = self.noise[noi_ind].transpose()[7][2048:]

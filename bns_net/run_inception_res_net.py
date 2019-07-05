@@ -22,15 +22,15 @@ if __name__ == "__main__":
         #pass
     
     try:
-        msg = 'This run tries to identify which data is best to be fed to the network, as there is the new and reduced data feeding. In this case we try to have overlapping data for all sample rates. (Trained using mse, metric mape)'
-        run_net('inception_res_net_rev_12', 'templates_new_vary_mass_sky_pos_coa_phase', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        msg = 'Previously there was a bug in the generator, where instead of pure noise the network got noise + always the same signal. This reruns the same network (inception_res_net_rev_9) with the corrected generator. (Trained using mse, metric mape)'
+        run_net('inception_res_net_rev_9', 'templates_new_vary_mass_sky_pos_coa_phase', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
     
     try:
-        msg = 'This run tries to identify which data is best to be fed to the network, as there is the new and reduced data feeding. In this case we try to have overlapping data for only the sample rates 2048, 512, 128. (Trained using mse, metric mape)'
-        run_net('inception_res_net_rev_13', 'templates_new_vary_mass_sky_pos_coa_phase', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        msg = 'Previously there was a bug in the generator, where instead of pure noise the network got noise + always the same signal. This reruns the same network (collect_inception_res_net_rev_1) with the corrected generator. (Trained using mse, metric mape)'
+        run_net('collect_inception_res_net_rev_1', 'templates_new_vary_mass_sky_pos_coa_phase', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
