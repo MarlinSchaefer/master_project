@@ -22,14 +22,14 @@ if __name__ == "__main__":
         #pass
     
     try:
-        msg = 'Previously there was a bug in the generator, where instead of pure noise the network got noise + always the same signal. This reruns the same network (inception_res_net_rev_9) with the corrected generator. (Trained using mse, metric mape)'
+        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! Previously there was a bug in the generator, where instead of pure noise the network got noise + always the same signal. This reruns the same network (inception_res_net_rev_9) with the corrected generator. (Trained using mse, metric mape)'
         run_net('inception_res_net_rev_9', 'templates_new_vary_mass_sky_pos_coa_phase', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
     
     try:
-        msg = 'Previously there was a bug in the generator, where instead of pure noise the network got noise + always the same signal. This reruns the same network (collect_inception_res_net_rev_1) with the corrected generator. (Trained using mse, metric mape)'
+        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! Previously there was a bug in the generator, where instead of pure noise the network got noise + always the same signal. This reruns the same network (collect_inception_res_net_rev_1) with the corrected generator. (Trained using mse, metric mape)'
         run_net('collect_inception_res_net_rev_1', 'templates_new_vary_mass_sky_pos_coa_phase', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=50, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()

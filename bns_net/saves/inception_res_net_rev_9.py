@@ -162,9 +162,9 @@ def get_data_obj(file_path):
         
         def load_data(self):
             with h5py.File(self.file_path) as FILE:
-                self.signals = FILE['signals']['data'][:]
-                self.noise = FILE['noise']['data'][:]
-                self.signal_labels = FILE['signals']['snr'][:]
+                self.signals = FILE['signals']['data'][:10000]
+                self.noise = FILE['noise']['data'][:50000]
+                self.signal_labels = FILE['signals']['snr'][:10000]
                 self.noise_label = FILE['noise']['snr'][0]
         
         @property
