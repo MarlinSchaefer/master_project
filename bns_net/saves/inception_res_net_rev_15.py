@@ -9,6 +9,7 @@ from aux_functions import get_store_path
 import h5py
 from evaluate_nets import evaluate_training
 import time
+import random
 
 filter_size = (1, 2, 3)
 
@@ -283,25 +284,18 @@ def get_data_obj(file_path):
             if max_len < num_pairs:
                 raise ValueError('Tried to generate {} unique pairs from {} possible combinations.'.format(num_pairs, max_len))
             
-            trues = np.full(num_pairs, 1)
-            falses = np.full(len_sig * len_noi - num_pairs, 0)
-            
-            poss = np.concatenate([trues, falses])
-            np.random.shuffle(poss)
+            idxs = np.array(random.sample(xrange(max_len), num_pairs))
             
             ret = []
             
-            true_val = 1
-            
-            for i, val in enumerate(poss):
-                if val == true_val:
-                    sig_idx = i / len_noi
-                    noi_idx = i % len_noi
-        
-                    if sig_idx == len_sig:
-                        ret.append((-1, noi_idx))
-                    else:
-                        ret.append((sig_idx, noi_idx))
+            for i in idxs:
+                sig_idx = i / len_noi
+                noi_idx = i % len_noi
+    
+                if sig_idx == len_sig:
+                    ret.append((-1, noi_idx))
+                else:
+                    ret.append((sig_idx, noi_idx))
             
             ret = np.array(ret, dtype=int)
             np.random.shuffle(ret)
