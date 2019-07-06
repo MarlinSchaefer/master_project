@@ -283,23 +283,15 @@ def get_data_obj(file_path):
             if max_len < num_pairs:
                 raise ValueError('Tried to generate {} unique pairs from {} possible combinations.'.format(num_pairs, max_len))
             
-            #Check if it is more efficient to pick pairs to not include
-            inv = False
-            if num_pairs > (len_sig * len_noi) / 2:
-                inv = True
+            trues = np.full(num_pairs, 1)
+            falses = np.full(len_sig * len_noi - num_pairs, 0)
             
-            curr_pairs = 0
-            max_pair = max_len - num_pairs if inv else num_pairs
-            poss = np.zeros(max_len, dtype=int)
-            while curr_pairs < max_pair:
-                r_int = np.random.randint(0, max_len)
-                if poss[r_int] == 0:
-                    poss[r_int] = 1
-                    curr_pairs += 1
-            
-            true_val = 0 if inv else 1
+            poss = np.concatenate([trues, falses])
+            np.random.shuffle(poss)
             
             ret = []
+            
+            true_val = 1
             
             for i, val in enumerate(poss):
                 if val == true_val:
