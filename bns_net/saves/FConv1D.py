@@ -72,9 +72,19 @@ def get_model():
     
     #Preprocessing
     batch_1 = keras.layers.BatchNormalization()(inp)
-    res_8 = FConv1D(32, 20, 4096, activation='relu')(batch_1)
+    sin1 = FConv1D(32, 20, 4096, activation='relu')(batch_1)
+    incp1 = incp_lay(sin1, 32)
     
-    pool_2 = keras.layers.MaxPooling1D(4)(res_8)
+    sin2 = FConv1D(32, 20, 4096, activation='relu')(incp1)
+    incp2 = incp_lay(sin2, 32)
+    
+    sin3 = FConv1D(32, 20, 4096, activation='relu')(incp2)
+    incp3 = incp_lay(sin3, 32)
+    
+    sin4 = FConv1D(32, 20, 4096, activation='relu')(incp3)
+    incp4 = incp_lay(sin4, 32)
+    
+    pool_2 = keras.layers.MaxPooling1D(4)(incp4)
     dim_red = keras.layers.Conv1D(32, 1)(pool_2)
     flatten = keras.layers.Flatten()(dim_red)
     
