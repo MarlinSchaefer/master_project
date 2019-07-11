@@ -24,7 +24,7 @@ class MinMaxClip(Constraint):
         return(w)
 
 class FConv1D(Layer):
-    def __init__(self, filters, frequency_low, frequency_high, activation=None, number_of_cycles=1, **kwargs):
+    def __init__(self, filters, frequency_low, frequency_high, activation=None, number_of_cycles=1, fill=True, window='hann', **kwargs):
         self.filters = filters
         self.frequency_low = float(frequency_low)
         self.frequency_high = float(frequency_high)
@@ -32,6 +32,14 @@ class FConv1D(Layer):
         self.number_of_cycles = number_of_cycles
         self.dt = 0.5 / self.frequency_high
         self.rank = 1
+        self.T = 1 / self.frequency_low
+        self.T_LEN = int(np.floor(self.T / self.dt)) + 1
+        self.fill = fill
+        if not window in ['hann', None]:
+            raise ValueError('Right now only Hanning and no windowing are supported.')
+        else:
+            self.window = window
+        
         super(FConv1D, self).__init__(**kwargs)
     
     def build(self, input_shape):
@@ -61,8 +69,18 @@ class FConv1D(Layer):
                                       dtype=np.float32
                                       )
         
-        self.kernel_shape = (self.number_of_cycles * (int(np.floor(2 * self.frequency_high / self.frequency_low)) + 1),) + length[1:]
-        print("Kernel shape: {}".format(self.kernel_shape))
+        self.kernel_shape = (self.number_of_cycles * self.T_LEN,) + length[1:]
+        if self.kernel_shape[0] > input_shape[1]:
+            msg  = 'A low and high frequency cutoff of (f_low, f_high) of '
+            msg += '({}, {}) '.format(self.frequency_low, self.frequency_high)
+            msg += 'combined with a repition rate of {}'.format(self.number_of_cycles)
+            msg += ' results in a kernel of length '
+            msg += '{}. The maximum length '.format(self.kernel_shape[0])
+            msg += 'however must be smaller or equal '
+            msg += '{}. (input_shape[1])'.format(input_shape[1])
+            raise ValueError(msg)
+        
+        #print("Kernel shape: {}".format(self.kernel_shape))
         
         self.input_spec = InputSpec(ndim=self.rank + 2,
                                     axes={-1: input_shape[-1]})
@@ -71,83 +89,46 @@ class FConv1D(Layer):
     
     def call(self, x):
         np_kernel = np.zeros(self.kernel_shape, dtype=np.float32)
+        if not self.window == None:
+            np_window = np.zeros(self.kernel_shape, dtype=np.float32)
         
         np_freq, np_amp, np_phase = self.get_weights()
         
-        print("Phase shape: {}".format(np_phase.shape))
-        
         for i, freq in enumerate(np_freq[0]):
             for j, f in enumerate(freq):
-                phase = np_phase[0][i][j]
-                args = np.arange(phase, self.number_of_cycles / f + self.dt + phase, self.dt)
-                #print("f: {}, upper_lim: {}".format(f, self.number_of_cycles / f))
-                if len(args) == self.kernel_shape[0]:
-                    args = np.arange(phase, self.number_of_cycles / f + phase, self.dt)
-                #print("Shape of args: {}".format(args.shape))
-                vals = np.sin(args)
-                vals *= np_amp[0][i][j]
-                vals = np.concatenate([vals, np.zeros(self.kernel_shape[0] - len(vals))])
-                np_kernel[:,i,j] = vals
-        
+                if not self.fill:
+                    fT_len = int(np.floor(1 / (f * self.dt))) + 1
+                    args = dt * np.arange(self.number_of_cycles * fT_len)
+                    pad = np.zeros(self.T_LEN - len(args))
+                    vals = np.concatenate([args, pad])
+                    np_kernel[:,i,j] = vals
+                    if not self.window == None:
+                        np_window[:,i,j] = np.concatenate([np.hanning(len(args)), pad])
+                else:
+                    np_kernel[:,i,j] = self.dt * np.arange(self.number_of_cycles * self.T_LEN)
+                    if not self.window == None:
+                        np_window[:,i,j] =np.hanning(self.number_of_cycles * self.T_LEN)
+                    
         kernel = tf.convert_to_tensor(np_kernel)
-        
-        #print("1: {}".format(kernel.shape))
         
         ones = K.ones(self.kernel_shape)
         
         a = self.frequencies * ones
         
-        #print("shape of a: {}".format(a.shape))
-        #print("Shape of weights: {}".format(self.frequencies.shape))
-        #print("Shape of ones: {}".format(ones.shape))
-        
         kernel *= a
-        
-        #print("2: {}".format(kernel.shape))
         
         b = self.phases * ones
         
         kernel += b
         
-        #print("3: {}".format(kernel.shape))
-        
         kernel = K.sin(kernel)
-        
-        #print("4: {}".format(kernel.shape))
         
         b = self.amplitudes * ones
         
-        #print("5: {}".format(kernel.shape))
-        
         kernel *= b
         
-        ##Old non-working version
-        #np_kernel = np.zeros(self.kernel_shape, dtype=np.float32)
-        
-        #np_freq, np_amp, np_phase = self.get_weights()
-        
-        #print("get_weights returns: {}".format(self.weights))
-        
-        #print("Real shape of numpy: {}".format(np_freq.shape))
-        
-        #print("Kernel shape: {}".format(self.kernel_shape))
-        
-        #for i, freq in enumerate(np_freq):
-            #for j, f in enumerate(freq):
-                #phase = np.array(np_phase)[i][j]
-                #args = np.arange(phase, self.number_of_cycles / f + self.dt + phase, self.dt)
-                ##print("f: {}, upper_lim: {}".format(f, self.number_of_cycles / f))
-                #if len(args) == self.kernel_shape[0]:
-                    #args = np.arange(phase, self.number_of_cycles / f + phase, self.dt)
-                ##print("Shape of args: {}".format(args.shape))
-                #vals = np.sin(args)
-                #vals *= np.array(np_amp)[i][j]
-                #vals = np.concatenate([vals, np.zeros(self.kernel_shape[0] - len(vals))])
-                #np_kernel[:,j,i] = vals
-        
-        #kernel = tf.convert_to_tensor(np_kernel)
-        
-        #print("Kernel shape final: {}".format(kernel.shape))
+        if not self.window == None:
+            kernel += tf.convert_to_tensor(np_window)
         
         output = K.conv1d(x,
                           kernel,
