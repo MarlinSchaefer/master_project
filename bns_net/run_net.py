@@ -8,7 +8,7 @@ import time
 from wiki import make_wiki_entry, read_json, model_to_string
 from ini_handeling import run_net_defaults, load_options
 from store_test_results import store_test_results
-from metrics import plot_false_alarm, plot_sensitivity, joint_snr_bar_plot, joint_snr_false_alarm_plot, joint_prob_false_alarm_plot
+from metrics import plot_false_alarm, plot_sensitivity, joint_snr_bar_plot, joint_snr_false_alarm_plot, joint_prob_false_alarm_plot, joint_prob_bar_plot
 import traceback
 
 """
@@ -426,14 +426,18 @@ def run_net(net_name, temp_name, **kwargs):
         try:
             sens_last_path, ext = os.path.splitext(wiki_data['sensitivity_plot_path_last_epoch'])
             sens_best_path, ext = os.path.splitext(wiki_data['sensitivity_plot_path_best_epoch'])
+            sens_prob_last_path = os.path.splitext(wiki_data['sensitivity_plot_prob_path_last_epoch'])[0]
+            sens_prob_best_path = os.path.splitext(wiki_data['sensitivity_plot_prob_path_best_epoch'])[0]
             fa_snr_last_path, ext = os.path.splitext(wiki_data['false_alarm_plot_path_last_epoch'])
             fa_snr_best_path, ext = os.path.splitext(wiki_data['false_alarm_plot_path_best_epoch'])
             fa_prob_last_path, ext = os.path.splitext(wiki_data['false_alarm_plot_prob_path_last_epoch'])
             fa_prob_best_path, ext = os.path.splitext(wiki_data['false_alarm_plot_prob_path_best_epoch'])
             joint_sens_path = os.path.join(opt_arg['store_results_path'], 'joint_sensitivity_plot.png')
+            joint_sens_prob_path = os.path.join(opt_arg['store_results_path'], 'joint_probabilitiy_sensitivity_plot.png')
             joint_false_alarm_plot_snr = os.path.join(opt_arg['store_results_path'], 'joint_false_alarm_plot_snr.png')
             joint_false_alarm_plot_prob = os.path.join(opt_arg['store_results_path'], 'joint_false_alarm_plot_prob.png')
             joint_snr_bar_plot(sens_last_path+'.hf5', sens_best_path+'.hf5', joint_sens_path)
+            joint_prob_bar_plot(sens_prob_last_path+'.hf5', sens_prob_best_path+'.hf5', joint_sens_prob_path)
             joint_snr_false_alarm_plot(fa_snr_last_path+'.hf5', fa_snr_best_path+'.hf5', joint_false_alarm_plot_snr)
             joint_prob_false_alarm_plot(fa_prob_last_path+'.hf5', fa_prob_best_path+'.hf5', joint_false_alarm_plot_prob)
         except:

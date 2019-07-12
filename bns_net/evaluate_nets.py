@@ -61,11 +61,11 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
     
     t_string = date_to_file_string(t_start)
         
-    net_last = keras.models.load_model(os.path.join(dir_path, net_name + '.hf5'))
+    net_last = keras.models.load_model(os.path.join(dir_path, net_name + '.hf5'), custom_objects=custom_layers.get_custom_objects())
     
     #Load networks
     if not opt_arg['best_epoch'] == 0:
-        net_best = keras.models.load_model(os.path.join(dir_path, net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'))
+        net_best = keras.models.load_model(os.path.join(dir_path, net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'), custom_objects=custom_layers.get_custom_objects())
     else:
         net_best = None
     
@@ -257,13 +257,13 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
     
     print("Now loading the last model")
     
-    net_last = keras.models.load_model(os.path.join(dir_path, net_name + '.hf5'))
+    net_last = keras.models.load_model(os.path.join(dir_path, net_name + '.hf5'), custom_objects=custom_layers.get_custom_objects())
     
     print("Now loading the best model")
     
     #Load networks
     if not opt_arg['best_epoch'] == 0:
-        net_best = keras.models.load_model(os.path.join(dir_path, net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'))
+        net_best = keras.models.load_model(os.path.join(dir_path, net_name + '_epoch_' + str(opt_arg['best_epoch']) + '.hf5'), custom_objects=custom_layers.get_custom_objects())
     else:
         net_best = None
     
@@ -341,9 +341,10 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
     
     sensitivity_plot_prob_path_last = os.path.join(dir_path, net_name + '_sensitivity_plot_prob_last_epoch_full_testing_' + t_string + '.png')
     
-    plot_sensitivity(dobj, prediction_path_last, tmp_false_alarm_path_last, sensitivity_plot_path_last, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
+    plot_sensitivity(dobj, prediction_path_last, tmp_false_alarm_path_last, sensitivity_plot_path_last, bins=(snr_range[0]+1, snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
     
-    plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
+    plot_sensitivity_prob_from_pred_file(prediction_path_last, sensitivity_plot_prob_path_last, bins=(snr_range[0]+1, snr_range[1], 1))
+    #plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
     
     sensitivity_plot_path_best = ''
     
@@ -356,6 +357,7 @@ def evaluate_training_on_testing(net_name, dobj, dir_path, t_start, batch_size=3
         
         plot_sensitivity(dobj, prediction_path_best, tmp_false_alarm_path_best, sensitivity_plot_path_best, bins=(snr_range[0], snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
         
-        plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
+        plot_sensitivity_prob_from_pred_file(prediction_path_best, sensitivity_plot_prob_path_best, bins=(snr_range[0]+1, snr_range[1], 1))
+        #plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
     
     return((SNR_plot_path_last, false_alarm_plot_path_last, false_alarm_plot_prob_path_last, sensitivity_plot_path_last, sensitivity_plot_prob_path_last, SNR_plot_path_best, false_alarm_plot_path_best, false_alarm_plot_prob_path_best, sensitivity_plot_path_best, sensitivity_plot_prob_path_best))

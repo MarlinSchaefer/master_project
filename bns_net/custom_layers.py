@@ -7,6 +7,20 @@ from keras import activations
 from keras.initializers import RandomUniform
 from keras.engine.base_layer import InputSpec
 
+def get_custom_objects(name=None):
+    custom_objects = {
+        'FConv1D': FConv1D
+    }
+    if name == None:
+        return custom_objects
+    else:
+        if name in custom_objects:
+            return {name: custom_objects[name]}
+        else:
+            msg  = '{} is not defined as a custom layer in '.format(name)
+            msg += 'custom_layers.py.'
+            raise ValueError(msg)
+
 class MinMaxClip(Constraint):
     def __init__(self, min_val, max_val):
         self.min_val = min_val
@@ -142,3 +156,16 @@ class FConv1D(Layer):
     
     def compute_output_shape(self, input_shape):
         return(input_shape[:-1] + (self.filters, ))
+    
+    def get_config(self):
+        config = {
+            'filters': self.filters,
+            'frequency_low': self.frequency_low,
+            'frequency_high': self.frequency_high,
+            'activation': activations.serialize(self.activation),
+            'number_of_cycles': self.number_of_cycles,
+            'fill': self.fill,
+            'window': self.window
+        }
+        base_config = super(FConv1D, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))

@@ -613,3 +613,126 @@ def plot_p_val_dist(pred_file, image_path, noise_color='red', signal_color='gree
         plt.close()
     
     return(image_path)
+
+def plot_sensitivity_prob_from_pred_file(file_path, image_path, bins=(10, 50, 1), show=False):
+    with h5py.File(file_path, 'r') as predFile:
+        try:
+            true_vals = [predFile['labels']['0'][:], predFile['labels']['1'][:]]
+            max_false_pval = -np.inf
+            pvals = []
+            for i in range(len(true_vals[1])):
+                #if true_vals[1][i][0] <= true_vals[1][i][1]:
+                    #if predFile['data'][i][1] > predFile['data'][i][2]:
+                        #max_false_snr = max(max_false_snr, predFile['data'][i][0])
+                #else:
+                    #snr_vals.append([true_vals[0][i][0], predFile['data'][i][0]])
+                if true_vals[1][i][0] <= true_vals[1][i][1]:
+                    max_false_pval = max(max_false_pval, predFile['1'][i][0])
+                else:
+                    pvals.append([true_vals[0][i][0], predFile['1'][i][0]])
+            
+            #print("True vals: {}".format(true_vals))
+            #print("snr_vals: {}".format(snr_vals))
+            #print("Max_false: {}".format(max_false_snr))
+            act_bins = np.arange(bins[0], bins[1], bins[2])
+            pval_bins = np.zeros(len(act_bins)+1)
+            norm_factor = np.zeros(len(act_bins)+1)
+            bin_order = np.digitize([pt[0] for pt in pvals], act_bins)
+            for i in range(len(pvals)):
+                norm_factor[bin_order[i]] += 1
+                if pvals[i][1] > max_false_pval:
+                    pval_bins[bin_order[i]] += 1
+            
+            #print("SNR_bins: {}".format(SNR_bins))
+            #print("norm_factor: {}".format(norm_factor))
+            
+            y_pt = [pval_bins[i] / norm_factor[i] if not norm_factor[i] == 0 else 0 for i in range(len(pval_bins))]
+        except IOError:
+            raise ValueError('You need to create a false alarm plot first. Please use the method "plot_false_alarm" of the metrics module to do this.')
+    
+    store_file_path = image_path[:-4] + '.hf5'
+    with h5py.File(store_file_path, 'w') as FILE:
+        FILE.create_dataset('bins', data=np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]))
+        FILE.create_dataset('data', data=np.array(y_pt))
+        FILE.create_dataset('loudest_false_positive', data=np.array([max_false_pval]))
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
+    
+    plt.bar(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), y_pt, width=bins[2])
+    #plt.hist(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2]), len(np.arange(bins[0]-float(bins[2]) / 2, bins[1]+float(bins[2]) / 2, bins[2])), weights=y_pt)
+    plt.xlabel('SNR')
+    plt.ylabel('Fraction of signals louder than highest false positive')
+    plt.title('Loudest false positive p-value: {}'.format(max_false_pval))
+    plt.grid()
+    plt.savefig(image_path)
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(store_file_path)
+
+def joint_prob_bar_plot(file_last, file_best, image_save_path, color_last='blue', color_best='red', show=False):
+    with h5py.File(file_last) as last:
+        last_bins = last['bins'][:]
+        last_data = last['data'][:]
+        last_loud = last['loudest_false_positive'][0]
+    
+    with h5py.File(file_best) as best:
+        best_bins = best['bins'][:]
+        best_data = best['data'][:]
+        best_loud = best['loudest_false_positive'][0]
+    
+    if not all(np.array([last_bins == best_bins]).flatten()):
+        raise ValueError('The databins of the plots you are trying to join do not match up.')
+    
+    bar_width = last_bins[1] - last_bins[0]
+    
+    top = []
+    bot = []
+    color_top = []
+    color_bot = []
+    for i in range(len(last_data)):
+        if last_data[i] <= best_data[i]:
+            top.append(best_data[i])
+            bot.append(last_data[i])
+            color_top.append(color_best)
+            color_bot.append(color_last)
+        else:
+            top.append(last_data[i])
+            bot.append(best_data[i])
+            color_top.append(color_last)
+            color_bot.append(color_best)
+    
+    top = np.array(top)
+    bot = np.array(bot)
+    top = top - bot
+    
+    last_patch = pat.Patch(color=color_last, label='Data last epoch')
+    best_patch = pat.Patch(color=color_best, label='Data best epoch')
+    
+    dpi = 96
+    plt.figure(figsize=(1920.0/dpi, 1440.0/dpi), dpi=dpi)
+    plt.rcParams.update({'font.size': 32, 'text.usetex': 'true'})
+    
+    plt.bar(last_bins, bot, width=bar_width, color=color_bot)
+    plt.bar(last_bins, top, width=bar_width, color=color_top, bottom=bot)
+    plt.xlabel('SNR')
+    plt.ylabel('Fraction of signals with higher p-value than highest false positive')
+    plt.title('Loudest false pos: last: {} | best: {}'.format(last_loud, best_loud))
+    plt.legend(handles=[last_patch, best_patch])
+    plt.grid()
+    plt.savefig(image_save_path)
+    
+    if show:
+        plt.show()
+    else:
+        plt.cla()
+        plt.clf()
+        plt.close()
+    
+    return(image_save_path)
