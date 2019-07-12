@@ -12,6 +12,7 @@ from ini_handeling import evaluate_net_defaults
 from loss_plot import make_loss_plot
 import generator as g
 import traceback
+import custom_layers
 
 testing_file_names = ['testing_set_injections_100000_1.hf5', 'testing_set_injections_100000_2.hf5', 'testing_set_injections_100000_3.hf5', 'testing_set_injections_100000_4.hf5', 'testing_set_injections_100000_5.hf5']
 
