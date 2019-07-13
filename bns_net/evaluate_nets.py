@@ -154,7 +154,9 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
         
         m.plot_sensitivity_from_pred_file(prediction_path_last, sensitivity_plot_path_last, bins=(snr_range[0]+1, snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
         
-        m.plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
+        m.plot_sensitivity_prob_from_pred_file(prediction_path_last, sensitivity_plot_prob_path_last, bins=(snr_range[0]+1, snr_range[1], 1))
+        
+        #m.plot_sensitivity_prob(dobj, prediction_path_last, tmp_false_alarm_prob_path_last, sensitivity_plot_prob_path_last, show=opt_arg['show_sensitivity_plot'])
         
         sensitivity_plot_path_best = ''
         
@@ -167,7 +169,9 @@ def evaluate_training(net_name, dobj, dir_path, t_start, batch_size=32, generato
             
             m.plot_sensitivity_from_pred_file(prediction_path_best, sensitivity_plot_path_best, bins=(snr_range[0]+1, snr_range[1], 1), show=opt_arg['show_sensitivity_plot'])
             
-            m.plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
+            m.plot_sensitivity_prob_from_pred_file(prediction_path_best, sensitivity_plot_prob_path_best, bins=(snr_range[0]+1, snr_range[1], 1))
+            
+            #m.plot_sensitivity_prob(dobj, prediction_path_best, tmp_false_alarm_prob_path_best, sensitivity_plot_prob_path_best, show=opt_arg['show_sensitivity_plot'])
     except:
         print("Something went wrong while trying to make the sensitivity plots.")
         traceback.print_exc()
