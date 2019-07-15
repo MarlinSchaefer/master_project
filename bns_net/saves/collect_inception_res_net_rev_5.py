@@ -24,7 +24,7 @@ def custom_loss(y_true, y_pred):
     part2  = K.cast(y_true <= 6, K.floatx()) * part21 + K.cast(y_true > 6, K.floatx()) * part22
     part2 *= K.cast(y_true - y_pred >= -1, K.floatx())
     
-    return K.mean(part1 + part2)
+    return K.mean(K.minimum(part1 + part2, K.abs(y_true - y_pred) + 10000))
 
 def set_filter_size(tup):
     global filter_size
