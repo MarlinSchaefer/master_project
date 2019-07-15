@@ -10,21 +10,22 @@ import h5py
 from evaluate_nets import evaluate_training
 import time
 from keras import backend as K
+from custom_layers import custom_loss
 
 filter_size = (1, 2, 3)
 
-def custom_loss(y_true, y_pred):
-    part1  = 4 * (y_true - y_pred) / np.e
-    part1 *= (1 - 2 * K.cast(y_true > 6, K.floatx()))
-    part1 -= 1
-    part1 *= K.cast(y_true - y_pred < -1, K.floatx())
+#def custom_loss(y_true, y_pred):
+    #part1  = 4 * (y_true - y_pred) / np.e
+    #part1 *= (1 - 2 * K.cast(y_true > 6, K.floatx()))
+    #part1 -= 1
+    #part1 *= K.cast(y_true - y_pred < -1, K.floatx())
     
-    part21 = 4 * K.exp(y_pred - y_true + 2) / (np.e ** 2 * K.square(y_pred - y_true + 2))
-    part22 = 4 * K.exp(y_true - y_pred + 2) / (np.e ** 2 * K.square(y_true - y_pred + 2))
-    part2  = K.cast(y_true <= 6, K.floatx()) * part21 + K.cast(y_true > 6, K.floatx()) * part22
-    part2 *= K.cast(y_true - y_pred >= -1, K.floatx())
+    #part21 = 4 * K.exp(y_pred - y_true + 2) / (np.e ** 2 * K.square(y_pred - y_true + 2))
+    #part22 = 4 * K.exp(y_true - y_pred + 2) / (np.e ** 2 * K.square(y_true - y_pred + 2))
+    #part2  = K.cast(y_true <= 6, K.floatx()) * part21 + K.cast(y_true > 6, K.floatx()) * part22
+    #part2 *= K.cast(y_true - y_pred >= -1, K.floatx())
     
-    return K.mean(K.minimum(part1 + part2, K.abs(y_true - y_pred) + 10000))
+    #return K.mean(K.minimum(part1 + part2, K.abs(y_true - y_pred) + 10000))
 
 def set_filter_size(tup):
     global filter_size

@@ -9,7 +9,8 @@ from keras.engine.base_layer import InputSpec
 
 def get_custom_objects(name=None):
     custom_objects = {
-        'FConv1D': FConv1D
+        'FConv1D': FConv1D,
+        'custom_loss': custom_loss
     }
     if name == None:
         return custom_objects
@@ -20,6 +21,19 @@ def get_custom_objects(name=None):
             msg  = '{} is not defined as a custom layer in '.format(name)
             msg += 'custom_layers.py.'
             raise ValueError(msg)
+
+def custom_loss(y_true, y_pred):
+    part1  = 4 * (y_true - y_pred) / np.e
+    part1 *= (1 - 2 * K.cast(y_true > 6, K.floatx()))
+    part1 -= 1
+    part1 *= K.cast(y_true - y_pred < -1, K.floatx())
+    
+    part21 = 4 * K.exp(y_pred - y_true + 2) / (np.e ** 2 * K.square(y_pred - y_true + 2))
+    part22 = 4 * K.exp(y_true - y_pred + 2) / (np.e ** 2 * K.square(y_true - y_pred + 2))
+    part2  = K.cast(y_true <= 6, K.floatx()) * part21 + K.cast(y_true > 6, K.floatx()) * part22
+    part2 *= K.cast(y_true - y_pred >= -1, K.floatx())
+    
+    return K.mean(K.minimum(part1 + part2, K.abs(y_true - y_pred) + 10000))
 
 class MinMaxClip(Constraint):
     def __init__(self, min_val, max_val):
