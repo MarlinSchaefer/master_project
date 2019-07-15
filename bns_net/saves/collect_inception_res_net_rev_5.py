@@ -136,7 +136,8 @@ def get_model():
     return(model)
 
 def compile_model(model):
-    model.compile(loss=[custom_loss, 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
+    opt = keras.optimizers.Adam(lr=10**-6)
+    model.compile(loss=[custom_loss, 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer=opt, metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
