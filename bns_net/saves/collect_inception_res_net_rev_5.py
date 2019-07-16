@@ -126,7 +126,7 @@ def get_model():
     flatten = keras.layers.Flatten()(dim_red)
     
     dense_1 = keras.layers.Dense(2)(flatten)
-    dense_2 = keras.layers.Dense(1, activation='relu', name='Out_SNR')(dense_1)
+    dense_2 = keras.layers.Dense(1, name='Out_SNR')(dense_1)
     
     dense_3 = keras.layers.Dense(3)(flatten)
     dense_4 = keras.layers.Dense(2, activation='softmax', name='Out_Bool')(dense_3)
