@@ -23,16 +23,18 @@ def get_custom_objects(name=None):
             raise ValueError(msg)
 
 def custom_loss(y_true, y_pred):
-    squish_factor = 3
-    part1  = squish_factor * 4 * (y_true - y_pred) / np.e
-    part1 *= (1 - 2 * K.cast(y_true > 6, K.floatx()))
-    part1 -= 1
-    part1 *= K.cast(squish_factor * (y_true - y_pred) < -1, K.floatx())
+    #sf means squish factor
+    sf = 3
+    z = y_true - y_pred
+    part11 = 4 / (np.e ** 2 * K.square(2 + sf * z)) K.exp(2 + sf * z) - 1
+    part12 = -4 / np.e * sf * z - 1
+    part1  = K.cast(sf * z >= -1, K.floatx()) * part11 + K.cast(sf * z < -1, K.floatx()) * part12
+    part1 *= K.cast(y_true <= 6, K.floatx())
     
-    part21 = 4 * K.exp(squish_factor * (y_pred - y_true) + 2) / (np.e ** 2 * K.square(squish_factor * (y_pred - y_true) + 2))
-    part22 = 4 * K.exp(squish_factor * (y_true - y_pred) + 2) / (np.e ** 2 * K.square(squish_factor * (y_true - y_pred) + 2))
-    part2  = K.cast(y_true <= 6, K.floatx()) * part21 + K.cast(y_true > 6, K.floatx()) * part22
-    part2 *= K.cast(squish_factor * (y_true - y_pred) >= -1, K.floatx())
+    part21 = 4 / (np.e ** 2 * K.square(2 - sf * z)) K.exp(2 - sf * z) - 1
+    part22 = 4 / np.e * sf * z - 1
+    part2  = K.cast(sf * z <= 1, K.floatx()) * part21 + K.cast(sf * z > 1, K.floatx()) * part22
+    part2 *= K.cast(y_true > 6, K.floatx())
     
     return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(squish_factor * (y_true - y_pred)) + 500))
 
