@@ -26,17 +26,17 @@ def custom_loss(y_true, y_pred):
     #sf means squish factor
     sf = 3
     z = y_true - y_pred
-    part11 = 4 / (np.e ** 2 * K.square(2 + sf * z)) K.exp(2 + sf * z) - 1
+    part11 = 4 / (np.e ** 2 * K.square(2 + sf * z)) * K.exp(2 + sf * z) - 1
     part12 = -4 / np.e * sf * z - 1
     part1  = K.cast(sf * z >= -1, K.floatx()) * part11 + K.cast(sf * z < -1, K.floatx()) * part12
     part1 *= K.cast(y_true <= 6, K.floatx())
     
-    part21 = 4 / (np.e ** 2 * K.square(2 - sf * z)) K.exp(2 - sf * z) - 1
+    part21 = 4 / (np.e ** 2 * K.square(2 - sf * z)) * K.exp(2 - sf * z) - 1
     part22 = 4 / np.e * sf * z - 1
     part2  = K.cast(sf * z <= 1, K.floatx()) * part21 + K.cast(sf * z > 1, K.floatx()) * part22
     part2 *= K.cast(y_true > 6, K.floatx())
     
-    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(squish_factor * (y_true - y_pred)) + 500))
+    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_true - y_pred)) + 500))
 
 class MinMaxClip(Constraint):
     def __init__(self, min_val, max_val):
