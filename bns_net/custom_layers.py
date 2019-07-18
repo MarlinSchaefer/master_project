@@ -26,7 +26,7 @@ def get_custom_objects(name=None):
 def custom_loss(y_true, y_pred):
     #sf means squish factor
     sf = 3
-    z = y_true - y_pred
+    z = y_pred - y_true
     part11 = 4 / (np.e ** 2 * K.square(2 + sf * z)) * K.exp(2 + sf * z) - 1
     part12 = -4 / np.e * sf * z - 1
     part1  = K.cast(sf * z >= -1, K.floatx()) * part11 + K.cast(sf * z < -1, K.floatx()) * part12
@@ -37,7 +37,7 @@ def custom_loss(y_true, y_pred):
     part2  = K.cast(sf * z <= 1, K.floatx()) * part21 + K.cast(sf * z > 1, K.floatx()) * part22
     part2 *= K.cast(y_true > 6, K.floatx())
     
-    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_true - y_pred)) + 500))
+    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_pred - y_true)) + 500))
 
 class MinMaxClip(Constraint):
     def __init__(self, min_val, max_val):
@@ -266,6 +266,8 @@ class WConv1D(Layer):
         
         np_kernel = np_kernel.transpose(0, 1, 3, 2)
         
+        np_window = np_window.transpose(0, 1, 3, 2)
+        
         for i, freqs in enumerate(np_freq[0]):
             for j, freq in enumerate(freqs):
                 for k, f in enumerate(freq):
@@ -283,6 +285,8 @@ class WConv1D(Layer):
                             np_window[:,i,j,k] =np.hanning(self.number_of_cycles * self.T_LEN)
         
         np_kernel = np_kernel.transpose(0, 1, 3, 2)
+        
+        np_window = np_window.transpose(0, 1, 3, 2)
                     
         kernel = tf.convert_to_tensor(np_kernel)
         
