@@ -37,7 +37,7 @@ def custom_loss(y_true, y_pred):
     part2  = K.cast(sf * z <= 1, K.floatx()) * part21 + K.cast(sf * z > 1, K.floatx()) * part22
     part2 *= K.cast(y_true > 6, K.floatx())
     
-    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_pred - y_true)) + 500))
+    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_pred - y_true)) + 50))
 
 class MinMaxClip(Constraint):
     def __init__(self, min_val, max_val):
