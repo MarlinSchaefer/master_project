@@ -10,7 +10,7 @@ import h5py
 from evaluate_nets import evaluate_training
 import time
 from keras import backend as K
-from custom_layers import custom_loss
+from custom_layers import custom_loss, loss_c1
 
 filter_size = (1, 2, 3)
 
@@ -137,7 +137,7 @@ def get_model():
 
 def compile_model(model):
     #opt = keras.optimizers.Adam(lr=10**-6)
-    model.compile(loss=[custom_loss, 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
+    model.compile(loss=[loss_c1, 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
