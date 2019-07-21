@@ -11,7 +11,8 @@ def get_custom_objects(name=None):
     custom_objects = {
         'FConv1D': FConv1D,
         'custom_loss': custom_loss,
-        'WConv1D': WConv1D
+        'WConv1D': WConv1D,
+        'loss_c1': loss_c1
     }
     if name == None:
         return custom_objects
@@ -37,7 +38,45 @@ def custom_loss(y_true, y_pred):
     part2  = K.cast(sf * z <= 1, K.floatx()) * part21 + K.cast(sf * z > 1, K.floatx()) * part22
     part2 *= K.cast(y_true > 6, K.floatx())
     
-    return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_pred - y_true)) + 50))
+    #return K.mean(K.minimum(part1 + part2, 4 / np.e * K.abs(sf * (y_pred - y_true)) + 50))
+    return K.mean(part1 + part2)
+
+def loss_c1(x, y):
+    #Initialization
+    k = 2.2
+    k = K.cast(y > 6, K.floatx()) * -1.2 + K.cast(y <= 6, K.floatx()) * k
+    sf = 3
+    z = x - y
+    
+    #Part 1
+    part11 = 4 / np.e * sf * z - 1 # y > 6, z > 1
+    u = 4 / K.square(2 - sf * (k - 1)) * K.exp(-sf * (k - 1)) - 1 #Err_total(y+k-1,y)
+    part12 = 4 / np.e * sf * K.abs(z) + (u - 4 / np.e * sf * (1 - k)) #y>6, z<k-1
+    l = 4 / K.square(2- sf * k) * K.exp(-sf * k) - 1 #Err_total(y+k,y)
+    d1 = -4 * sf**2 * k * K.exp(-sf * k) / ((2 - sf * k) * (2 - sf * k) * (2 - sf * k))
+    d2 = sf * 4 / np.e
+    inp = k - z
+    a = d2 + d1 - 2 * (u - l)
+    b = 3 * (u - l) - 2* d1 - d2
+    part13 = a * inp * inp * inp + b * K.square(inp) + d1 * inp + l #smooth_polynomial(-z, -k, u, l, d1, d2)
+    part14 = K.cast(sf * z <= 1, K.floatx()) * (4 / K.square(2 - sf * z) * K.exp(-sf * z) - 1) + K.cast(sf * z > 1, K.floatx()) * part11 #y>6, z\in[k, 1]
+    part1 = K.cast(z > 1, K.floatx()) * part11 + K.cast(z < k, K.floatx()) * (K.cast(z < k - 1, K.floatx()) * part12 + K.cast(z >= k - 1, K.floatx()) * part13) + K.cast(z <= 1, K.floatx()) * K.cast(z >= k, K.floatx()) * part14
+    
+    #Part 2
+    part21 = -4 / np.e * sf * z - 1 #y<=6, z<-1
+    u = 4 / K.square(2 + sf * k) * K.exp(sf * k) - 1
+    part22 = 4 / np.e * sf * z + (u - 4 / np.e * sf * k)
+    l = 4 / K.square(2 + sf * (k - 1)) * K.exp(sf * (k - 1)) - 1
+    d1 = 4 * sf**2 * (k - 1) * K.exp(sf * (k - 1)) / ((2 + sf * (k - 1)) * (2 + sf * (k - 1)) * (2 + sf * (k - 1)))
+    inp = z - k + 1
+    a = d2 + d1 - 2 * (u - l)
+    b = 3 * (u - l) - 2* d1 - d2
+    part23 = a * inp * inp * inp + b * K.square(inp) + d1 * inp + l #smooth_polynomial(-z, -k, u, l, d1, d2)
+    part24 = K.cast(sf * z >= -1, K.floatx()) * (4 / K.square(2 + sf * z) * K.exp(sf * z) - 1) + K.cast(sf * z < -1, K.floatx()) * part21
+    part2 = K.cast(z < -1, K.floatx()) * part21 + K.cast(z > k - 1, K.floatx()) * (K.cast(z > k, K.floatx()) * part22 + K.cast(z <= k, K.floatx()) * part23) + K.cast(z >= -1, K.floatx()) * K.cast(z <= k - 1, K.floatx()) * part24
+    
+    #Return
+    return K.cast(y > 6, K.floatx()) * part1 + K.cast(y <= 6, K.floatx()) * part2
 
 class MinMaxClip(Constraint):
     def __init__(self, min_val, max_val):
