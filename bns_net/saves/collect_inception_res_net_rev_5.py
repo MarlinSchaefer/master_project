@@ -126,7 +126,7 @@ def get_model():
     flatten = keras.layers.Flatten()(dim_red)
     
     dense_1 = keras.layers.Dense(2)(flatten)
-    dense_2 = keras.layers.Dense(1, name='Out_SNR')(dense_1)
+    dense_2 = keras.layers.Dense(1, activation='relu', name='Out_SNR')(dense_1)
     
     dense_3 = keras.layers.Dense(3)(flatten)
     dense_4 = keras.layers.Dense(2, activation='softmax', name='Out_Bool')(dense_3)
@@ -137,7 +137,7 @@ def get_model():
 
 def compile_model(model):
     #opt = keras.optimizers.Adam(lr=10**-6)
-    model.compile(loss=['mse', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
+    model.compile(loss=[loss_c1, 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
