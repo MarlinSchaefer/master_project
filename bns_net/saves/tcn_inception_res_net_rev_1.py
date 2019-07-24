@@ -62,12 +62,13 @@ def get_input(input_names, NUM_OF_DETECTORS=2):
 def tcn_residual_block(inp, k=3, d=1, num_filters=32, dropout_rate=0.1, name=None):
     global NUM_OF_DETECTORS
     res = keras.layers.Conv1D(num_filters, 1)(inp)
+    num_channels = 16
     
     for _ in range(k-1):
         if _ == 0:
-            x = keras.layers.Conv1D(num_filters, 2, dilation_rate=d, padding="causal")(inp)
+            x = keras.layers.Conv1D(num_filters, num_channels, dilation_rate=d, padding="causal")(inp)
         else:
-            x = keras.layers.Conv1D(num_filters, 2, dilation_rate=d, padding="causal")(x)
+            x = keras.layers.Conv1D(num_filters, num_channels, dilation_rate=d, padding="causal")(x)
         x = keras.layers.BatchNormalization()(x)
         x = keras.layers.Activation('relu')(x)
         x = keras.layers.Dropout(dropout_rate)(x)
