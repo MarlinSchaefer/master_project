@@ -8,8 +8,8 @@ import traceback
 
 if __name__ == "__main__":
     try:
-        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! This network tries to reuse the old concept of the TCN-network. It has the same architecture as tcn_inception_res_net_rev_1, but now utilizes an auxilliary output after the TCN-part. The TCN-part now tries to recover the original signal as best as possible and is therefore trained using the mean squared error loss, where the intermediate output is compared to the true waveform.'
-        run_net('tcn_inception_res_net_rev_2', 'templates_new_dev25', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=40, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! This run is the same as tcn_inception_res_net_rev_1 from the run before (24.07.2019), but uses mape instead of mse as loss.'
+        run_net('tcn_inception_res_net_rev_1', 'templates_new_dev24', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=40, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
