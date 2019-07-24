@@ -422,7 +422,7 @@ class DataGenerator(keras.utils.Sequence):
     def __data_generation(self, indices):
         num_detectors = 2
         num_channels = self.data_channels
-        num_inputs = 3
+        num_inputs = 2
         X = [np.zeros([len(indices), num_detectors * num_channels, 2048]) for i in range(num_inputs)]
         
         y_1 = np.zeros((len(indices), 1))
@@ -449,9 +449,6 @@ class DataGenerator(keras.utils.Sequence):
                 X[0][i][13] = self.signals[sig_ind].transpose()[12][:2048]
                 X[0][i][14] = self.signals[sig_ind].transpose()[6][:2048]
                 X[0][i][15] = self.signals[sig_ind].transpose()[13][:2048]
-                
-                for j in range(len(X[0][i])):
-                    X[2][i][j] = X[0][i][j]
             
             X[1][i][0] = self.noise[noi_ind].transpose()[0][2048:]
             X[1][i][1] = self.noise[noi_ind].transpose()[7][2048:]
@@ -484,7 +481,7 @@ class DataGenerator(keras.utils.Sequence):
         
         X = [dat.transpose(0, 2, 1) for dat in X]
         
-        return((X, [y_1, y_2]))
+        return((X, [y_1, y_2, X[0]]))
 
 def get_generator():
     return(DataGenerator)
