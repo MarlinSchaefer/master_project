@@ -8,8 +8,8 @@ import traceback
 
 if __name__ == "__main__":
     try:
-        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! This network is a pure inception layer stack. On more difficult data it was worse than the collect_inception_res_nets, but we want to try it also on the easier case. Trained using mse, has dropout.'
-        run_net('inception_res_net_rev_9', 'templates_new_dev24', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=40, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! This network Tries to reuse the old concept of the TCN-network. Right now it does not use the pure signals as a label for training, but this might be added back in later on.'
+        run_net('tcn_collect_inception_res_net_rev_1', 'templates_new_dev25', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=40, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
