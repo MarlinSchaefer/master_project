@@ -8,8 +8,8 @@ import traceback
 
 if __name__ == "__main__":
     try:
-        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! This run is tcn_inception_res_net_rev_2, but with more auxilliary outputs, that are used to train the network. Each auxilliary output trains for simple SNR with a mse loss and a loss weight of 0.3. This idea was taken from the GoogleLeNet.'
-        run_net('tcn_inception_res_net_rev_3', 'templates_new_dev25', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=40, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
+        msg = 'ATTENTION: CHANGED THE DEFAULT IMPORT SIZE IN D_OBJ! This run tries to use mostly just the TCN-network and funnels it to the SNR-detection quite quickly.'
+        run_net('tcn_funnel_rev_1', 'templates_new_dev24', ini_file='testing_net.ini', create_wiki_entry=True, overwrite_template_file=False, epochs=40, use_data_object=True, show_snr_plot=False, overwrite_net_file=True, evaluate_on_large_testing_set=False, batch_size=24, custom_message=msg)
     except:
         traceback.print_exc()
         pass
