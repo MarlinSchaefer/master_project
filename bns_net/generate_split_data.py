@@ -1,8 +1,8 @@
-from tensorflow import ConfigProto, Session
-config = ConfigProto()
-config.gpu_options.allow_growth = True
-session = Session(config=config)
-import keras
+#from tensorflow import ConfigProto, Session
+#config = ConfigProto()
+#config.gpu_options.allow_growth = True
+#session = Session(config=config)
+#import keras
 import numpy as np
 import multiprocessing as mp
 import h5py
@@ -181,6 +181,10 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
         signal_data = signals.create_dataset('data', shape=data_shape, dtype=np.float64)
         signal_snr = signals.create_dataset('snr', shape=(num_pure_signals, ), dtype=np.float64)
         signal_bool = signals.create_dataset('bool', shape=(num_pure_signals, ), dtype=np.float64)
+        if reduced:
+            data_shape = (num_pure_noise, 2048, 2 * (len(sample_rates) + 1))
+        else:
+            data_shape = (num_pure_noise, 4096, 2 * len(sample_rates))
         noise = FILE.create_group('noise')
         noise_data = noise.create_dataset('data', shape=data_shape, dtype=np.float64)
         noise_snr = noise.create_dataset('snr', shape=(num_pure_noise, ), dtype=np.float64)
