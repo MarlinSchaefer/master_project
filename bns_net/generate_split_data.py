@@ -16,7 +16,7 @@ from pycbc.filter import resample_to_delta_t
 from pycbc.noise import noise_from_psd
 from data_object import DataSet
 from pycbc.psd import inverse_spectrum_truncation, interpolate
-from evaluate_nets import evaluate_training
+#from evaluate_nets import evaluate_training
 import json
 import time
 
@@ -34,7 +34,7 @@ def get_waveform_default():
 def get_hyper_waveform_defaults():
     dic = {}
     dic['snr'] = 10.0
-    dic['t_from_right'] = 0.5
+    dic['t_from_right'] = 2.25
     dic['time_offset'] = 0.0
     dic['t_len'] = 96.0
     return(dic)
@@ -70,7 +70,7 @@ def whiten_data(strain_list, psd, low_freq_cutoff=20.0):
 
     DF = 1.0 / strain_list[0].delta_t / (4 * strain_list[0].sample_rate) #This is the definition of delta_f from the TimeSeries.whiten in the welchs method.
     F_LEN = int(4 * strain_list[0].sample_rate / 2 + 1)
-    
+    get_hyper_waveform_defaults
     low_freq_diff = 20
     if low_freq_cutoff > low_freq_diff:
         tmp_psd = aLIGOZeroDetHighPower(length=F_LEN, delta_f=DF, low_freq_cutoff=low_freq_cutoff-low_freq_diff)
@@ -140,14 +140,15 @@ def noise_worker(parameters):
 
     #Whiten noise
     strain_list = whiten_data(strain_list, psd, low_freq_cutoff=f_lower)
+    
+    ret = resample_data(strain_list, sample_rates)
 
     return(resample_data(strain_list, sample_rates))
 
-def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=[4096, 2048, 1024, 512, 256, 128, 64], **kwargs):
+def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=[4096, 2048, 1024, 512, 256, 128, 64], reduced=False, **kwargs):
     #Manually setting some defaults
     if not 'seed' in kwargs:
         kwargs['seed'] = 0
-    parameters = generate_parameters(num_pure_signals, rand_seed=kwargs['seed'], **kwargs)
 
     if not 't_len' in kwargs:
         kwargs['t_len'] = 96.0
@@ -160,7 +161,9 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
 
     if not 'no_gw_snr' in kwargs:
         kwargs['no_gw_snr'] = 4.0
-
+    
+    parameters = generate_parameters(num_pure_signals, rand_seed=kwargs['seed'], **kwargs)
+    
     for dic in parameters:
         dic['sample_rates'] = sample_rates
     
@@ -170,12 +173,16 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
     pool = mp.Pool()
 
     with h5py.File(file_path, 'w') as FILE:
+        if reduced:
+            data_shape = (num_pure_signals, 2048, 2 * (len(sample_rates) + 1))
+        else:
+            data_shape = (num_pure_signals, 4096, 2 * len(sample_rates))
         signals = FILE.create_group('signals')
-        signal_data = signals.create_dataset('data', shape=(num_pure_signals, 4096, 2 * len(sample_rates)), dtype=np.float64)
+        signal_data = signals.create_dataset('data', shape=data_shape, dtype=np.float64)
         signal_snr = signals.create_dataset('snr', shape=(num_pure_signals, ), dtype=np.float64)
         signal_bool = signals.create_dataset('bool', shape=(num_pure_signals, ), dtype=np.float64)
         noise = FILE.create_group('noise')
-        noise_data = noise.create_dataset('data', shape=(num_pure_noise, 4096, 2 * len(sample_rates)), dtype=np.float64)
+        noise_data = noise.create_dataset('data', shape=data_shape, dtype=np.float64)
         noise_snr = noise.create_dataset('snr', shape=(num_pure_noise, ), dtype=np.float64)
         noise_bool = noise.create_dataset('bool', shape=(num_pure_noise, ), dtype=np.float64)
         parameter_space = FILE.create_group('parameter_space')
@@ -185,24 +192,70 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
             parameter_space.create_dataset(str(k), data=np.array(v), dtype=np.array(v).dtype)
 
         bar = progress_tracker(num_pure_signals, name='Generating signals')
+        
+        if reduced:
+            #Something
+            X = np.zeros(data_shape[1:]).transpose()
+            for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
+            #for i, dat in enumerate(list(map(signal_worker, parameters))):
+                tmp_dat = dat[0].transpose()
+                for j in range(len(sample_rates) + 1):
+                    if j == 0:
+                        X[j] = tmp_dat[j][2048:]
+                        X[j+len(sample_rates)+1] = tmp_dat[j+len(sample_rates)][2048:]
+                    else:
+                        X[j] = tmp_dat[j-1][:2048]
+                        X[j+len(sample_rates)+1] = tmp_dat[(j-1)+len(sample_rates)][:2048]
+                signal_data[i] = X.transpose()
+                signal_snr[i] = dat[1]
+                signal_bool[i] = 1.0
 
-        for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
-        #for i, dat in enumerate(list(map(signal_worker, parameters))):
-            signal_data[i] = dat[0]
-            signal_snr[i] = dat[1]
-            signal_bool[i] = 1.0
+                bar.iterate()
+        else:
+            for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
+            #for i, dat in enumerate(list(map(signal_worker, parameters))):
+                signal_data[i] = dat[0]
+                signal_snr[i] = dat[1]
+                signal_bool[i] = 1.0
 
-            bar.iterate()
+                bar.iterate()
 
         bar = progress_tracker(num_pure_noise, name='Generating noise')
+        
+        if reduced:
+            #Something
+            X = np.zeros(data_shape[1:]).transpose()
+            for i, dat in enumerate(pool.imap_unordered(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), noise_seeds[i], sample_rates) for i in range(num_pure_noise)])):
+            #for i, dat in enumerate(list(map(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), np.random.randint(0, 10**8), sample_rates) for i in range(num_pure_noise)]))):
+                tmp_dat = dat[0].transpose()
+                for j in range(len(sample_rates) + 1):
+                    if j == 0:
+                        X[j] = tmp_dat[j][2048:]
+                        X[j+len(sample_rates)+1] = tmp_dat[j+len(sample_rates)][2048:]
+                    else:
+                        X[j] = tmp_dat[j-1][:2048]
+                        X[j+len(sample_rates)+1] = tmp_dat[(j-1)+len(sample_rates)][:2048]
+                noise_data[i] = X.transpose()
+                noise_snr[i] = kwargs['no_gw_snr']
+                noise_bool[i] = 0.0
 
-        for i, dat in enumerate(pool.imap_unordered(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), noise_seeds[i], sample_rates) for i in range(num_pure_noise)])):
-        #for i, dat in enumerate(list(map(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), np.random.randint(0, 10**8), sample_rates) for i in range(num_pure_noise)]))):
-            noise_data[i] = dat
-            noise_snr[i] = kwargs['no_gw_snr']
-            noise_bool[i] = 0.0
+                bar.iterate()
+        else:
+            for i, dat in enumerate(pool.imap_unordered(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), noise_seeds[i], sample_rates) for i in range(num_pure_noise)])):
+            #for i, dat in enumerate(list(map(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), np.random.randint(0, 10**8), sample_rates) for i in range(num_pure_noise)]))):
+                noise_data[i] = dat
+                noise_snr[i] = kwargs['no_gw_snr']
+                noise_bool[i] = 0.0
 
-            bar.iterate()
+                bar.iterate()
+        
+        #for i, dat in enumerate(pool.imap_unordered(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), noise_seeds[i], sample_rates) for i in range(num_pure_noise)])):
+        ##for i, dat in enumerate(list(map(noise_worker, [(kwargs['t_len'], kwargs['f_lower'], 1.0 / max(sample_rates), len(kwargs['detectors']), np.random.randint(0, 10**8), sample_rates) for i in range(num_pure_noise)]))):
+            #noise_data[i] = dat
+            #noise_snr[i] = kwargs['no_gw_snr']
+            #noise_bool[i] = 0.0
+
+            #bar.iterate()
 
     pool.close()
     pool.join()
