@@ -11,6 +11,7 @@ from evaluate_nets import evaluate_training
 import time
 from keras import backend as K
 from custom_layers import custom_loss, loss_c1
+import tensorflow as tf
 
 filter_size = (1, 2, 3)
 NUM_OF_DETECTORS = 2
@@ -116,10 +117,22 @@ def aux_out(inp, name):
     return out
 
 def custom_softmax(x):
+    sess = K.get_session()
+    shape = K.shape(x).eval(session=sess)
+    rand = np.random.randint(2, size=shape[0])
     div = K.sum(x)
+    div_np = div.eval(session=sess)
+    catch_zero = div_np == 0.
+    overwrite_zero = np.zeros(shape)
+    for i, b in enumerate(catch_zero):
+        if b:
+            div_np[i] = 1.
+            overwrite_zero[i] = np.array([1., 0.]) if rand == 0 else np.array([0., 1.])
+    div = tf.convert_to_tensor(div_np)
     ret = K.transpose(x)
     ret = ret / div
     ret = K.transpose(ret)
+    ret = ret + tf.convert_to_tensor(overwrite_zero)
     return ret
 
 def get_model():
