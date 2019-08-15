@@ -97,12 +97,13 @@ def tcn_residual_block(inp, k=3, d=1, num_filters=32, dropout_rate=0.1, name=Non
 def get_tcn_stack(inp, name="TCN"):
     global NUM_OF_DETECTORS
     kernel = 3
+    depth = 11
     
-    for i in range(11):
+    for i in range(depth):
         if i == 0:
             x = tcn_residual_block(inp, k=kernel, d=2**i)
         else:
-            if i == 11:
+            if i == depth-1:
                 x = tcn_residual_block(x, k=kernel, d=2**i, name=name, num_filters=2)
             else:
                 x = tcn_residual_block(x, k=kernel, d=2**i)
