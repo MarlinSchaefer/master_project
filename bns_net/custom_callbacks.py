@@ -96,7 +96,7 @@ class SensitivityTracker(Callback):
         if self.verbose:
             bar = progress_tracker(len(self.generator), name='Calculating predictions')
         for i in range(len(self.generator)):
-            x, y = next(self.generator)
+            x, y = self.generator.__getitem__(i)
             y_p = model.predict(x)
             y_true.append(y)
             y_pred.append(y_p)
