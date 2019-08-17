@@ -106,7 +106,7 @@ class SensitivityTracker(Callback):
         y_true_snr, y_true_prob = self._split_snr_p_val(y_true)
         y_pred_snr, y_pred_prob = self._split_snr_p_val(y_pred)
         
-        snr_bins = np.arange(np.arange(bins[0], bins[1], bins[2]))
+        snr_bins = np.arange(np.arange(self.bins[0], self.bins[1], self.bins[2]))
         
         snr_bins, snr_loud = self._bin_data(y_true_prob, y_true_snr, y_pred_snr)
         prob_bins, prob_loud = self._bin_data(y_true_prob, y_true_prob, y_pred_prob)
