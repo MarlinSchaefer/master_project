@@ -59,7 +59,7 @@ class SensitivityTracker(Callback):
         return y_snr, y_prob
     
     def _bin_data(self, true_prob, y_true, y_pred):
-        bins = np.arange(np.arange(self.bins[0], self.bins[1], self.bins[2]))
+        bins = np.arange(self.bins[0], self.bins[1], self.bins[2])
         loud_false = -np.inf
         signal_true = []
         signal_pred = []
