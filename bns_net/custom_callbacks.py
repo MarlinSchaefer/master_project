@@ -136,7 +136,7 @@ class SensitivityTracker(Callback):
         else:
             pass
     
-    def on_train_end(self):
+    def on_train_end(self, logs):
         self.plot_history()
         return
     
