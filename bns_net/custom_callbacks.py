@@ -114,7 +114,7 @@ class SensitivityTracker(Callback):
         return list(snr_bins), float(snr_loud), list(prob_bins), float(prob_loud)
     
     def on_epoch_end(self, epoch, logs={}):
-        if epoch + 1 % self.interval == 0:
+        if (epoch + 1) % self.interval == 0:
             snr_tot, snr_loud, prob_tot, prob_loud = self.calculate_sensitivity()
             
             self.loudest_sample_snr.append(snr_loud)
