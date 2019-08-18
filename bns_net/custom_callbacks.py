@@ -41,8 +41,8 @@ class SensitivityTracker(Callback):
         data['complete_prob_history'] = self.total_sensitivity_prob_history
         data['loudest_sample_snr_history'] = self.loudest_sample_snr
         data['loudest_sample_prob_history'] = self.loudest_sample_prob
-        data['snr_bins'] = np.arange(self.bins[0], self.bins[1], self.bins[2]) + 0.5
-        data['epochs'] = np.arange(self.interval, (len(self.loudest_sample_snr) + 1) * self.interval, self.interval)
+        data['snr_bins'] = list(np.arange(self.bins[0], self.bins[1], self.bins[2]) + 0.5)
+        data['epochs'] = list(np.arange(self.interval, (len(self.loudest_sample_snr) + 1) * self.interval, self.interval))
         
         with open(os.path.join(self.dir_path, self.file_name + '.json'), 'w') as FILE:
             json.dump(data, FILE, indent=4)
@@ -111,7 +111,7 @@ class SensitivityTracker(Callback):
         snr_bins, snr_loud = self._bin_data(y_true_prob, y_true_snr, y_pred_snr)
         prob_bins, prob_loud = self._bin_data(y_true_prob, y_true_prob, y_pred_prob)
         
-        return snr_bins, snr_loud, prob_bins, prob_loud
+        return list(snr_bins), snr_loud, list(prob_bins), prob_loud
     
     def on_epoch_end(self, epoch, logs={}):
         if epoch % self.interval == 0:
