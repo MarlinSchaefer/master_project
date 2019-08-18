@@ -112,7 +112,7 @@ class SensitivityTracker(Callback):
         snr_bins, snr_loud = self._bin_data(y_true_prob, y_true_snr, y_pred_snr)
         prob_bins, prob_loud = self._bin_data(y_true_prob, y_true_prob, y_pred_prob)
         
-        return list(snr_bins), snr_loud, list(prob_bins), prob_loud
+        return list(snr_bins), float(snr_loud), list(prob_bins), float(prob_loud)
     
     def on_epoch_end(self, epoch, logs={}):
         if epoch % self.interval == 0:
