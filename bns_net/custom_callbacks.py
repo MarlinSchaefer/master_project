@@ -43,6 +43,7 @@ class SensitivityTracker(Callback):
         data['loudest_sample_prob_history'] = self.loudest_sample_prob
         data['snr_bins'] = list(np.arange(self.bins[0], self.bins[1], self.bins[2]) + 0.5)
         data['epochs'] = list(np.arange(self.interval, (len(self.loudest_sample_snr) + 1) * self.interval, self.interval))
+        print(data)
         
         with open(os.path.join(self.dir_path, self.file_name + '.json'), 'w') as FILE:
             json.dump(data, FILE, indent=4)
