@@ -55,7 +55,7 @@ class SensitivityTracker(Callback):
             for sample in batch[0]:
                 y_snr.append(sample[0])
             for sample in batch[1]:
-                y_prob.append(sample[1])
+                y_prob.append(sample[0])
         return y_snr, y_prob
     
     def _bin_data(self, true_prob, y_true, y_pred):
@@ -77,6 +77,8 @@ class SensitivityTracker(Callback):
         norm_values = np.zeros(len(bins), dtype=np.float64)
         
         for i, idx in enumerate(signal_indices):
+            if idx == len(bins):
+                idx = len(bins) - 1 
             if signal_pred[i] > loud_false:
                 bin_values[idx] += 1
             norm_values[idx] += 1
@@ -109,7 +111,7 @@ class SensitivityTracker(Callback):
         snr_bins = np.arange(self.bins[0], self.bins[1], self.bins[2])
         
         snr_bins, snr_loud = self._bin_data(y_true_prob, y_true_snr, y_pred_snr)
-        prob_bins, prob_loud = self._bin_data(y_true_prob, y_true_prob, y_pred_prob)
+        prob_bins, prob_loud = self._bin_data(y_true_prob, y_true_snr, y_pred_prob)
         
         return list(snr_bins), float(snr_loud), list(prob_bins), float(prob_loud)
     
