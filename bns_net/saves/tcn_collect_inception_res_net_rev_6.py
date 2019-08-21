@@ -621,7 +621,7 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
         
         q_size = 2
         SensTracker = cc.SensitivityTracker(testing_generator, net_path, interval=epoch_break)
-        check_path = os.path.join(net_path, name + '_epoch_{epoch:02d}.hf5')
+        check_path = os.path.join(net_path, name + '_epoch_{epoch:d}.hf5')
         ModelCheck = ModelCheckpoint(check_path, verbose=1, period=epoch_break)
         
         tmp = model.fit_generator(generator=training_generator, validation_data=testing_generator, epochs=epochs, max_q_size=q_size, callbacks=[ModelCheck, SensTracker]).history
@@ -632,11 +632,10 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
             tr_metrics = []
             te_metrics = []
             for k in keys:
-                if 'loss' in k:
-                    if 'val' in k:
-                        te_metrics.insert(0, tmp[k][i])
-                    else:
-                        tr_metrics.insert(0, tmp[k][i])
+                if k == 'loss':
+                    tr_metrics.insert(0, tmp[k][i])
+                elif k == 'val_loss':
+                    te_metrics.insert(0, tmp[k][i])
                 elif 'val' in k:
                     te_metrics.append(tmp[k][i])
                 else:
@@ -646,5 +645,8 @@ def train_model(model, dobj, net_path, epochs=None, epoch_break=10, batch_size=3
     #Save the results to a file.
     with open(os.path.join(net_path, name + '_results.json'), "w+") as FILE:
         json.dump(results, FILE, indent=4)
+    
+    with open(os.path.join(net_path, name + '_results_keyed.json'), "w+") as FILE:
+        json.dump(tmp, FILE, indent=4)
     
     return(model)
