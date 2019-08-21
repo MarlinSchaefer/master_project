@@ -134,6 +134,8 @@ class SensitivityTracker(Callback):
             self.file_writer()
             if self.plot_by_interval:
                 self.plot_history()
+            print("Sensitivity SNR   | Peak: {}, Average: {}".format(self.peak_sensitivity_snr_history[-1], self.average_sensitivity_snr_history[-1]))
+            print("Sensitivity p-val | Peak: {}, Average: {}".format(self.peak_sensitivity_prob_history[-1], self.average_sensitivity_prob_history[-1]))
         else:
             pass
     
