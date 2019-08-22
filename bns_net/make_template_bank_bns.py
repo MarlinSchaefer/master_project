@@ -25,7 +25,7 @@ def generate_psd(**kwargs):
     return(aLIGOZeroDetHighPower(length=F_LEN, delta_f=DELTA_F, low_freq_cutoff=kwargs['f_lower']))
 
 def generate_parameters(num_of_templates, rand_seed, **kwargs):
-    exceptions = ['mode_array', 'detectors']
+    exceptions = ['mode_array', 'detectors', 'declination']
     seed(rand_seed)
     
     #print(kwargs)
@@ -44,6 +44,8 @@ def generate_parameters(num_of_templates, rand_seed, **kwargs):
                     #print("If  :{}: {}".format(key, uniform(val[0], val[1])))
                     tmp_dic[key] = uniform(val[0], val[1])
                     #print("If dic: {}: {}".format(key, tmp_dic[key]))
+                elif key == 'declination':
+                    tmp_dic[key] = np.arccos(uniform(val[0], val[1]))
                 else:
                     #print("Else: {}: {}".format(key, val))
                     tmp_dic[key] = val
