@@ -368,7 +368,7 @@ class generatorFromTimeSeriesReducedSplit(keras.utils.Sequence):
         #How many points are shifted each step
         self.stride = int(time_step / self.dt)
         #How many window shifts happen
-        self.window_shifts = int(np.floor(float(len(self.ts[0])-self.window_size) / self.stride))
+        self.window_shifts = int(np.floor(float(len(self.ts[0])-self.window_size + self.stride) / self.stride))
         
         self.resample_dt = [1.0 / 4096, 1.0 / 2048, 1.0 / 1024,
                                1.0 / 512, 1.0 / 256, 1.0 / 128, 1.0 / 64]
@@ -408,7 +408,9 @@ class generatorFromTimeSeriesReducedSplit(keras.utils.Sequence):
         for in_batch, idx in enumerate(index_range):
             for detector in range(len(self.ts)):
                 low, up = idx
+                #Using whiten_data works
                 white_full_signal = whiten_data(self.ts[detector][low:up], psd=self.psd)
+                #white_full_signal = self.ts[detector][low:up].whiten(4, 4)
                 max_idx = len(white_full_signal)
                 min_idx = max_idx - int(float(self.num_samples) / float(self.resample_rates[0]) / self.dt)
                 for i, sr in enumerate(self.resample_rates):
