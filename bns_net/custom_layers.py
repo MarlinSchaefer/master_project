@@ -6,6 +6,7 @@ import tensorflow as tf
 from keras import activations
 from keras.initializers import RandomUniform
 from keras.engine.base_layer import InputSpec
+import warnings
 
 def get_custom_objects(name=None):
     custom_objects = {
@@ -230,7 +231,7 @@ class FConv1D(Layer):
 #Wave convolution: Adds sins off different frequencies and amplitudes to
 #build a filter.
 class WConv1D(Layer):
-    def __init__(self, filters, frequency_low, frequency_high, activation=None, number_of_cycles=1, fill=True, window='hann', waves_per_filter=128, **kwargs):
+    def __init__(self, filters, frequency_low, frequency_high, activation=None, number_of_cycles=1, fill=True, window=None, waves_per_filter=128, **kwargs):
         self.filters = filters
         self.waves_per_filter = waves_per_filter
         self.frequency_low = float(frequency_low)
@@ -246,6 +247,9 @@ class WConv1D(Layer):
             raise ValueError('Right now only Hanning and no windowing are supported.')
         else:
             self.window = window
+        
+        if window == 'hann':
+            warnings.warn('The implementation of the Hanning window is wrong.', RuntimeWarning)
         
         super(WConv1D, self).__init__(**kwargs)
     
@@ -346,7 +350,7 @@ class WConv1D(Layer):
         kernel *= b
         
         if not self.window == None:
-            kernel += tf.convert_to_tensor(np_window)
+            kernel *= tf.convert_to_tensor(np_window)
         
         kernel = K.sum(kernel, axis=-1)
         
