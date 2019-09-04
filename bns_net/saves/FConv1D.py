@@ -1,4 +1,4 @@
-from custom_layers import FConv1D
+from custom_layers import FConv1D, WConv1D, loss_c1
 import keras
 import numpy as np
 import json
@@ -72,46 +72,46 @@ def get_model():
     
     #Preprocessing
     batch_1 = keras.layers.BatchNormalization()(inp)
-    sin1 = FConv1D(128, 20, 4096)(batch_1)
+    sin1 = WConv1D(128, 20, 4096)(batch_1)
     
     conv_1 = keras.layers.Conv1D(128, 16)(sin1)
     bn_conv_1 = keras.layers.BatchNormalization()(conv_1)
     act_conv_1 = keras.layers.Activation('relu')(bn_conv_1)
     
-    inc_1 = incp_lay(act_conv_1, FILTER_NUM)
-    inc_bn_1 = keras.layers.BatchNormalization()(inc_1)
+    #inc_1 = incp_lay(act_conv_1, FILTER_NUM)
+    #inc_bn_1 = keras.layers.BatchNormalization()(inc_1)
     
-    inc_2 = incp_lay(inc_bn_1, FILTER_NUM)
-    inc_bn_2 = keras.layers.BatchNormalization()(inc_2)
-    res_2 = keras.layers.Add()([inc_bn_1, inc_bn_2])
+    #inc_2 = incp_lay(inc_bn_1, FILTER_NUM)
+    #inc_bn_2 = keras.layers.BatchNormalization()(inc_2)
+    #res_2 = keras.layers.Add()([inc_bn_1, inc_bn_2])
     
-    inc_3 = incp_lay(res_2, FILTER_NUM)
-    inc_bn_3 = keras.layers.BatchNormalization()(inc_3)
-    res_3 = keras.layers.Add()([res_2, inc_bn_3])
+    #inc_3 = incp_lay(res_2, FILTER_NUM)
+    #inc_bn_3 = keras.layers.BatchNormalization()(inc_3)
+    #res_3 = keras.layers.Add()([res_2, inc_bn_3])
     
-    inc_4 = incp_lay(res_3, FILTER_NUM)
-    inc_bn_4 = keras.layers.BatchNormalization()(inc_4)
-    res_4 = keras.layers.Add()([res_3, inc_bn_4])
+    #inc_4 = incp_lay(res_3, FILTER_NUM)
+    #inc_bn_4 = keras.layers.BatchNormalization()(inc_4)
+    #res_4 = keras.layers.Add()([res_3, inc_bn_4])
     
-    inc_5 = incp_lay(res_4, FILTER_NUM)
-    inc_bn_5 = keras.layers.BatchNormalization()(inc_5)
-    res_5 = keras.layers.Add()([res_4, inc_bn_5])
+    #inc_5 = incp_lay(res_4, FILTER_NUM)
+    #inc_bn_5 = keras.layers.BatchNormalization()(inc_5)
+    #res_5 = keras.layers.Add()([res_4, inc_bn_5])
     
-    inc_6 = incp_lay(res_5, FILTER_NUM)
-    inc_bn_6 = keras.layers.BatchNormalization()(inc_6)
-    res_6 = keras.layers.Add()([res_5, inc_bn_6])
+    #inc_6 = incp_lay(res_5, FILTER_NUM)
+    #inc_bn_6 = keras.layers.BatchNormalization()(inc_6)
+    #res_6 = keras.layers.Add()([res_5, inc_bn_6])
     
-    pool_1 = keras.layers.MaxPooling1D(4)(res_6)
+    #pool_1 = keras.layers.MaxPooling1D(4)(res_6)
     
-    inc_7 = incp_lay(pool_1, FILTER_NUM)
-    inc_bn_7 = keras.layers.BatchNormalization()(inc_7)
+    #inc_7 = incp_lay(pool_1, FILTER_NUM)
+    #inc_bn_7 = keras.layers.BatchNormalization()(inc_7)
     
-    inc_8 = incp_lay(inc_bn_7, FILTER_NUM)
-    inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
-    res_8 = keras.layers.Add()([inc_bn_7, inc_bn_8])
+    #inc_8 = incp_lay(inc_bn_7, FILTER_NUM)
+    #inc_bn_8 = keras.layers.BatchNormalization()(inc_8)
+    #res_8 = keras.layers.Add()([inc_bn_7, inc_bn_8])
     
-    pool_2 = keras.layers.MaxPooling1D(4)(res_8)
-    dim_red = keras.layers.Conv1D(32, 1)(pool_2)
+    #pool_2 = keras.layers.MaxPooling1D(4)(res_8)
+    dim_red = keras.layers.Conv1D(32, 1)(act_conv_1)
     flatten = keras.layers.Flatten()(dim_red)
     
     dense_1 = keras.layers.Dense(2)(flatten)
@@ -125,7 +125,8 @@ def get_model():
     return(model)
 
 def compile_model(model):
-    model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
+    #model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer='adam', metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
+    model.compile(loss=['mean_squared_error', 'categorical_crossentropy'], loss_weights=[1.0, 0.5], optimizer=loss_c1, metrics={'Out_SNR': 'mape', 'Out_Bool': 'accuracy'})
 
 def evaluate_overfitting(train_loss, test_loss):
     THRESHOLD = 0.7
