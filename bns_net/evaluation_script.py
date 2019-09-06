@@ -7,6 +7,7 @@ from aux_functions import get_store_path
 from generator import generatorFromTimeSeriesReducedSplit
 from detection_pipeline import evaluate_ts_from_generator
 from pycbc.types import TimeSeries
+from progress_bar import progress_tracker
 
 #Command line input, should be integer
 data_num = int(sys.argv[1])
