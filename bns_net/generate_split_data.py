@@ -67,8 +67,10 @@ def whiten_data(strain_list, psd, low_freq_cutoff=20.0):
     org_type = type(strain_list)
     if not org_type == list:
         strain_list = [strain_list]
-
+    
+    #set to strain[0].delta_f
     DF = 1.0 / strain_list[0].delta_t / (4 * strain_list[0].sample_rate) #This is the definition of delta_f from the TimeSeries.whiten in the welchs method.
+    #set to len(strain_list[0]) / 2 + 1
     F_LEN = int(4 * strain_list[0].sample_rate / 2 + 1)
     get_hyper_waveform_defaults
     low_freq_diff = 20
@@ -89,6 +91,38 @@ def whiten_data(strain_list, psd, low_freq_cutoff=20.0):
     else:
         return(strain_list)
 
+def whiten_data_new(strain_list, low_freq_cutoff=20., max_filter_duration=4., psd=None):
+    org_type = type(strain_list)
+    if not org_type == list:
+        strain_list = [strain_list]
+    
+    ret = []
+    for strain in strain_list:
+        df = strain.delta_f
+        f_len = int(len(strain) / 2) + 1
+        if psd is None:
+            psd = aLIGOZeroDetHighPower(length=f_len, delta_f=df, low_freq_cutoff=low_freq_cutoff-2.)
+        else:
+            if not len(psd) == f_len:
+                msg = 'Length of PSD does not match data.'
+                raise ValueError(msg)
+            elif not psd.delta_f == df:
+                psd = interpolate(psd, df)
+        max_filter_len = int(max_filter_duration * strain.sample_rate) #Cut out the beginning and end
+        psd = inverse_spectrum_truncation(psd, max_filter_len=max_filter_len, low_frequency_cutoff=low_freq_cutoff, trunc_method='hann')
+        f_strain = strain.to_frequencyseries()
+        kmin = int(low_freq_cutoff / df)
+        f_strain.data[:kmin] = 0
+        f_strain.data[-1] = 0
+        f_strain.data[kmin:] /= psd[kmin:] ** 0.5
+        strain = f_strain.to_timeseries()
+        ret.append(strain[max_filter_len:len(strain)-max_filter_len])
+    
+    if not org_type == list:
+        return(ret[0])
+    else:
+        return(ret)
+
 def signal_worker(parameters):
     waveform_parameters, parameters = filter_keys(get_waveform_default(), parameters)
     hyper_parameters, parameters = filter_keys(get_hyper_waveform_defaults(), parameters)
@@ -104,6 +138,7 @@ def signal_worker(parameters):
     hp, hc = get_td_waveform(**waveform_parameters)
 
     #Project waveform onto projectors
+    print(projection_parameters)
     strain_list = detector_projection(hp, hc, **projection_parameters)
 
     #Set temporal offset
@@ -163,6 +198,7 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
         kwargs['no_gw_snr'] = 4.0
     
     parameters = generate_parameters(num_pure_signals, rand_seed=kwargs['seed'], **kwargs)
+    print(parameters)
     
     for dic in parameters:
         dic['sample_rates'] = sample_rates
@@ -200,8 +236,8 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
         if reduced:
             #Something
             X = np.zeros(data_shape[1:]).transpose()
-            for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
-            #for i, dat in enumerate(list(map(signal_worker, parameters))):
+            #for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
+            for i, dat in enumerate(list(map(signal_worker, parameters))):
                 tmp_dat = dat[0].transpose()
                 for j in range(len(sample_rates) + 1):
                     if j == 0:
@@ -216,8 +252,8 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
 
                 bar.iterate()
         else:
-            for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
-            #for i, dat in enumerate(list(map(signal_worker, parameters))):
+            #for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
+            for i, dat in enumerate(list(map(signal_worker, parameters))):
                 signal_data[i] = dat[0]
                 signal_snr[i] = dat[1]
                 signal_bool[i] = 1.0
