@@ -34,7 +34,8 @@ def get_waveform_default():
 def get_hyper_waveform_defaults():
     dic = {}
     dic['snr'] = 10.0
-    dic['t_from_right'] = 2.25
+    #dic['t_from_right'] = 2.25
+    dic['t_from_right'] = 4.25
     dic['time_offset'] = 0.0
     dic['t_len'] = 96.0
     return(dic)
@@ -138,7 +139,7 @@ def signal_worker(parameters):
     hp, hc = get_td_waveform(**waveform_parameters)
 
     #Project waveform onto projectors
-    print(projection_parameters)
+    #print(projection_parameters)
     strain_list = detector_projection(hp, hc, **projection_parameters)
 
     #Set temporal offset
@@ -148,7 +149,7 @@ def signal_worker(parameters):
     strain_list = rescale_to_snr(strain_list, hyper_parameters['snr'], psd, waveform_parameters['f_lower'])
 
     #Whiten the signal here
-    strain_list = whiten_data(strain_list, psd, low_freq_cutoff=waveform_parameters['f_lower'])
+    strain_list = whiten_data_new(strain_list, psd=None, low_freq_cutoff=waveform_parameters['f_lower'])
 
     #Resample appropriately
     return((resample_data(strain_list, sample_rates), hyper_parameters['snr']))
@@ -174,9 +175,9 @@ def noise_worker(parameters):
     strain_list = [noise_from_psd(length=T_LEN, delta_t=dt, psd=psd, seed=seed[i]) for i in range(num_detectors)]
 
     #Whiten noise
-    strain_list = whiten_data(strain_list, psd, low_freq_cutoff=f_lower)
+    strain_list = whiten_data_new(strain_list, psd=None, low_freq_cutoff=f_lower)
     
-    ret = resample_data(strain_list, sample_rates)
+    #ret = resample_data(strain_list, sample_rates)
 
     return(resample_data(strain_list, sample_rates))
 
@@ -236,8 +237,8 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
         if reduced:
             #Something
             X = np.zeros(data_shape[1:]).transpose()
-            #for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
-            for i, dat in enumerate(list(map(signal_worker, parameters))):
+            for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
+            #for i, dat in enumerate(list(map(signal_worker, parameters))):
                 tmp_dat = dat[0].transpose()
                 for j in range(len(sample_rates) + 1):
                     if j == 0:
@@ -252,8 +253,8 @@ def generate_template(file_path, num_pure_signals, num_pure_noise, sample_rates=
 
                 bar.iterate()
         else:
-            #for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
-            for i, dat in enumerate(list(map(signal_worker, parameters))):
+            for i, dat in enumerate(pool.imap_unordered(signal_worker, parameters)):
+            #for i, dat in enumerate(list(map(signal_worker, parameters))):
                 signal_data[i] = dat[0]
                 signal_snr[i] = dat[1]
                 signal_bool[i] = 1.0
