@@ -414,8 +414,8 @@ def main():
         training_signals = f['signals/data'][:num_training_signals]
         training_noise = f['noise/data'][:num_training_noise]
         
-        validation_signal_labels = f['signals/snr'][num_training_samples:num_training_signals+num_validation_signals]
-        validation_signals = f['signals/data'][num_training_samples:num_training_signals+num_validation_signals]
+        validation_signal_labels = f['signals/snr'][num_training_signals:num_training_signals+num_validation_signals]
+        validation_signals = f['signals/data'][num_training_signals:num_training_signals+num_validation_signals]
         validation_noise = f['noise/data'][num_training_noise:num_training_noise+num_validation_noise]
     
     print("Generating indices for training set...")
