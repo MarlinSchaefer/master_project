@@ -329,7 +329,7 @@ class generatorFromTimeSeriesReduced(keras.utils.Sequence):
         return
 
 class generatorFromTimeSeriesReducedSplit(keras.utils.Sequence):
-    from generate_split_data import whiten_data
+    from generate_split_data import whiten_data_new
     def __init__(self, ts, time_step=0.25, batch_size=32, dt=None):
         self.batch_size = batch_size
         if not isinstance(ts, list):
@@ -362,8 +362,8 @@ class generatorFromTimeSeriesReducedSplit(keras.utils.Sequence):
         #The delta_t for all data
         self.dt = self.dt[0]
         #How big is the window that is shifted over the data
-        #(64s + 4s for cropping when whitening)
-        self.window_size_time = 68.0
+        #(64s + 8s for cropping when whitening)
+        self.window_size_time = 72.0
         self.window_size = int(self.window_size_time / self.dt)
         #How many points are shifted each step
         self.stride = int(time_step / self.dt)
@@ -409,7 +409,7 @@ class generatorFromTimeSeriesReducedSplit(keras.utils.Sequence):
             for detector in range(len(self.ts)):
                 low, up = idx
                 #Using whiten_data works
-                white_full_signal = whiten_data(self.ts[detector][low:up], psd=self.psd)
+                white_full_signal = whiten_data_new(self.ts[detector][low:up])
                 #white_full_signal = self.ts[detector][low:up].whiten(4, 4)
                 max_idx = len(white_full_signal)
                 min_idx = max_idx - int(float(self.num_samples) / float(self.resample_rates[0]) / self.dt)
