@@ -189,3 +189,12 @@ def evaluate_ts_from_generator(ts, net_path, generator, time_step=0.25, batch_si
     bool_ts = TimeSeries([pt[0] for pt in res[1]], delta_t=time_step, epoch=ts[0]._epoch)
     
     return((snr_ts, bool_ts))
+
+def evaluate_ts_pure_generator(net_path, generator, time_step=0.25, batch_size=32):
+    net = keras.models.load_model(net_path)
+    res = net.predict_generator(generator, verbose=1)
+    
+    snr_ts = TimeSeries(res[0].flatten(), delta_t=time_step, epoch=ts[0]._epoch)
+    bool_ts = TimeSeries([pt[0] for pt in res[1]], delta_t=time_step)
+    
+    return((snr_ts, bool_ts))
