@@ -302,6 +302,7 @@ class TestInputForSimplicity(Callback):
         outputs = [expand_output(dense_1, shape[1:]) for shape in output_shapes]
         self.test_model = keras.models.Model(inputs=inputs, outputs=outputs)
         self.test_model.compile(loss=self.loss, optimizer=self.optimizer)
+        self.initialized = True
         return
     
     def on_epoch_end(self, epoch, logs={}):
@@ -381,6 +382,12 @@ class TestInputForSimplicity(Callback):
                 print("Warned on epoch {}".format(self.warned_on_epochs[0]))
             else:
                 print("Warned on epochs {}".format(self.warned_on_epochs))
+    
+    def get_test_model(self):
+        if self.initialized:
+            return self.test_model
+        else:
+            return None
 
 class PrintLogs(Callback):
     def on_epoch_end(self, epoch, logs={}):
