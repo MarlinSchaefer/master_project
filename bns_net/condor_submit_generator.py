@@ -53,7 +53,7 @@ def main():
     for highLevel in highLevelSteps:
         for lowLevel in lowLevelSteps:
             condor_file = write_submit_file(highLevel, lowLevel)
-            subprocess.run(["condor_submit", condor_file])
+            subprocess.call(["condor_submit", condor_file])
             bar.iterate()
     return
 
