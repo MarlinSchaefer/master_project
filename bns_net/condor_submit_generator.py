@@ -1,5 +1,7 @@
 import numpy as np
 import subprocess
+import os
+from progress_bar import progress_tracker
 
 def get_submit_file(highLevel, lowLevel):
     lines=[
@@ -45,10 +47,14 @@ def write_submit_file(highLevel, lowLevel):
     return file_path
 
 def main():
-    for highLevel in np.arange(3, 202, 2, dtype=int):
-        for lowLevel in np.arange(22, dtype=int):
+    highLevelSteps = np.arange(3, 202, 2, dtype=int)
+    lowLevelSteps = np.arange(22, dtype=int)
+    bar = progress_tracker(len(highLevelSteps) * len(lowLevelSteps), name='Submitting jobs')
+    for highLevel in highLevelSteps:
+        for lowLevel in lowLevelSteps:
             condor_file = write_submit_file(highLevel, lowLevel)
             subprocess.run(["condor_submit", condor_file])
+            bar.iterate()
     return
 
 if __name__ == "__main__":
