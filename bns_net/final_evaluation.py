@@ -31,13 +31,13 @@ def create_directory(dir_path):
         pass
     return
 
+def get_parent_dir_path():
+    return os.path.join(get_store_path(), PARENT_DIR_NAME)
+
 def copy_necessary(dir_path):
     net_path = os.path.join(dir_path, NET_FILE)
     if not os.path.isfile(net_path):
-        shutil.copy(os.path.join(parent_dir, NET_FILE), net_path)
-
-def get_parent_dir_path():
-    return os.path.join(get_store_path(), PARENT_DIR_NAME)
+        shutil.copy(os.path.join(get_parent_dir_path(), NET_FILE), net_path)
 
 def get_dir_path():
     data_dir_name = str(HL) + '_' + str(LL)
