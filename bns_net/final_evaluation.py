@@ -77,7 +77,7 @@ def call(highLevel, lowLevel):
     
     #Call pipeline
     gen = generator.generatorFromTimeSeriesReducedSplitRemoveLast
-    snr_ts, bool_ts = dp.evaluate_ts_from_generator(data, net_path, generatorFromTimeSeriesReducedSplitRemoveLast)
+    snr_ts, bool_ts = dp.evaluate_ts_from_generator(data, net_path, gen)
     
     #Store results
     with h5py.File(result_path, 'w') as f:
