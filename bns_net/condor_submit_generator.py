@@ -39,8 +39,11 @@ def get_submit_file(highLevel, lowLevel):
     ]
     return lines
 
+def get_commit_file_path(highLevel, lowLevel):
+    return os.path.join('/work/marlin.schaefer', 'condor_submit_final_evaluation_{}_{}.sub'.format(highLevel, lowLevel))
+
 def write_submit_file(highLevel, lowLevel):
-    file_path = os.path.join('/work/marlin.schaefer', 'condor_submit_final_evaluation_{}_{}.sub'.format(highLevel, lowLevel))
+    file_path = get_commit_file_path(highLevel, lowLevel)
     with open(file_path, 'w') as f:
         for line in get_submit_file(highLevel, lowLevel):
             f.write(line + '\n')
@@ -52,7 +55,8 @@ def main():
     bar = progress_tracker(len(highLevelSteps) * len(lowLevelSteps), name='Submitting jobs')
     for highLevel in highLevelSteps:
         for lowLevel in lowLevelSteps:
-            condor_file = write_submit_file(highLevel, lowLevel)
+            #condor_file = write_submit_file(highLevel, lowLevel)
+            condor_file = get_commit_file_path(highLevel, lowLevel)
             subprocess.call(["condor_submit", condor_file])
             bar.iterate()
     return
