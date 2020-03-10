@@ -46,7 +46,8 @@ def get_dir_path():
     return os.path.join(get_parent_dir_path(), data_dir_name)
 
 def get_result_path():
-    file_name = 'result_' + str(HL) + '_' + str(LL) + '.hf5'
+    #file_name = 'result_' + str(HL) + '_' + str(LL) + '.hf5'
+    file_name = 'bbh_result_' + str(HL) + '_' + str(LL) + '.hf5'
     return os.path.join(get_dir_path(), file_name)
 
 def get_data(file_path):
@@ -56,10 +57,12 @@ def get_data(file_path):
     return data
 
 def get_data_dir():
-    return os.path.join(get_store_path(), 'long_data_2')
+    #return os.path.join(get_store_path(), 'long_data_2')
+    return os.path.join(get_store_path(), 'bbhTest')
 
 def get_file_path():
-    return os.path.join(get_data_dir(), 'data-' + str(HL) + '_part_' + str(LL) + '.hf5')
+    #return os.path.join(get_data_dir(), 'data-' + str(HL) + '_part_' + str(LL) + '.hf5')
+    return os.path.join(get_data_dir(), 'data-' + str(HL) + str(LL) + '.hdf')
 
 def call(highLevel, lowLevel):
     #Initial setup
