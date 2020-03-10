@@ -51,9 +51,13 @@ def get_result_path():
     return os.path.join(get_dir_path(), file_name)
 
 def get_data(file_path):
+    #with h5py.File(file_path, 'r') as f:
+        #data = [TimeSeries(f['L1'][()], delta_t=1./4096),
+                #TimeSeries(f['H1'][()], delta_t=1./4096)]
+    #return data
     with h5py.File(file_path, 'r') as f:
-        data = [TimeSeries(f['L1'][()], delta_t=1./4096),
-                TimeSeries(f['H1'][()], delta_t=1./4096)]
+        data = [TimeSeries(f['L1/0'][()], delta_t=1./4096),
+                TimeSeries(f['H1/0'][()], delta_t=1./4096)]
     return data
 
 def get_data_dir():
